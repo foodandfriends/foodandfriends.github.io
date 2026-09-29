@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Propuesta de carta digital</title>
+<meta name="description" content="Cinco estilos para la carta digital del restaurante. Recórralos y escoja el que más le guste.">
+<meta property="og:title" content="Propuesta de carta digital">
+<meta property="og:description" content="Cinco estilos para su carta en el celular. Escoja el que más le guste.">
+<meta name="theme-color" content="#f5f1ea">
+<link rel="icon" href="../logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Cabin+Sketch:wght@700&family=Courier+Prime:wght@700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #f5f1ea;
+    --superficie: #fffdf9;
+    --tinta: #1d1814;
+    --suave: #6c6257;
+    --linea: #e3dace;
+    --boton: #1d1814;
+    --boton-texto: #fffdf9;
+    --naranja: #fa7a0b;
+    --whatsapp: #1fa855;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #14110f; --superficie: #1d1916; --tinta: #f4ede4; --suave: #a99d91; --linea: #302924;
+      --boton: #f4ede4; --boton-texto: #14110f; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --fondo: #14110f; --superficie: #1d1916; --tinta: #f4ede4; --suave: #a99d91; --linea: #302924;
+    --boton: #f4ede4; --boton-texto: #14110f; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 17px/1.5 "Instrument Sans", ui-sans-serif, system-ui, sans-serif; overflow-x: hidden; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--naranja); outline-offset: 3px; border-radius: 10px; }
+  .col { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .eyebrow { margin: 0; color: var(--suave); font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 52px; padding: 0 22px;
+    border-radius: 999px; border: 1.5px solid var(--linea); background: var(--superficie);
+    font-weight: 700; text-decoration: none; white-space: nowrap;
+  }
+  .btn.principal { background: var(--boton); border-color: var(--boton); color: var(--boton-texto); }
+  .btn.whatsapp { background: var(--whatsapp); border-color: var(--whatsapp); color: #fff; }
+  .btn svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Portada */
+  .portada { padding: calc(28px + env(safe-area-inset-top)) 0 12px; overflow: hidden; }
+  .portada .col { display: grid; gap: 28px; }
+  .marca { display: flex; align-items: center; gap: 14px; }
+  .marca img { width: 64px; height: 64px; }
+  h1 { margin: 0; font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: clamp(2.7rem, 12.5vw, 4.6rem); line-height: .98; letter-spacing: -.02em; }
+  h1 em { color: var(--naranja); }
+  .intro { max-width: 36ch; margin: 16px 0 0; color: var(--suave); font-size: 1.08rem; }
+  .pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 24px 0 0; padding: 0; list-style: none; }
+  .pasos li { padding: 14px 12px; border: 1px solid var(--linea); border-radius: 16px; background: var(--superficie); font-size: .82rem; font-weight: 600; line-height: 1.25; }
+  .pasos svg { display: block; width: 24px; height: 24px; margin-bottom: 8px; fill: none; stroke: var(--naranja); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .portada .btn { margin-top: 24px; }
+
+  /* Tres celulares en abanico */
+  .abanico { position: relative; height: 380px; margin: 4px 0 0; }
+  .abanico a { position: absolute; left: 50%; top: 10px; width: 164px; }
+  .abanico a:nth-child(1) { transform: translateX(-118%) rotate(-9deg); top: 34px; }
+  .abanico a:nth-child(2) { transform: translateX(-50%); z-index: 2; }
+  .abanico a:nth-child(3) { transform: translateX(18%) rotate(9deg); top: 34px; }
+
+  /* Celular */
+  .telefono { display: block; padding: 7px; border-radius: 30px; background: #0e0d0c; box-shadow: 0 1px 0 rgba(255,255,255,.1) inset, 0 24px 44px -18px rgba(29, 24, 20, .5); text-decoration: none; }
+  .pantalla { position: relative; aspect-ratio: 375 / 812; overflow: hidden; border-radius: 24px; background: #222; container-type: size; }
+  .pantalla img { display: block; width: 100%; height: auto; }
+  .pantalla.corta img { height: 100%; object-fit: cover; object-position: top; }
+  .en-vista .pantalla:not(.corta) img { animation: recorrer var(--duracion, 44s) ease-in-out 1.2s infinite alternate; }
+  @keyframes recorrer { 0%, 6% { transform: translateY(0); } 94%, 100% { transform: translateY(calc(-100% + 100cqh)); } }
+
+  /* Selector fijo de opciones */
+  .selector { position: sticky; top: 0; z-index: 10; margin-top: 28px; background: color-mix(in srgb, var(--fondo) 92%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
+  .selector ul { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; max-width: 1080px; margin: 0 auto; padding: calc(10px + env(safe-area-inset-top)) 20px 10px; list-style: none; }
+  .selector ul::-webkit-scrollbar { display: none; }
+  .selector a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 6px; border-radius: 999px; border: 1px solid var(--linea); background: var(--superficie); white-space: nowrap; text-decoration: none; font-weight: 700; }
+  .selector a span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--fondo); font-size: .85rem; }
+  .selector a[aria-current="true"] { background: var(--boton); border-color: var(--boton); color: var(--boton-texto); }
+  .selector a[aria-current="true"] span { background: rgba(255, 255, 255, .16); }
+
+  /* Cada opción */
+  .opcion { scroll-margin-top: 66px; padding: 44px 0 20px; }
+  .opcion .col { display: grid; gap: 22px; }
+  .opcion + .opcion { border-top: 1px solid var(--linea); }
+  .nombre { margin: 4px 0 0; font-size: 2.6rem; font-weight: 400; line-height: 1.05; }
+  .idea { max-width: 40ch; margin: 10px 0 0; color: var(--suave); }
+  .colores { display: flex; gap: 6px; margin: 16px 0 0; padding: 0; list-style: none; }
+  .colores li { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14); }
+  .muestra { width: min(300px, 80vw); margin: 0 auto; }
+  .muestra .pista { margin: 10px 0 0; color: var(--suave); font-size: .85rem; text-align: center; }
+  .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .acciones .btn { padding: 0 12px; }
+
+  /* Cierre */
+  .cierre { margin-top: 30px; padding: 56px 0 calc(56px + env(safe-area-inset-bottom)); background: #1d1814; color: #f4ede4; }
+  .cierre h2 { margin: 0; font-family: "Instrument Serif", Georgia, serif; font-weight: 400; font-size: clamp(2.3rem, 10vw, 3.6rem); line-height: 1; }
+  .cierre h2 em { color: var(--naranja); }
+  .cierre p { max-width: 44ch; margin: 14px 0 0; color: #bfb3a6; }
+  .cierre .btn { margin-top: 22px; }
+  .sigue { display: grid; gap: 12px; margin: 38px 0 0; padding: 0; list-style: none; counter-reset: paso; }
+  .sigue li { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; counter-increment: paso; }
+  .sigue li::before { content: counter(paso); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #4a3f37; color: var(--naranja); font-weight: 700; }
+  .sigue strong { display: block; color: #f4ede4; }
+  .sigue span { color: #bfb3a6; font-size: .95rem; }
+  .nota { margin-top: 34px !important; font-size: .85rem; color: #8f8377 !important; }
+
+  @media (min-width: 900px) {
+    .portada .col { grid-template-columns: 1.1fr 1fr; align-items: center; }
+    .abanico { height: 470px; }
+    .abanico a { width: 200px; }
+    .opcion .col { grid-template-columns: 1fr 340px; grid-template-rows: auto 1fr; column-gap: 60px; align-items: start; }
+    .opcion .texto { grid-column: 1; }
+    .opcion .muestra { grid-column: 2; grid-row: 1 / span 2; width: 320px; }
+    .opcion .acciones { grid-column: 1; grid-row: 2; display: flex; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .en-vista .pantalla img { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<header class="portada" id="arriba">
+  <div class="col">
+    <div>
+      <div class="marca">
+        <img src="../logo.webp" alt="Logo del restaurante">
+        <p class="eyebrow">Propuesta<br>Carta digital</p>
+      </div>
+      <h1 style="margin-top: 22px">Su carta, <em>en el celular</em> de cada cliente</h1>
+      <p class="intro">Un código QR en cada mesa abre la carta en el celular, sin descargar nada. Le preparé cinco estilos con la misma carta: recórralos y dígame cuál le gusta más.</p>
+      <ol class="pasos">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 14v7h-4M14 18v3"/></svg>Escanean el QR de la mesa</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>Ven la carta con fotos y precios</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12v9H4v-9"/><path d="M2 7h20v5H2z"/><path d="M12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7ZM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/></svg>Piden sin esperar la carta de papel</li>
+      </ol>
+      <a class="btn principal" href="#opcion-1">Ver las 5 opciones <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg></a>
+    </div>
+    <div class="abanico" aria-hidden="true">
+      <a class="telefono" href="#opcion-2" tabindex="-1"><div class="pantalla corta"><img src="previas/2-cartel.jpg" alt=""></div></a>
+      <a class="telefono" href="#opcion-1" tabindex="-1"><div class="pantalla corta"><img src="previas/1-rock.jpg" alt=""></div></a>
+      <a class="telefono" href="#opcion-3" tabindex="-1"><div class="pantalla corta"><img src="previas/3-terraza.jpg" alt=""></div></a>
+    </div>
+  </div>
+</header>
+
+<nav class="selector" aria-label="Opciones"><ul id="selector"></ul></nav>
+<main id="opciones"></main>
+
+<section class="cierre">
+  <div class="col">
+    <p class="eyebrow" style="color:#8f8377">Para terminar</p>
+    <h2>¿Cuál le <em>gustó</em> más?</h2>
+    <p>Escríbame el número de la opción. Si le gustan cosas de varias también se pueden combinar, por ejemplo los colores de una con la forma de otra.</p>
+    <a class="btn whatsapp" id="responder" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>Responder por WhatsApp</a>
+    <ol class="sigue">
+      <li><div><strong>Escoge el estilo</strong><span>Y lo ajustamos a su gusto: colores, letras, orden.</span></div></li>
+      <li><div><strong>Me pasa su carta</strong><span>Los platos, los precios y fotos de lo que más vende.</span></div></li>
+      <li><div><strong>Le entrego la carta y los QR</strong><span>Listos para las mesas. Usted mismo cambia precios y agrega o quita platos desde el celular.</span></div></li>
+    </ol>
+    <p class="nota">Las fotos, precios y horarios de estas muestras son de ejemplo. En la carta final van los suyos.</p>
+  </div>
+</section>
+
+<script src="propuesta.js"></script>
+<script>
+(function () {
+  const P = window.PROPUESTA;
+  const INFO = {
+    rock: { fuente: "font-family:'Alfa Slab One';text-transform:uppercase;color:#f40b00",
+      idea: 'Con los colores del logo: negro, rojo y naranja. Cada plato con su foto, títulos grandes y una cinta con "Rock · Beer · Pub" arriba.',
+      colores: ['#120e0c', '#f40b00', '#fa7a0b', '#f6ede4'] },
+    cartel: { fuente: "font-family:'Anton';text-transform:uppercase;letter-spacing:.01em",
+      idea: 'Letrero pintado de la Loma: el amarillo, azul y rojo de las banderas de la fachada, banderines de feria y el logo como sticker.',
+      colores: ['#ffd21f', '#1b3aa6', '#e0262b', '#111111'] },
+    terraza: { fuente: "font-family:'Bricolage Grotesque';font-weight:800;letter-spacing:-.03em",
+      idea: 'Las sombrillas rojas de la entrada: toldo de rayas con el logo colgando, fondo crema y cada plato en su tarjeta.',
+      colores: ['#d52b1e', '#fbf3e3', '#2b1a12', '#2f6b3a'] },
+    pizarra: { fuente: "font-family:'Cabin Sketch'",
+      idea: 'El tablero de tiza del bar: letra a mano, marco de madera y puntos que llevan hasta el precio.',
+      colores: ['#1f2a24', '#f1efe6', '#f6d97c', '#f4a8a0', '#5a3d27'] },
+    comanda: { fuente: "font-family:'Courier Prime';font-weight:700;text-transform:uppercase;letter-spacing:.04em",
+      idea: 'El papelito que va a la cocina: letra de máquina, papel rasgado, mesa y fecha del día y código de barras al final.',
+      colores: ['#fffdf4', '#1f1c19', '#c8331f', '#2a2622'] }
+  };
+  const ICONO_ABRIR = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>';
+  const ICONO_GUSTA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v11M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 7A2 2 0 0 1 17.5 21H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9Z"/></svg>';
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const selector = document.getElementById('selector');
+  const main = document.getElementById('opciones');
+  P.opciones.forEach((o, i) => {
+    const n = i + 1, info = INFO[o.id];
+    selector.insertAdjacentHTML('beforeend', `<li><a href="#opcion-${n}"><span>${n}</span>${esc(o.nombre)}</a></li>`);
+    main.insertAdjacentHTML('beforeend', `
+      <section class="opcion" id="opcion-${n}">
+        <div class="col">
+          <div class="texto">
+            <p class="eyebrow">Opción ${n}</p>
+            <h2 class="nombre" style="${info.fuente}">${esc(o.nombre)}</h2>
+            <p class="idea">${esc(info.idea)}</p>
+            <ul class="colores" aria-label="Colores">${info.colores.map(c => `<li style="background:${c}"></li>`).join('')}</ul>
+          </div>
+          <div class="muestra">
+            <a class="telefono" href="${o.id}.html" aria-label="Abrir la opción ${n}, ${esc(o.nombre)}">
+              <div class="pantalla"><img src="previas/${n}-${o.id}.jpg" alt="" loading="${n <= 2 ? 'eager' : 'lazy'}"></div>
+            </a>
+            ${n === 1 ? '<p class="pista">Así se ve de arriba a abajo. Tóquela para recorrerla.</p>' : ''}
+          </div>
+          <div class="acciones">
+            <a class="btn principal" href="${o.id}.html">${ICONO_ABRIR}Abrir</a>
+            <a class="btn" href="${P.enlaceWhatsApp(P.mensaje(i))}" target="_blank" rel="noopener">${ICONO_GUSTA}Me gusta esta</a>
+          </div>
+        </div>
+      </section>`);
+  });
+  document.getElementById('responder').href = P.enlaceWhatsApp('Hola, ya vi las opciones de la carta digital. Me gusta la opción ');
+
+  // El celular de cada opción recorre la carta solo cuando está en pantalla
+  const secciones = [...document.querySelectorAll('.opcion')];
+  const enlaces = [...selector.querySelectorAll('a')];
+  const vista = new IntersectionObserver(entradas => {
+    entradas.forEach(e => e.target.classList.toggle('en-vista', e.isIntersecting));
+  }, { threshold: .3 });
+  secciones.forEach(s => vista.observe(s));
+
+  // Opción resaltada en el selector según por dónde va
+  let activa = -1;
+  function marcar() {
+    let actual = -1;
+    secciones.forEach((s, i) => { if (s.getBoundingClientRect().top < innerHeight * .4) actual = i; });
+    if (actual === activa) return;
+    if (activa >= 0) enlaces[activa].removeAttribute('aria-current');
+    activa = actual;
+    if (activa >= 0) {
+      const a = enlaces[activa];
+      a.setAttribute('aria-current', 'true');
+      const r = a.getBoundingClientRect(), rc = selector.getBoundingClientRect();
+      selector.scrollBy({ left: r.left - rc.left - (rc.width - r.width) / 2, behavior: 'smooth' });
+    }
+  }
+  let pendiente = false;
+  addEventListener('scroll', () => {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => { pendiente = false; marcar(); });
+  }, { passive: true });
+  marcar();
+})();
+</script>
+</body>
+</html>

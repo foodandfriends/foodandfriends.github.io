@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Food and Friends · Carta</title>
+<meta name="description" content="Carta de Food and Friends, en el Parque Artesanal Loma de la Cruz, Cali.">
+<meta name="theme-color" content="#15100e">
+<meta property="og:title" content="Food and Friends · Carta">
+<meta property="og:description" content="La carta de Food and Friends, Parque Artesanal Loma de la Cruz, Cali.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff5a36'/%3E%3Ctext x='32' y='44' font-family='Arial,sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='%2315100e'%3EF%26F%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --fondo: #15100e;
+    --tarjeta: #1f1815;
+    --linea: #3a2d27;
+    --texto: #f6ede3;
+    --suave: #b9a89a;
+    --acento: #ff5a36;
+    --precio: #ffc93c;
+    --nav: 64px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--precio); outline-offset: 3px; border-radius: 8px; }
+  .col { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+  /* Cabecera */
+  .hero {
+    padding: calc(36px + env(safe-area-inset-top)) 0 28px;
+    background: radial-gradient(120% 90% at 50% -20%, rgba(255, 90, 54, .30), transparent 62%);
+  }
+  .lugar { margin: 0 0 12px; color: var(--acento); font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: clamp(2.5rem, 12vw, 3.75rem); line-height: .96; font-weight: 850; letter-spacing: -.025em; }
+  .subtitulo { margin: 14px 0 0; color: var(--suave); }
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 20px; border-radius: 999px;
+    border: 1.5px solid var(--linea); background: var(--tarjeta);
+    font-weight: 650; text-decoration: none;
+  }
+  .btn.principal { background: var(--acento); border-color: var(--acento); color: var(--fondo); }
+  .btn svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Categorías, fijas arriba al bajar */
+  .cats {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(21, 16, 14, .94);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--linea);
+    padding-top: env(safe-area-inset-top);
+  }
+  .cats ul {
+    position: relative; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+    max-width: 640px; margin: 0 auto; padding: 10px 20px; list-style: none;
+  }
+  .cats ul::-webkit-scrollbar { display: none; }
+  .cats a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 999px;
+    border: 1.5px solid var(--linea); white-space: nowrap; text-decoration: none; font-weight: 600; font-size: .95rem;
+  }
+  .cats a[aria-current="true"] { background: var(--acento); border-color: var(--acento); color: var(--fondo); font-weight: 750; }
+
+  /* Platos */
+  main { padding-bottom: 12px; }
+  .cat { scroll-margin-top: calc(var(--nav) + 4px); padding-top: 34px; }
+  h2 { display: flex; align-items: center; gap: 14px; margin: 0; font-size: 1.65rem; line-height: 1.1; font-weight: 800; letter-spacing: -.01em; }
+  h2::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, var(--acento), transparent); }
+  .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .92rem; }
+  .platos { margin: 8px 0 0; padding: 0; list-style: none; }
+  .plato { display: grid; grid-template-columns: 1fr auto; column-gap: 16px; row-gap: 3px; padding: 15px 0; border-bottom: 1px solid var(--linea); }
+  .plato:last-child { border-bottom: 0; }
+  .nombre { font-weight: 700; font-size: 1.06rem; }
+  .precio { grid-column: 2; grid-row: 1; align-self: start; color: var(--precio); font-weight: 750; font-size: 1.06rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .desc { grid-column: 1; margin: 0; color: var(--suave); font-size: .93rem; }
+  .marca {
+    display: inline-block; margin-left: 8px; padding: 1px 8px; vertical-align: 2px;
+    border: 1px solid var(--acento); border-radius: 999px; color: var(--acento);
+    font-size: .68rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase;
+  }
+  .plato.agotado .nombre, .plato.agotado .desc, .plato.agotado .precio { opacity: .5; }
+  .plato.agotado .precio { text-decoration: line-through; }
+  .plato.agotado .marca { border-color: var(--suave); color: var(--suave); }
+
+  /* Pie */
+  footer { margin-top: 30px; padding: 30px 0 44px; border-top: 1px solid var(--linea); background: var(--tarjeta); }
+  footer h3 { margin: 0 0 6px; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--acento); }
+  footer .bloque { margin-bottom: 22px; }
+  footer p { margin: 0; }
+  .horario { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 0; }
+  .horario dt { color: var(--suave); }
+  .horario dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .redes { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pie-nota { color: var(--suave); font-size: .85rem; }
+  .arriba { display: inline-block; margin-top: 8px; color: var(--suave); font-size: .9rem; }
+
+  noscript p { margin: 24px 20px; text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<header class="hero" id="arriba"><div class="col" id="cabecera"></div></header>
+<nav class="cats" id="nav" aria-label="Categorías de la carta"><ul id="chips"></ul></nav>
+<main class="col" id="carta"></main>
+<footer><div class="col" id="pie"></div></footer>
+<noscript><p>Para ver la carta activa JavaScript en el navegador.</p></noscript>
+
+<script src="menu.js"></script>
+<script>
+(function () {
+  const M = window.MENU || {};
+  const N = M.negocio || {};
+  const categorias = (M.categorias || []).filter(c => c.platos && c.platos.length);
+
+  const $ = id => document.getElementById(id);
+  function el(tag, clase, texto) {
+    const e = document.createElement(tag);
+    if (clase) e.className = clase;
+    if (texto) e.textContent = texto;
+    return e;
+  }
+  const ICONOS = {
+    pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+    tel: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/>',
+    chat: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>'
+  };
+  function boton(texto, href, icono, principal) {
+    const a = el('a', 'btn' + (principal ? ' principal' : ''));
+    a.href = href;
+    if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = ICONOS[icono];
+    a.append(svg, texto);
+    return a;
+  }
+  const digitos = t => String(t || '').replace(/\D/g, '');
+  const formatoPrecio = p => typeof p === 'number'
+    ? '$' + String(Math.round(p)).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    : (p || '');
+
+  document.title = (N.nombre || 'Carta') + ' · Carta';
+
+  // Cabecera
+  const cab = $('cabecera');
+  if (N.lugar) cab.append(el('p', 'lugar', N.lugar));
+  cab.append(el('h1', '', N.nombre || 'Carta'));
+  cab.append(el('p', 'subtitulo', 'La carta'));
+  const acciones = el('div', 'acciones');
+  if (N.mapa) acciones.append(boton('Cómo llegar', N.mapa, 'pin', true));
+  if (digitos(N.telefono).length === 10) acciones.append(boton('Llamar', 'tel:+57' + digitos(N.telefono), 'tel'));
+  if (digitos(N.whatsapp).length === 10) acciones.append(boton('WhatsApp', 'https://wa.me/57' + digitos(N.whatsapp), 'chat'));
+  cab.append(acciones);
+
+  // Categorías y platos
+  const chips = $('chips');
+  const carta = $('carta');
+  const enlaces = new Map();
+  categorias.forEach((c, i) => {
+    const id = 'cat-' + (c.id || i);
+    const li = el('li');
+    const a = el('a', '', c.nombre);
+    a.href = '#' + id;
+    li.append(a);
+    chips.append(li);
+    enlaces.set(id, a);
+
+    const sec = el('section', 'cat');
+    sec.id = id;
+    sec.append(el('h2', '', c.nombre));
+    if (c.nota) sec.append(el('p', 'nota-cat', c.nota));
+    const lista = el('ul', 'platos');
+    c.platos.forEach(p => {
+      const item = el('li', 'plato' + (p.agotado ? ' agotado' : ''));
+      const nombre = el('div', 'nombre', p.nombre);
+      const marca = p.agotado ? 'Agotado' : p.etiqueta;
+      if (marca) nombre.append(el('span', 'marca', marca));
+      item.append(nombre);
+      const precio = formatoPrecio(p.precio);
+      if (precio) item.append(el('div', 'precio', precio));
+      if (p.descripcion) item.append(el('p', 'desc', p.descripcion));
+      lista.append(item);
+    });
+    sec.append(lista);
+    carta.append(sec);
+  });
+  if (!categorias.length) $('nav').hidden = true;
+
+  // Pie
+  const pie = $('pie');
+  function bloque(titulo) {
+    const b = el('div', 'bloque');
+    b.append(el('h3', '', titulo));
+    pie.append(b);
+    return b;
+  }
+  if (N.direccion) {
+    const b = bloque('Dónde estamos');
+    b.append(el('p', '', N.direccion));
+    if (N.mapa) {
+      const v = el('a', '', 'Ver en Google Maps');
+      v.href = N.mapa; v.target = '_blank'; v.rel = 'noopener';
+      b.append(v);
+    }
+  }
+  if (N.horario && N.horario.length) {
+    const b = bloque('Horario');
+    const dl = el('dl', 'horario');
+    N.horario.forEach(f => { dl.append(el('dt', '', f[0])); dl.append(el('dd', '', f[1])); });
+    b.append(dl);
+  }
+  if (digitos(N.telefono)) {
+    const b = bloque('Contacto');
+    const t = el('a', '', N.telefono);
+    t.href = 'tel:+57' + digitos(N.telefono);
+    b.append(t);
+  }
+  if (N.instagram || N.facebook) {
+    const b = bloque('Síganos');
+    const redes = el('div', 'redes');
+    [['Instagram', N.instagram], ['Facebook', N.facebook]].forEach(([nombre, url]) => {
+      if (!url) return;
+      const a = el('a', 'btn', nombre);
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      redes.append(a);
+    });
+    b.append(redes);
+  }
+  if (N.nota) pie.append(el('p', 'pie-nota', N.nota));
+  const arriba = el('a', 'arriba', 'Volver arriba ↑');
+  arriba.href = '#arriba';
+  pie.append(arriba);
+
+  // Categoría resaltada según por dónde va la persona
+  const nav = $('nav');
+  const secciones = Array.from(document.querySelectorAll('.cat'));
+  let activa = null;
+  function medir() {
+    document.documentElement.style.setProperty('--nav', nav.offsetHeight + 'px');
+  }
+  function marcar() {
+    const limite = nav.offsetHeight + 40;
+    let actual = null;
+    secciones.forEach(s => { if (s.getBoundingClientRect().top <= limite) actual = s.id; });
+    if (secciones.length && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+      actual = secciones[secciones.length - 1].id;
+    }
+    if (actual === activa) return;
+    if (activa) enlaces.get(activa).removeAttribute('aria-current');
+    activa = actual;
+    if (activa) {
+      const a = enlaces.get(activa);
+      a.setAttribute('aria-current', 'true');
+      chips.scrollTo({ left: a.offsetLeft - (chips.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+    }
+  }
+  let pendiente = false;
+  addEventListener('scroll', () => {
+    if (pendiente) return;
+    pendiente = true;
+    requestAnimationFrame(() => { pendiente = false; marcar(); });
+  }, { passive: true });
+  addEventListener('resize', () => { medir(); marcar(); });
+  medir();
+  marcar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Food and Friends · Carta</title>
+<meta name="theme-color" content="#d52b1e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --papel: #fbf3e3;
+    --papel-2: #f2e4ca;
+    --tarjeta: #fffaf0;
+    --tinta: #2b1a12;
+    --suave: #7a6152;
+    --linea: #ead9bd;
+    --rojo: #d52b1e;
+    --rojo-2: #a91f14;
+    --hoja: #2f6b3a;
+    --nav: 70px;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--papel); color: var(--tinta);
+    font: 16px/1.45 "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+    font-optical-sizing: auto;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--hoja); outline-offset: 3px; border-radius: 10px; }
+  .col { max-width: 620px; margin: 0 auto; padding: 0 18px; }
+
+  /* Toldo: rayas y festón como las sombrillas de la terraza */
+  .toldo { padding-top: env(safe-area-inset-top); background: var(--rojo); }
+  .toldo .rayas { height: 46px; background: repeating-linear-gradient(90deg, var(--rojo) 0 36px, var(--papel-2) 36px 72px); }
+  .toldo .feston {
+    height: 18px; background-color: var(--papel);
+    background-image:
+      radial-gradient(circle at 18px 0, var(--rojo) 17.5px, transparent 18px),
+      radial-gradient(circle at 54px 0, var(--papel-2) 17.5px, transparent 18px);
+    background-size: 72px 18px; background-repeat: repeat-x;
+    filter: drop-shadow(0 3px 0 rgba(43, 26, 18, .08));
+  }
+
+  .hero { position: relative; z-index: 1; padding: 0 0 26px; }
+  #cabecera { display: flex; flex-direction: column; align-items: flex-start; }
+  /* El logo cuelga del toldo */
+  h1 { order: -1; margin: -30px 0 16px; line-height: 0; }
+  .logo { width: 136px; height: 136px; filter: drop-shadow(0 8px 14px rgba(43, 26, 18, .28)); }
+  .lugar { margin: 0; color: var(--rojo); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .subtitulo { margin: 4px 0 0; font-size: clamp(2.8rem, 14vw, 4rem); line-height: .95; font-weight: 800; letter-spacing: -.045em; }
+  .acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px;
+    border-radius: 999px; border: 2px solid var(--tinta); background: transparent;
+    font-weight: 700; text-decoration: none;
+  }
+  .btn.principal { background: var(--rojo); border-color: var(--rojo); color: #fff; box-shadow: 0 3px 0 var(--rojo-2); }
+  .btn svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .cats {
+    position: sticky; top: 0; z-index: 10; background: rgba(251, 243, 227, .95);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--linea);
+  }
+  .cats ul { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; max-width: 620px; margin: 0 auto; padding: 11px 18px; list-style: none; }
+  .cats ul::-webkit-scrollbar { display: none; }
+  .cats a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 999px;
+    background: var(--papel-2); white-space: nowrap; text-decoration: none; font-weight: 650;
+  }
+  .cats a[aria-current="true"] { background: var(--rojo); color: #fff; }
+
+  .cat { scroll-margin-top: calc(var(--nav) + 6px); padding-top: 30px; }
+  h2 { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: 1.9rem; line-height: 1.05; font-weight: 800; letter-spacing: -.03em; }
+  h2 .num { color: var(--rojo); font-size: .95rem; font-weight: 700; letter-spacing: 0; }
+  .nota-cat { margin: 6px 0 0; color: var(--suave); }
+  .platos { display: grid; gap: 10px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .plato { padding: 14px 16px; border-radius: 18px; background: var(--tarjeta); border: 1px solid var(--linea); }
+  .fila { display: flex; align-items: baseline; gap: 12px; }
+  .nombre { flex: 1; font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
+  .puntos { display: none; }
+  .precio { color: var(--rojo); font-weight: 800; font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .desc { margin: 4px 0 0; color: var(--suave); font-size: .95rem; }
+  .marca {
+    display: inline-block; margin-left: 4px; padding: 2px 9px; vertical-align: 2px; border-radius: 999px;
+    background: var(--hoja); color: #fff; font-size: .7rem; font-weight: 700; letter-spacing: .04em;
+  }
+  .plato.agotado { background: transparent; border-style: dashed; }
+  .plato.agotado .nombre, .plato.agotado .desc, .plato.agotado .precio { opacity: .5; }
+  .plato.agotado .precio { text-decoration: line-through; }
+  .plato.agotado .marca { background: var(--suave); }
+
+  footer { margin-top: 40px; background: var(--rojo); color: #fff; }
+  footer .feston {
+    height: 18px; background-color: var(--rojo);
+    background-image: radial-gradient(circle at 18px 0, var(--papel) 17.5px, transparent 18px);
+    background-size: 36px 18px; background-repeat: repeat-x;
+  }
+  footer .col { padding-top: 22px; padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+  footer h3 { margin: 0 0 4px; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+  footer .bloque { margin-bottom: 20px; }
+  footer p { margin: 0; }
+  .horario { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; margin: 0; }
+  .horario dd { margin: 0; text-align: right; }
+  .redes { display: flex; gap: 10px; }
+  footer .btn { border-color: #fff; }
+  .pie-nota { opacity: .75; font-size: .85rem; }
+  .arriba { display: inline-block; margin-top: 10px; opacity: .85; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="toldo" id="arriba"><div class="rayas"></div><div class="feston"></div></div>
+<header class="hero"><div class="col" id="cabecera"></div></header>
+<nav class="cats" id="nav" aria-label="Categorías de la carta"><ul id="chips"></ul></nav>
+<main class="col" id="carta"></main>
+<footer><div class="feston"></div><div class="col" id="pie"></div></footer>
+<script src="muestra.js"></script>
+<script src="propuesta.js"></script>
+<script src="carta.js"></script>
+</body>
+</html>

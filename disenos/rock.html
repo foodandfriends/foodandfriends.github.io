@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Food and Friends · Carta</title>
+<meta name="theme-color" content="#120e0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Figtree:wght@400;600;700;800&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #120e0c;
+    --fondo-2: #1b1512;
+    --texto: #f6ede4;
+    --suave: #a99a8d;
+    --linea: #2e2521;
+    --rojo: #f40b00;
+    --naranja: #fa7a0b;
+    --nav: 66px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.45 "Figtree", ui-sans-serif, system-ui, sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--naranja); outline-offset: 3px; border-radius: 8px; }
+  .col { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+
+  /* Cinta con las palabras del anillo del logo */
+  .cinta { overflow: hidden; padding-top: env(safe-area-inset-top); background: var(--rojo); color: #fff; }
+  .cinta div {
+    display: flex; width: max-content; padding: 7px 0; white-space: nowrap;
+    font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+    animation: correr 38s linear infinite;
+  }
+  .cinta span { padding-right: 1.2em; }
+  @keyframes correr { to { transform: translateX(-50%); } }
+
+  .hero { padding: 34px 0 30px; text-align: center; background: radial-gradient(70% 60% at 50% 35%, rgba(250, 122, 11, .16), transparent 70%); }
+  h1 { margin: 0; line-height: 0; }
+  .logo { width: 188px; height: 188px; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, .6)); }
+  .lugar { order: 2; margin: 16px 0 0; color: var(--suave); font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  #cabecera { display: flex; flex-direction: column; align-items: center; }
+  #cabecera h1 { order: 1; }
+  .subtitulo { order: 3; margin: 4px 0 0; font-family: "Kaushan Script", cursive; font-size: 2rem; line-height: 1.2; color: var(--naranja); }
+  .acciones { order: 4; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 999px;
+    border: 1.5px solid var(--linea); background: var(--fondo-2); font-weight: 700; text-decoration: none;
+  }
+  .btn.principal { background: var(--naranja); border-color: var(--naranja); color: #1a0d03; }
+  .btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .cats { position: sticky; top: 0; z-index: 10; background: rgba(18, 14, 12, .95); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
+  .cats ul { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; max-width: 600px; margin: 0 auto; padding: 10px 20px; list-style: none; }
+  .cats ul::-webkit-scrollbar { display: none; }
+  .cats a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 17px; border-radius: 999px;
+    background: var(--fondo-2); border: 1px solid var(--linea); white-space: nowrap; text-decoration: none; font-weight: 700; font-size: .95rem;
+  }
+  .cats a[aria-current="true"] { background: var(--naranja); border-color: var(--naranja); color: #1a0d03; }
+
+  .cat { scroll-margin-top: calc(var(--nav) + 4px); padding-top: 38px; }
+  h2 { margin: 0; font-family: "Alfa Slab One", Georgia, serif; font-weight: 400; font-size: clamp(1.6rem, 9vw, 2.35rem); line-height: 1; text-transform: uppercase; color: var(--rojo); letter-spacing: .01em; overflow-wrap: anywhere; }
+  h2 .num { display: none; }
+  .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .95rem; }
+  .platos { display: grid; gap: 20px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .plato {
+    display: grid; grid-template-columns: 1fr 112px; column-gap: 16px;
+    grid-template-areas: "nombre foto" "desc foto" "precio foto" "resto foto"; grid-template-rows: auto auto auto 1fr;
+  }
+  .fila { display: contents; }
+  .nombre { grid-area: nombre; color: var(--naranja); font-weight: 800; font-size: 1.1rem; line-height: 1.25; }
+  .puntos { display: none; }
+  .desc { grid-area: desc; margin: 3px 0 0; color: var(--suave); font-size: .93rem; }
+  .precio { grid-area: precio; margin-top: 6px; font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .foto { grid-area: foto; width: 112px; height: 88px; border-radius: 12px; object-fit: cover; }
+  .foto.vacia {
+    display: grid; place-items: center; align-content: center; gap: 2px;
+    background: linear-gradient(150deg, #2b211c, #17110f); border: 1px solid var(--linea); color: var(--naranja);
+  }
+  .foto.vacia svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: .8; }
+  .foto.vacia span { color: var(--suave); font-size: .62rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+  .marca {
+    display: inline-block; margin-left: 4px; padding: 2px 8px; vertical-align: 2px; border-radius: 999px;
+    background: var(--rojo); color: #fff; font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  }
+  .plato.agotado > * { opacity: .45; }
+  .plato.agotado .precio { text-decoration: line-through; }
+  .plato.agotado .marca { background: var(--suave); color: var(--fondo); }
+
+  footer { margin-top: 48px; background: #0b0908; border-top: 1px solid var(--linea); }
+  footer .col { padding-top: 32px; padding-bottom: calc(44px + env(safe-area-inset-bottom)); }
+  footer h3 { margin: 0 0 4px; font-family: "Alfa Slab One", serif; font-weight: 400; font-size: 1rem; letter-spacing: .04em; text-transform: uppercase; color: var(--rojo); }
+  footer .bloque { margin-bottom: 22px; }
+  footer p { margin: 0; }
+  .horario { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; margin: 0; }
+  .horario dt { color: var(--suave); }
+  .horario dd { margin: 0; text-align: right; }
+  .redes { display: flex; gap: 10px; }
+  .pie-nota { color: var(--suave); font-size: .85rem; }
+  .arriba { display: inline-block; margin-top: 10px; color: var(--suave); }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cinta div { animation: none; } }
+</style>
+</head>
+<body data-fotos>
+<div class="cinta" id="arriba" aria-hidden="true"><div>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+</div></div>
+<header class="hero"><div class="col" id="cabecera"></div></header>
+<nav class="cats" id="nav" aria-label="Categorías de la carta"><ul id="chips"></ul></nav>
+<main class="col" id="carta"></main>
+<footer><div class="col" id="pie"></div></footer>
+<script src="muestra.js"></script>
+<script src="propuesta.js"></script>
+<script src="carta.js"></script>
+</body>
+</html>

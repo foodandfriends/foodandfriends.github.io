@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Food and Friends · Carta</title>
+<meta name="theme-color" content="#ffd21f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --amarillo: #ffd21f;
+    --tinta: #111;
+    --suave: rgba(17, 17, 17, .74);
+    --azul: #1b3aa6;
+    --rojo: #e0262b;
+    --crema: #fff8e2;
+    --nav: 68px;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--amarillo); color: var(--tinta); font: 16px/1.4 "Archivo", ui-sans-serif, system-ui, sans-serif; overflow-x: hidden; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+  .col { max-width: 620px; margin: 0 auto; padding: 0 18px; }
+
+  .bandera { padding-top: env(safe-area-inset-top); background: var(--amarillo); }
+  /* Banderines de feria */
+  .bandera div {
+    height: 34px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='78' height='34'%3E%3Cpath d='M0 4 Q39 10 78 4' fill='none' stroke='%23111' stroke-width='2'/%3E%3Cpath d='M3 5 L23 7 L12 30Z' fill='%231b3aa6' stroke='%23111' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M29 7.5 L49 7.5 L39 32Z' fill='%23e0262b' stroke='%23111' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M55 7 L75 5 L66 30Z' fill='%23fff8e2' stroke='%23111' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0 / 78px 34px repeat-x;
+  }
+
+  .hero { padding: 14px 0 30px; }
+  #cabecera { display: grid; grid-template-columns: 1fr auto; align-items: start; }
+  .lugar { grid-column: 1 / -1; justify-self: start; margin: 0 0 14px; padding: 5px 10px; background: var(--tinta); color: var(--amarillo); font-size: .74rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .subtitulo { grid-column: 1; grid-row: 2; margin: 0; font-family: "Anton", Impact, sans-serif; font-size: clamp(3.8rem, 19vw, 7rem); line-height: .88; text-transform: uppercase; }
+  /* El logo, pegado como sticker */
+  h1 { grid-column: 2; grid-row: 2; margin: 0; line-height: 0; }
+  .logo { width: 128px; height: 128px; transform: rotate(8deg); filter: drop-shadow(5px 5px 0 var(--tinta)); }
+  .acciones { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 50px; padding: 0 18px;
+    border: 3px solid var(--tinta); background: var(--crema); box-shadow: 4px 4px 0 var(--tinta);
+    font-weight: 800; text-transform: uppercase; letter-spacing: .03em; font-size: .92rem; text-decoration: none;
+  }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--tinta); }
+  .btn.principal { background: var(--tinta); color: var(--amarillo); box-shadow: 4px 4px 0 var(--rojo); }
+  .btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+  .cats { position: sticky; top: 0; z-index: 10; background: var(--tinta); }
+  .cats ul { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; max-width: 620px; margin: 0 auto; padding: 10px 18px; list-style: none; }
+  .cats ul::-webkit-scrollbar { display: none; }
+  .cats a {
+    display: inline-flex; align-items: center; min-height: 46px; padding: 0 14px; color: var(--amarillo);
+    font-family: "Anton", sans-serif; font-size: 1.1rem; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; text-decoration: none;
+  }
+  .cats a[aria-current="true"] { background: var(--rojo); color: #fff; }
+
+  .cat { position: relative; scroll-margin-top: var(--nav); padding: 30px 0 24px; }
+  /* Una categoría sí y una no, en azul de lado a lado */
+  .cat:nth-of-type(even) { background: var(--azul); color: var(--crema); box-shadow: 0 0 0 100vmax var(--azul); clip-path: inset(0 -100vmax); }
+  h2 { display: flex; align-items: center; gap: 12px; margin: 0; padding-bottom: 10px; border-bottom: 4px solid currentColor; font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; line-height: .95; }
+  h2 .num { font-size: 3.4rem; color: transparent; -webkit-text-stroke: 2px var(--tinta); }
+  h2 .tit { font-size: 2.3rem; }
+  .cat:nth-of-type(even) h2 .num { -webkit-text-stroke-color: var(--amarillo); }
+  .nota-cat { margin: 10px 0 0; font-weight: 600; }
+  .platos { margin: 6px 0 0; padding: 0; list-style: none; }
+  .plato { padding: 14px 0; border-bottom: 2px dashed currentColor; }
+  .plato:last-child { border-bottom: 0; }
+  .fila { display: flex; align-items: flex-start; gap: 14px; }
+  .nombre { flex: 1; font-weight: 800; font-size: 1.12rem; line-height: 1.2; }
+  .puntos { display: none; }
+  .precio { font-family: "Anton", sans-serif; font-size: 1.45rem; line-height: 1.05; white-space: nowrap; }
+  .cat:nth-of-type(even) .precio { color: var(--amarillo); }
+  .desc { margin: 4px 0 0; color: var(--suave); }
+  .cat:nth-of-type(even) .desc { color: rgba(255, 248, 226, .8); }
+  .marca {
+    display: inline-block; margin: 2px 0 0 4px; padding: 3px 8px; background: var(--rojo); color: #fff;
+    font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    transform: rotate(-4deg); box-shadow: 2px 2px 0 var(--tinta);
+  }
+  .plato.agotado .nombre, .plato.agotado .desc, .plato.agotado .precio { opacity: .5; }
+  .plato.agotado .precio { text-decoration: line-through 3px; }
+  .plato.agotado .marca { background: var(--tinta); color: var(--amarillo); opacity: 1; }
+
+  footer { background: var(--tinta); color: var(--amarillo); border-top: 3px solid var(--tinta); }
+  footer .col { padding-top: 30px; padding-bottom: calc(44px + env(safe-area-inset-bottom)); }
+  footer h3 { margin: 0 0 4px; font-family: "Anton", sans-serif; font-weight: 400; font-size: 1.3rem; letter-spacing: .04em; text-transform: uppercase; color: #fff; }
+  footer .bloque { margin-bottom: 22px; }
+  footer p { margin: 0; }
+  .horario { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; margin: 0; }
+  .horario dd { margin: 0; text-align: right; font-weight: 800; }
+  .redes { display: flex; gap: 12px; }
+  footer .btn { box-shadow: 4px 4px 0 var(--rojo); color: var(--tinta); }
+  .pie-nota { opacity: .75; font-size: .85rem; }
+  .arriba { display: inline-block; margin-top: 10px; font-weight: 800; }
+
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="bandera" id="arriba"><div></div></div>
+<header class="hero"><div class="col" id="cabecera"></div></header>
+<nav class="cats" id="nav" aria-label="Categorías de la carta"><ul id="chips"></ul></nav>
+<main class="col" id="carta"></main>
+<footer><div class="col" id="pie"></div></footer>
+<script src="muestra.js"></script>
+<script src="propuesta.js"></script>
+<script src="carta.js"></script>
+</body>
+</html>
