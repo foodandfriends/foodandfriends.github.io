@@ -21,7 +21,8 @@
     font-family: "Montserrat", "Arial Black", sans-serif; }
   .logo { position: absolute; left: 50%; top: calc(4 * var(--mm)); width: calc(21 * var(--mm)); height: calc(21 * var(--mm)); transform: translateX(-50%); }
   .titulo { position: absolute; left: 0; right: 0; top: calc(26.6 * var(--mm)); text-align: center; font-weight: 800; font-size: calc(8.6 * var(--mm)); line-height: 1; letter-spacing: calc(.25 * var(--mm)); }
-  .qr { position: absolute; left: 50%; top: calc(37 * var(--mm)); width: calc(33 * var(--mm)); height: calc(33 * var(--mm)); transform: translateX(-50%); background: #fff; }
+  .qr { position: absolute; left: 50%; top: calc(37 * var(--mm)); width: calc(33 * var(--mm)); height: calc(33 * var(--mm)); transform: translateX(-50%); background: #fff;
+    border-radius: calc(3 * var(--mm)); overflow: hidden; } /* esquinas redondeadas: el margen blanco del QR alcanza de sobra */
   .qr svg { display: block; width: 100%; height: 100%; }
   .nfc { position: absolute; left: 50%; top: calc(72.6 * var(--mm)); width: calc(12 * var(--mm)); transform: translateX(-50%); text-align: center; }
   .nfc svg { display: block; width: calc(9 * var(--mm)); height: calc(5 * var(--mm)); margin: 0 auto; }
