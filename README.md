@@ -86,6 +86,11 @@ Después conviene correr `node scripts/respaldo.mjs` y subir `datos/` para que l
 Opcional: en Google Cloud → **APIs y servicios → Credenciales**, restringir el `apiKey` al sitio
 (`https://foodandfriends.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
 
+## Publicar un cambio
+
+Antes de subir cambios en `js/`, correr `node scripts/nueva-version.mjs`: les pone una versión nueva a los
+scripts en todas las páginas, para que los celulares no sigan usando el código viejo que tenían guardado.
+
 ## Probar cambios sin tocar Firebase
 
 `herramientas/simulador.mjs` imita Firebase en este computador y sirve la carta y el panel apuntando a él:
