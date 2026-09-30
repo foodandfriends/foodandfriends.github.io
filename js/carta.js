@@ -7,7 +7,7 @@
   - h1 > img.logo si el negocio tiene logo; si no, h1 > .w por palabra y .y para el "and" / "&" / "y"
   - h2 > .num ("01") + .tit
   - .plato > .fila (.nombre > .marca, .puntos, .precio) + .desc (+ .foto)
-  - body[data-subtitulo] cambia el "La carta" de la cabecera
+  - body[data-subtitulo] cambia el "La carta" de la cabecera; body[data-botones="no"] quita los botones de arriba
   - body[data-fotos] pone la foto de cada plato; sin foto sale un espacio con un dibujo de la categoría.
     Con data-fotos="si-hay" solo salen las fotos que existen, sin espacio para las que faltan.
 */
@@ -99,11 +99,14 @@
     }
     cab.append(h1);
     cab.append(el('p', 'subtitulo', document.body.dataset.subtitulo || 'La carta'));
-    const acciones = el('div', 'acciones');
-    if (N.mapa) acciones.append(boton('Cómo llegar', N.mapa, 'pin', true));
-    if (digitos(N.telefono).length === 10) acciones.append(boton('Llamar', 'tel:+57' + digitos(N.telefono), 'tel'));
-    if (digitos(N.whatsapp).length === 10) acciones.append(boton('WhatsApp', 'https://wa.me/57' + digitos(N.whatsapp), 'chat'));
-    cab.append(acciones);
+    // Con body[data-botones="no"] la cabecera no lleva "Cómo llegar" ni "Llamar" (quien la lee ya está en el local)
+    if (document.body.dataset.botones !== 'no') {
+      const acciones = el('div', 'acciones');
+      if (N.mapa) acciones.append(boton('Cómo llegar', N.mapa, 'pin', true));
+      if (digitos(N.telefono).length === 10) acciones.append(boton('Llamar', 'tel:+57' + digitos(N.telefono), 'tel'));
+      if (digitos(N.whatsapp).length === 10) acciones.append(boton('WhatsApp', 'https://wa.me/57' + digitos(N.whatsapp), 'chat'));
+      cab.append(acciones);
+    }
 
     // Categorías y platos
     const chips = $('chips');
