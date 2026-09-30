@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 const raiz = new URL('../', import.meta.url);
 const version = new Date().toISOString().replace(/\D/g, '').slice(0, 12);
 const paginas = ['index.html', 'admin/index.html', ...readdirSync(new URL('disenos/', raiz))
-  .filter(f => f.endsWith('.html')).map(f => 'disenos/' + f)];
+  .filter(f => f.endsWith('.html') && !f.startsWith('._')).map(f => 'disenos/' + f)]; // ._algo: basura del Mac en el disco externo
 
 for (const pagina of paginas) {
   const ruta = new URL(pagina, raiz);

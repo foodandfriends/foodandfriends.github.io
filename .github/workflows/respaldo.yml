@@ -8,13 +8,14 @@ on:
 
 permissions:
   contents: write
+  actions: write             # solo para el último paso (mantener la tarea prendida)
 
 jobs:
   respaldo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - name: Bajar la carta de Firebase
@@ -25,3 +26,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add datos
           git diff --cached --quiet || { git commit -m "Respaldo diario de la carta" && git push; }
+      # GitHub apaga las tareas diarias de un repositorio que pasa 60 días sin cambios (si la carta
+      # no cambia, el respaldo no guarda nada). Volver a prenderla cada día evita que se apague sola
+      - name: Mantener la tarea prendida
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/respaldo.yml/enable"

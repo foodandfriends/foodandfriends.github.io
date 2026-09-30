@@ -4,12 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
-<title>Carta</title>
-<meta name="description" content="La carta del restaurante: platos, precios y fotos.">
+<title>Food and Friends · Carta</title>
+<meta name="description" content="La carta de Food and Friends en el Parque Artesanal Loma de la Cruz, Cali: platos, precios y fotos.">
+<!-- Lo que sale cuando el enlace se comparte por WhatsApp, Instagram o Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://foodandfriends.github.io/">
+<meta property="og:title" content="Food and Friends · Carta">
+<meta property="og:description" content="Platos, precios y fotos. Parque Artesanal Loma de la Cruz, Cali.">
+<meta property="og:image" content="https://foodandfriends.github.io/compartir.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logo de Food and Friends y La carta">
+<meta property="og:locale" content="es_CO">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#120e0c">
 <!-- La carta ya es oscura: así el modo oscuro del celular o del navegador no le cambia los colores -->
 <meta name="color-scheme" content="only dark">
 <link rel="icon" href="logo.webp">
+<!-- Ícono cuando alguien guarda la carta en la pantalla de inicio del iPhone -->
+<link rel="apple-touch-icon" href="icono-180.png">
 <link rel="preload" href="logo.webp" as="image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,7 +112,7 @@
   .foto { grid-area: foto; width: 112px; height: 88px; border-radius: 12px; object-fit: cover; background: var(--fondo-2); }
   .marca {
     display: inline-block; margin-left: 4px; padding: 2px 8px; vertical-align: 2px; border-radius: 999px;
-    background: var(--rojo); color: #fff; font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+    background: #e00b00; color: #fff; /* un punto más oscuro que el rojo del logo: la letra es chiquita y así se lee bien */ font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
   }
   .plato.agotado > * { opacity: .45; }
   .plato.agotado .precio { text-decoration: line-through; }
@@ -138,9 +151,9 @@
 <main class="col" id="carta"><p class="cargando" id="cargando" role="status">Cargando la carta…</p></main>
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p><style>.portada { display: none; }</style></noscript>
-<script src="js/config.js?v=202609301437"></script>
-<script src="js/firebase.js?v=202609301437"></script>
-<script src="js/carta.js?v=202609301437"></script>
-<script src="js/carta-publica.js?v=202609301437"></script>
+<script src="js/config.js?v=202609301445"></script>
+<script src="js/firebase.js?v=202609301445"></script>
+<script src="js/carta.js?v=202609301445"></script>
+<script src="js/carta-publica.js?v=202609301445"></script>
 </body>
 </html>

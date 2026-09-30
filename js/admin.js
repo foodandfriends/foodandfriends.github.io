@@ -154,7 +154,21 @@
   // ---------------------------------------------------------------------------
   // Guardar: siempre sobre la versión que se leyó
   // ---------------------------------------------------------------------------
-  async function guardar(cambios) {
+  // Los cambios se guardan de a uno, en el orden en que se hicieron. Si se marcan dos platos seguidos,
+  // el segundo espera al primero: si salieran juntos, el segundo llevaría la versión vieja y Firebase
+  // lo rechazaría como si la carta la hubieran cambiado desde otro celular
+  let cola = Promise.resolve(), enEspera = 0;
+  function enOrden(tarea) {
+    enEspera++;
+    const hecha = cola.then(tarea).finally(() => {
+      // La lista se vuelve a pintar cuando ya no queda nada por guardar, así no se ve un interruptor
+      // devolverse un momento mientras espera su turno
+      if (--enEspera === 0 && estado.datos) pintarPlatos();
+    });
+    cola = hecha.catch(() => {});
+    return hecha;
+  }
+  async function guardarYa(cambios) {
     try {
       estado.version = await BD.guardarRestaurante(estado.slug, cambios, estado.version);
       Object.assign(estado.datos, cambios);
@@ -164,12 +178,13 @@
       throw e;
     }
   }
-  async function cambiarCarta(modificar) {
+  const guardar = cambios => enOrden(() => guardarYa(cambios));
+  // El cambio se arma sobre la carta como esté cuando le llega el turno (con lo anterior ya guardado)
+  const cambiarCarta = modificar => enOrden(async () => {
     const nuevas = structuredClone(categorias());
     modificar(nuevas);
-    await guardar({ categorias: nuevas });
-    pintarPlatos();
-  }
+    await guardarYa({ categorias: nuevas });
+  });
 
   // ---------------------------------------------------------------------------
   // Entrar, recordar contraseña, cambiar contraseña
@@ -362,7 +377,11 @@
     fila.classList.toggle('agotado', agotado);
     estado.textContent = textoEstado(agotado);
     try {
-      await cambiarCarta(cs => { categoria(cs, catId).platos.find(x => x.id === p.id).agotado = agotado; });
+      await cambiarCarta(cs => {
+        const plato = (categoria(cs, catId) || { platos: [] }).platos.find(x => x.id === p.id);
+        if (!plato) throw new Error('Ese plato ya no está en la carta (lo cambiaron desde otro celular).');
+        plato.agotado = agotado;
+      });
       aviso(agotado ? p.nombre + ' quedó agotado' : p.nombre + ' está disponible otra vez');
     } catch (e) {
       input.checked = agotado;
