@@ -17,7 +17,7 @@
 <meta property="og:image:alt" content="Logo de Food and Friends y La carta">
 <meta property="og:locale" content="es_CO">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#e30b00">
+<meta name="theme-color" content="#1c1512">
 <!-- La carta es blanca: así el modo oscuro del celular o del navegador no le cambia los colores -->
 <meta name="color-scheme" content="only light">
 <link rel="icon" href="logo.webp">
@@ -35,9 +35,8 @@
     --texto: #1c1512;
     --suave: #6f6259;
     --linea: #ece3db;
-    --rojo: #e30b00;
-    --precio: #b80900;
-    --naranja: #fa7a0b;
+    --amarillo: #f5c400; /* colores escogidos por Willy: amarillo y negro, sin rojo */
+    --precio: #1c1512;
     --nav: 66px;
     color-scheme: only light;
   }
@@ -53,11 +52,11 @@
   .portada.lista { opacity: 0; visibility: hidden; }
   @keyframes aparecer { from { opacity: 0; transform: scale(.94); } }
   a { color: inherit; }
-  :focus-visible { outline: 3px solid var(--rojo); outline-offset: 3px; border-radius: 8px; }
+  :focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; border-radius: 8px; }
   .col { max-width: 600px; margin: 0 auto; padding: 0 20px; }
 
   /* Cinta con las palabras del anillo del logo */
-  .cinta { overflow: hidden; padding-top: env(safe-area-inset-top); background: var(--rojo); color: #fff; }
+  .cinta { overflow: hidden; padding-top: env(safe-area-inset-top); background: var(--texto); color: var(--amarillo); }
   .cinta div {
     display: flex; width: max-content; padding: 7px 0; white-space: nowrap;
     font-size: .78rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
@@ -68,22 +67,22 @@
      aunque la pantalla sea muy ancha, y al volver a empezar no se nota el salto */
   @keyframes correr { to { transform: translateX(-12.5%); } }
 
-  .hero { padding: 32px 0 30px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, rgba(250, 122, 11, .10), transparent 70%); }
+  .hero { padding: 32px 0 30px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, rgba(245, 196, 0, .16), transparent 70%); }
   h1 { margin: 0; line-height: 0; }
   .logo { width: 180px; height: 180px; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .18)); }
   .lugar { order: 2; margin: 16px 0 0; color: var(--suave); font-size: .85rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
   #cabecera { display: flex; flex-direction: column; align-items: center; }
   #cabecera h1 { order: 1; }
-  .subtitulo { order: 3; margin: 2px 0 0; font-family: "Kaushan Script", cursive; font-size: 2.1rem; line-height: 1.2; color: var(--rojo); }
+  .subtitulo { order: 3; margin: 2px 0 0; font-family: "Kaushan Script", cursive; font-size: 2.1rem; line-height: 1.2; color: var(--texto); }
   /* La historia del restaurante (la "nota" del panel), justo debajo de "La carta" */
-  .historia { order: 4; max-width: 30em; margin: 16px auto 0; padding-top: 16px; border-top: 2px solid var(--naranja);
+  .historia { order: 4; max-width: 30em; margin: 16px auto 0; padding-top: 16px; border-top: 2px solid var(--amarillo);
     font-family: "Kaushan Script", cursive; font-size: 1.22rem; line-height: 1.55; }
   .acciones { order: 5; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 999px;
     border: 1.5px solid var(--linea); background: var(--fondo); color: inherit; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer;
   }
-  .btn.principal { background: var(--naranja); border-color: var(--naranja); color: #1a0d03; }
+  .btn.principal { background: var(--amarillo); border-color: var(--amarillo); color: var(--texto); }
   .btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
   .cats { position: sticky; top: 0; z-index: 10; background: rgba(255, 255, 255, .95); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--linea); }
@@ -95,14 +94,14 @@
     background: var(--fondo-2); border: 1px solid var(--linea); white-space: nowrap; text-decoration: none;
     font-weight: 500; font-size: .98rem; letter-spacing: .04em; text-transform: uppercase;
   }
-  .cats a[aria-current="true"] { background: var(--naranja); border-color: var(--naranja); color: #1a0d03; }
+  .cats a[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); color: var(--texto); }
 
   .cargando { margin: 48px 0; color: var(--suave); text-align: center; }
 
   .cat { scroll-margin-top: calc(var(--nav) + 4px); padding-top: 36px; }
-  /* Títulos como los del menú impreso: gruesos, inclinados y en mayúsculas */
-  h2 { margin: 0; font-weight: 700; font-style: italic; font-size: clamp(1.9rem, 10vw, 2.5rem); line-height: 1.05; text-transform: uppercase; color: var(--rojo); letter-spacing: .01em; overflow-wrap: anywhere; }
-  h2::after { content: ""; display: block; width: 56px; height: 4px; margin-top: 8px; border-radius: 2px; background: var(--naranja); }
+  /* Títulos como los del menú impreso: gruesos, inclinados y en mayúsculas, con una raya amarilla debajo */
+  h2 { margin: 0; font-weight: 700; font-style: italic; font-size: clamp(1.9rem, 10vw, 2.5rem); line-height: 1.05; text-transform: uppercase; color: var(--texto); letter-spacing: .01em; overflow-wrap: anywhere; }
+  h2::after { content: ""; display: block; width: 70px; height: 6px; margin-top: 8px; border-radius: 3px; background: var(--amarillo); }
   h2 .num { display: none; }
   .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .98rem; }
   .platos { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
@@ -117,7 +116,7 @@
   .foto { grid-area: foto; width: 104px; height: 82px; border-radius: 10px; object-fit: cover; background: var(--fondo-2); }
   .marca {
     display: inline-block; margin-left: 4px; padding: 1px 8px; vertical-align: 2px; border-radius: 999px;
-    background: var(--rojo); color: #fff; font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--texto); color: var(--amarillo); font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
   }
   .plato.agotado > * { opacity: .45; }
   .plato.agotado .precio { text-decoration: line-through; }
@@ -125,7 +124,7 @@
 
   footer { margin-top: 48px; background: var(--fondo-2); border-top: 1px solid var(--linea); }
   footer .col { padding-top: 32px; padding-bottom: calc(44px + env(safe-area-inset-bottom)); }
-  footer h3 { margin: 0 0 4px; font-weight: 700; font-style: italic; font-size: 1.15rem; letter-spacing: .04em; text-transform: uppercase; color: var(--rojo); }
+  footer h3 { margin: 0 0 4px; font-weight: 700; font-style: italic; font-size: 1.15rem; letter-spacing: .04em; text-transform: uppercase; color: var(--texto); }
   footer .bloque { margin-bottom: 22px; }
   footer p { margin: 0; }
   .horario { display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; margin: 0; }
