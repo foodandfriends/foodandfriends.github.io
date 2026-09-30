@@ -1,231 +1,839 @@
 {
   "categorias": [
     {
-      "id": "b02e42c9-59e1-4b7f-8d82-4998df68276c",
-      "nombre": "Hamburguesas",
-      "nota": "Pan artesanal y carne de res de 150 g.",
-      "platos": [
-        {
-          "agotado": false,
-          "descripcion": "Queso, lechuga, tomate, cebolla y salsa de la casa",
-          "etiqueta": "La más pedida",
-          "foto": "11979f65-457d-40a5-b426-e0f25d42087b.webp",
-          "id": "31da6311-bf81-40a9-93f7-f1a899ebb4c4",
-          "nombre": "Clásica de la casa",
-          "precio": 25000
-        },
-        {
-          "agotado": false,
-          "descripcion": "Doble carne, doble cheddar y cebolla caramelizada",
-          "etiqueta": null,
-          "foto": "120b2afd-e56c-43fc-bf57-cf99771f38dc.webp",
-          "id": "ccf2f545-4625-4d74-941b-81fe9f4c8795",
-          "nombre": "Doble queso",
-          "precio": 31000
-        },
-        {
-          "agotado": false,
-          "descripcion": "Tocineta crocante, aros de cebolla y salsa BBQ",
-          "etiqueta": null,
-          "foto": "1602a7f9-2cc9-4108-8f62-bdfe96a5a22a.webp",
-          "id": "d042ac54-736d-4ded-9058-edf857b37395",
-          "nombre": "BBQ con tocineta",
-          "precio": 33000
-        }
-      ]
-    },
-    {
-      "id": "14a9a68f-9cf9-4160-adad-9bee61fb761e",
-      "nombre": "Minipizzas",
+      "id": "3960ab8d-0d6d-4ddf-9179-5b844bc73607",
+      "nombre": "De la casa",
       "nota": null,
       "platos": [
         {
           "agotado": false,
-          "descripcion": "Jamón, piña y queso mozzarella",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "9d735fdf-5915-4751-9002-6cb843690c8c.webp",
-          "id": "9426e1ba-5b5e-4d34-962d-f03f0aea3751",
-          "nombre": "Hawaiana",
-          "precio": 18000
+          "foto": "cfa65d64-9b8b-42de-bda7-a1fc175ad5ff.webp",
+          "id": "9609608b-b3aa-4827-baf2-a3b3ec61425b",
+          "nombre": "Especial de la casa",
+          "precio": 43000
         },
         {
           "agotado": false,
-          "descripcion": "Pepperoni y queso mozzarella",
-          "etiqueta": "Nuevo",
-          "foto": "74631d11-81e7-4643-af73-bfa987b4cdeb.webp",
-          "id": "a68df580-8bb3-442d-a19c-b0b04f7d05f5",
-          "nombre": "Pepperoni",
-          "precio": 19000
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "53ccc6a8-9c7f-4f72-847c-0cea60aaf520.webp",
+          "id": "24840ef5-46fb-4363-9b38-18873b4e76e2",
+          "nombre": "Tostada especial",
+          "precio": 35000
         },
         {
           "agotado": false,
-          "descripcion": "Pollo, champiñones, maíz y tocineta",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "cfee5f7c-6c9c-4853-a3c7-0bf7b5c58783.webp",
-          "id": "35af699d-5d40-4534-a697-610b680c4956",
-          "nombre": "De la casa",
-          "precio": 22000
-        }
-      ]
-    },
-    {
-      "id": "10f02c90-6271-4c7e-9b02-bf671a7c0c25",
-      "nombre": "Para picar",
-      "nota": null,
-      "platos": [
-        {
-          "agotado": false,
-          "descripcion": "Carnes, chorizo, papa criolla, maduro y arepa. Para 2 o 3",
-          "etiqueta": "Para compartir",
-          "foto": "6ad62b64-731b-4032-af95-67505aa3483c.webp",
-          "id": "0c7426e4-b906-43e7-b258-e2c8a35f7f5b",
-          "nombre": "Picada de la casa",
-          "precio": 52000
+          "foto": "127356f2-9c8f-4319-8153-bdb93eb41eaa.webp",
+          "id": "12cb2d07-84cf-471f-a1f5-33ae4ece2e2d",
+          "nombre": "Ensalada especial",
+          "precio": 27000
         },
         {
           "agotado": false,
-          "descripcion": "A la parrilla, con arepa y limón",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "d3d371dd-8c09-45e8-970b-98e3918208a4.webp",
-          "id": "2027928b-ea5b-4d3e-aebe-5b06dd0ae9ac",
-          "nombre": "Chorizo con arepa",
-          "precio": 14000
+          "foto": "77aa92af-99e9-4c19-9f04-4919a51fad3a.webp",
+          "id": "ab302be2-9b26-4cb5-81b3-8c0c58e83822",
+          "nombre": "Tornado de pollo",
+          "precio": 30500
         },
         {
           "agotado": false,
-          "descripcion": "Queso fundido, frijol, pico de gallo y guacamole",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "c4d51684-d3d8-4434-89ee-6ba6eea2a63c.webp",
-          "id": "8b9f054f-36e2-4fe5-8482-4f2a43e80004",
-          "nombre": "Nachos",
+          "foto": "f8e83df0-d2d0-4aaa-a8cc-2e0a1e96537c.webp",
+          "id": "abced2dd-88b0-4fa9-8783-dd2f0a44fc45",
+          "nombre": "Sándwich",
           "precio": 26000
         },
         {
           "agotado": false,
-          "descripcion": "Bañadas en salsa de mango y habanero",
-          "etiqueta": "Picante",
-          "foto": "49fd4c98-9c06-45d5-8d30-6be83f3902b8.webp",
-          "id": "c7a3dba9-7b38-432f-8464-0ccf90b40607",
-          "nombre": "Alitas mango habanero",
-          "precio": 28000
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "774764c7-3f59-490e-b186-61ea377cdb1c.webp",
+          "id": "685ce20f-b536-4d36-94dc-39c889dc4f8c",
+          "nombre": "Desgranado mixto",
+          "precio": 26000
         }
       ]
     },
     {
-      "id": "0ffe118b-cd11-443c-9e10-0161a500e375",
-      "nombre": "Mexicano",
+      "id": "d8dcafa1-ca3e-4702-847b-d05181ed7287",
+      "nombre": "Mex",
       "nota": null,
       "platos": [
         {
           "agotado": false,
-          "descripcion": "Tres tortillas con carne, cebolla, cilantro y salsa",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "3b381a54-940d-4005-8564-8cd3ed3cde42.webp",
-          "id": "6acc8efb-81aa-4e89-9aea-d54921bce78e",
-          "nombre": "Tacos",
+          "foto": "0ecb0ceb-1097-48e3-8caf-fc80673cf244.webp",
+          "id": "a2c0d386-9165-49cd-9d14-364671f1601d",
+          "nombre": "Burrito mixto especial",
+          "precio": 32000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "7e24ea10-5f36-458d-99ab-b47052c971e0.webp",
+          "id": "957b0d0a-56a4-45e5-be42-3e24e8240037",
+          "nombre": "Burrito endiablado",
+          "precio": 33000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ca2b76c2-0ef5-4231-a167-c6d456481b68.webp",
+          "id": "9a90df5a-1ab7-443d-8965-46908b3ee9f8",
+          "nombre": "Burrito vegetariano",
           "precio": 30000
         },
         {
           "agotado": false,
-          "descripcion": "Tortilla de harina, carne, arroz, frijol y queso",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "15b125c3-de75-4256-980d-0a40f3bd2e5b.webp",
-          "id": "c8b18db3-4b39-4389-bcb0-a8b2cc55d5b9",
-          "nombre": "Burrito",
-          "precio": 34000
+          "foto": "5ebf2e5b-c73a-48ef-bddd-62cd3ca2c108.webp",
+          "id": "e3c73050-9cea-4bba-87c5-42004f4958a2",
+          "nombre": "Tortilla de pollo y jalapeño",
+          "precio": 28500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "91736a01-2bf0-4976-9670-deb3c7f6cf19.webp",
+          "id": "9a1e0f5b-7450-4f47-85f9-08df0636aa22",
+          "nombre": "Tortilla de chile con carne",
+          "precio": 28500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "e45375c8-9479-416b-bdd3-88978ab8df4b.webp",
+          "id": "890f1fd1-e8e1-41ac-8afe-f5235b533ee9",
+          "nombre": "Nachos de chile con carne",
+          "precio": 29000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "bed5bcce-2d09-4119-aaec-95a3c38800ea.webp",
+          "id": "389e0efc-42d0-417e-b366-90b98ea84a8f",
+          "nombre": "Nachos con salsa de queso",
+          "precio": 21000
         }
       ]
     },
     {
-      "id": "868af1ac-748c-4b42-bc86-b2333c3adbaa",
+      "id": "eddec2d4-0496-4d99-ac12-c79ce667378b",
+      "nombre": "Para compartir",
+      "nota": null,
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "82f487a9-6026-4e2b-bd6e-56f39435b2f6.webp",
+          "id": "3b929305-13c9-41e4-bf0f-5aadd4acda26",
+          "nombre": "Perro especial x2",
+          "precio": 32000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "b7825ae7-b69a-43f1-a420-488fc6d8fb78.webp",
+          "id": "375f554d-bf65-4509-bd05-7721dbb114f1",
+          "nombre": "Alitas BBQ x2",
+          "precio": 34000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "8193357a-3f84-4158-9fb7-946d1e0c3c46.webp",
+          "id": "14928797-b8e9-49d5-89f4-b1cf07dedc5f",
+          "nombre": "Arepa especial x2",
+          "precio": 34000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "935494ee-206c-4913-87bb-f8a0278f15c4.webp",
+          "id": "a349729d-9c58-4124-8ad5-4680976dfab2",
+          "nombre": "Arepa especial x1",
+          "precio": 20000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ced46cd1-bddf-446b-93d1-18222950dc7e.webp",
+          "id": "8855c35f-23a8-4a5d-a1dc-8724e85d1fe0",
+          "nombre": "Arepa con queso",
+          "precio": 10000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "6e87ab2e-d2a8-4bf4-94fc-5b720e6d9047.webp",
+          "id": "4186bc82-ae61-46c2-b6da-36736dd443eb",
+          "nombre": "Lasaña x2",
+          "precio": 42000
+        }
+      ]
+    },
+    {
+      "id": "c6709563-f976-457c-99ec-27966e2c21a4",
+      "nombre": "Entradas",
+      "nota": null,
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "6fa5813a-3323-4aef-b9cb-a34cffe6f275.webp",
+          "id": "2e0b3b17-9939-45cf-b374-c2427b3559ef",
+          "nombre": "Papas a la francesa",
+          "precio": 9500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "623fa678-9aa3-4dc4-89f8-69ba8571e3d7.webp",
+          "id": "aea4929b-5a02-4755-ad0e-84cf26272c3d",
+          "nombre": "Salchipapa especial",
+          "precio": 29000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "7e0b8aba-b838-4039-af6c-dd1d5cd7bc1d.webp",
+          "id": "d2168e33-e96f-45af-a8ba-5c8d3402d3c0",
+          "nombre": "Salchipapa sencilla",
+          "precio": 22000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "69ff666f-130e-4a30-8129-dc7d5cf6bc6e.webp",
+          "id": "59e606c5-e0b2-4212-9ffb-2556e3177c6e",
+          "nombre": "Chicharrón con yuca",
+          "precio": 27000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "5a84d97b-e771-4f5a-8e84-f3e059214fd9.webp",
+          "id": "9aff3b03-826b-4f9e-b0ff-7a12f1d547ce",
+          "nombre": "Empanadas x5",
+          "precio": 19000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "0b1950c9-4619-4422-ae17-7e1fd3a798c7.webp",
+          "id": "855752ad-e3f5-449c-beb1-5248b91a2fca",
+          "nombre": "Yuca con chorizo",
+          "precio": 19900
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ec8a268f-145b-49e4-8578-8e57143ef195.webp",
+          "id": "5c2fa44c-8dac-4503-8924-ddecfb838e8c",
+          "nombre": "Papas con tocineta",
+          "precio": 15500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "7d10bdce-6cb1-417f-929d-8dfbb656121b.webp",
+          "id": "62e8f099-eeaa-4976-b703-62c0a379cb92",
+          "nombre": "Chorizo con arepa",
+          "precio": 15000
+        }
+      ]
+    },
+    {
+      "id": "7a5f8358-7900-489a-a544-cd9f79d58cdf",
+      "nombre": "Parrilla",
+      "nota": null,
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "9f15bdaf-20c6-4340-91f5-98900ee5ecc6.webp",
+          "id": "664a507f-5eb6-463b-a37c-ddc8f4481b59",
+          "nombre": "Lomo al carbón 250 g",
+          "precio": 39000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "2254e73f-8ae4-4a3d-9d85-49d6dd5c016d.webp",
+          "id": "8a95af28-3c44-48eb-9582-f45a35bfc91a",
+          "nombre": "Churrasco 250 g",
+          "precio": 39000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "12d12bfd-5018-4217-b951-dbe82740e6fa.webp",
+          "id": "1fb41860-85fc-4011-bb0b-26cb1205ac9e",
+          "nombre": "Churrasco de pollo",
+          "precio": 35000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "d0b3e3d3-e53c-44df-937f-53ba31c5defe.webp",
+          "id": "24a9f836-bb09-4c61-9585-5362ce1e1a20",
+          "nombre": "Picada para dos",
+          "precio": 38500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "cc8aa6af-4730-4bee-9b44-9a0481a80b61.webp",
+          "id": "804e397d-a36d-418f-994d-935f08751769",
+          "nombre": "Picada para cuatro",
+          "precio": 71900
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "53c448b4-40eb-4cf9-a3f8-0807838adff2.webp",
+          "id": "45f4a2d6-1e9a-44e0-be5a-2507315214cc",
+          "nombre": "Costilla San Luis 500 g",
+          "precio": 38000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ed4cd1c6-b665-4716-8d7b-2317e0bfb64b.webp",
+          "id": "3b9652e4-eb08-43c8-a1c7-997fb9bd747a",
+          "nombre": "Pollo a la plancha 250 g",
+          "precio": 35000
+        }
+      ]
+    },
+    {
+      "id": "e7452cc8-517c-4761-b7b0-ca7a263de9da",
+      "nombre": "Hamburguesas",
+      "nota": null,
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ca9bf45d-42f2-4d01-a9f7-1590abf701b4.webp",
+          "id": "fef62ac6-7bcc-463f-84d6-6fafa5ac8695",
+          "nombre": "Angus importada 200 g",
+          "precio": 32000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "bb7b4ea4-f574-454e-8c33-3fc164cb997a.webp",
+          "id": "4b9cee55-bed5-4ffe-9d24-56cc418b9706",
+          "nombre": "De costilla",
+          "precio": 31000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "b23dfd05-60b6-46c0-a2e5-468ba610f2f3.webp",
+          "id": "40483b19-565a-4168-99cd-a5cc20eacefe",
+          "nombre": "Ranchera",
+          "precio": 31000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "9a8233f1-6ee2-49e9-a475-6028d4a67d8d.webp",
+          "id": "b4a4dc74-4835-4604-8365-6d22f92877d8",
+          "nombre": "Montañera",
+          "precio": 29000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "41da38db-0dc0-40af-8208-35c017bf9558.webp",
+          "id": "bb4b4795-0c66-48fc-a4ac-d555eada6e2a",
+          "nombre": "Res fusión x2",
+          "precio": 33000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "bb088368-fed3-40eb-ae99-2d2191c8fe50.webp",
+          "id": "06cfefa0-d0ff-49dd-86ab-bcc25bbc0162",
+          "nombre": "Combo familiar x6",
+          "precio": 86000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "a937bfd6-a385-47ce-8387-f39ac6ee9711.webp",
+          "id": "5448995d-e060-4435-bd89-4d5472aaa454",
+          "nombre": "Pollo fusión x2",
+          "precio": 35000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "4cd729cb-6766-4874-8866-14f2d333e657.webp",
+          "id": "1ac49f67-d1cd-49b6-a026-bb41b0bc8c8f",
+          "nombre": "Mini",
+          "precio": 13000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "b462bf8f-5307-440f-971a-f44a22cd3215.webp",
+          "id": "547fab09-e1e1-434b-993b-9273fdbf9648",
+          "nombre": "Vegetariana",
+          "precio": 24000
+        }
+      ]
+    },
+    {
+      "id": "5ea21531-2c8d-48aa-b0d7-ec571ee91471",
+      "nombre": "Bebidas",
+      "nota": "Limonadas, jugos y gaseosas",
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "64c8e47f-309b-42de-8898-11290d18536f.webp",
+          "id": "d0937994-7fd1-46a5-8115-065b815eb737",
+          "nombre": "Limonada de coco",
+          "precio": 13500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "81a5294a-39dd-48fd-b0bc-4c049057a339.webp",
+          "id": "8578f6fc-110c-423d-8162-99f66e045b66",
+          "nombre": "Limonada de cereza",
+          "precio": 13500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "cbeb7ccf-02a5-438e-a7bb-b701c0baec69.webp",
+          "id": "536882d6-dd67-40cd-a561-82b270f63479",
+          "nombre": "Limonada de mango biche",
+          "precio": 13500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "22579736-4fac-4298-a0dd-1796e78a5c6b.webp",
+          "id": "d008a367-caca-4070-9d55-93048df6ce1f",
+          "nombre": "Limonada natural",
+          "precio": 9000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "f9e012b9-9e40-4f67-ac27-793cc74bfcde.webp",
+          "id": "0e835f84-3a6e-4fc6-ab3a-beb4f0d38f25",
+          "nombre": "Limonada de hierbabuena",
+          "precio": 11500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "19e64c9d-764e-4074-9387-2241fc7bfe90.webp",
+          "id": "6747acf6-0080-4b37-83b9-25d035c0a8f3",
+          "nombre": "Milo frío",
+          "precio": 14000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "53773a97-8e26-45de-9729-22656b6b8164.webp",
+          "id": "7493438f-103e-457c-944d-0ee0b53718dc",
+          "nombre": "Frapuchino",
+          "precio": 16000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "c8862662-7fd7-4a1e-a557-d12da6bb4c06.webp",
+          "id": "5b5451ed-5d8d-4d0c-9d2e-1eb7612855e4",
+          "nombre": "Soda italiana",
+          "precio": 15000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "094fc3af-23d1-4a55-898d-476af4290820.webp",
+          "id": "0733d1b7-f3e6-44d8-b03c-fe73050235c9",
+          "nombre": "Granizado de café",
+          "precio": 14000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ed9b2f8d-2d97-4cee-aa65-10fedbfcd33c.webp",
+          "id": "2b16b9b4-3f92-4634-bdd3-1a77222b3eb5",
+          "nombre": "Piña colada sin licor",
+          "precio": 13000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "f7111b7a-980a-4e5e-95b8-2b91526a6c37.webp",
+          "id": "f0b365f5-098e-473b-a3f6-27143e8a5b24",
+          "nombre": "Jugo en agua",
+          "precio": 10000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "b297c2bc-7f24-4535-8883-acb745703260.webp",
+          "id": "4d70bb38-402f-4d65-aea1-1b2ad592dbb4",
+          "nombre": "Jugo en leche",
+          "precio": 12000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "495143b9-a830-4888-b1f5-76315888bc78",
+          "nombre": "Gaseosa personal",
+          "precio": 4500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "f591b9ff-2bec-4ee2-81da-e62b79cfda9a",
+          "nombre": "Coca-Cola",
+          "precio": 5000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "6851a871-629b-4870-b323-7e8884b517af",
+          "nombre": "Litrón Postobón 1,5 L",
+          "precio": 9000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "f9b08968-f9e0-4d3c-a1e7-ffa77d3a212b",
+          "nombre": "Litrón Coca-Cola",
+          "precio": 10000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "cc16c4ac-a518-44d5-84bf-ad1eefb35187",
+          "nombre": "Hit 1,5 L",
+          "precio": 8500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "5fe79f98-98d6-4ef5-b1db-ff7f51ae1d19",
+          "nombre": "Agua en botella",
+          "precio": 4000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "9ca3cb73-4f32-400d-af57-7b332e0bcd42",
+          "nombre": "Agua con gas",
+          "precio": 4500
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "463b0ced-ec4b-47c0-885e-9f062b3a2f1a",
+          "nombre": "Vaso michelado",
+          "precio": 1500
+        }
+      ]
+    },
+    {
+      "id": "cdbc514b-df56-4951-9953-5574dccfcc6c",
+      "nombre": "Cócteles",
+      "nota": null,
+      "platos": [
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "02d6cc6c-167d-48af-a960-77aca3fd7a43.webp",
+          "id": "7b7ca2b9-75a9-4544-a9d2-fbf611d48cbe",
+          "nombre": "Copa de sangría",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "ff80b011-fe0f-4347-b765-3a68eb1d0e13.webp",
+          "id": "865e0f5f-2af4-4ed2-8135-dcc07219aa7b",
+          "nombre": "Copa de vino",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "f93d2ca5-2fb6-48db-bf6a-5bc9a9bedbb1.webp",
+          "id": "031ea960-9f2d-4d81-baa7-356fbcdee231",
+          "nombre": "Vino (botella)",
+          "precio": 60000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "8015d80a-f967-40d1-8cb7-90172b1a5a8d.webp",
+          "id": "1a7888ed-1fb0-41ae-be33-6d476bc02f20",
+          "nombre": "Piscina roja para 2",
+          "precio": 70000
+        },
+        {
+          "agotado": false,
+          "descripcion": "2 por $45.000",
+          "etiqueta": null,
+          "foto": "45d03989-9b77-4b7b-bdf5-dd27e70abc19.webp",
+          "id": "c809887f-1ad7-487c-8cc2-0ebcdb143e2a",
+          "nombre": "Coctel de la casa",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": "2 por $45.000",
+          "etiqueta": null,
+          "foto": "b3f17665-a676-46d0-af81-029d33010267.webp",
+          "id": "932c1c20-82da-406c-abce-70c0a1cd1086",
+          "nombre": "Mojito",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "90e70b45-b6dd-4780-8225-6110e5ccc396.webp",
+          "id": "dc16ae14-140b-485b-821e-b5af5e73ba18",
+          "nombre": "Margarita",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "061a0955-c2d1-499c-ab66-4904108e60ff.webp",
+          "id": "38c8e15e-cfb9-4bb1-b9fc-cdd09127079f",
+          "nombre": "Orgasmo",
+          "precio": 30000
+        },
+        {
+          "agotado": false,
+          "descripcion": "2 por $45.000",
+          "etiqueta": null,
+          "foto": "7ace84f2-672b-4f97-b089-2e3968c5c49a.webp",
+          "id": "864fbf17-f7ec-4fac-bc1e-bb5fe63608ab",
+          "nombre": "Tequila sunrise",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "02a2e9d1-28d6-4d24-a474-5260569d7d2a.webp",
+          "id": "910a6c15-f4a5-4596-a787-03ee3ecc9c84",
+          "nombre": "Gin tonic",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "8a648595-c8a3-4df7-a0be-29b77dd32bff.webp",
+          "id": "fcdcd32c-ef3a-4996-aadc-f85bcee9578d",
+          "nombre": "Cuba libre",
+          "precio": 25000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "2f5f5b42-961c-43b6-867b-5b16dc7bced6.webp",
+          "id": "ccc5454d-848e-41a7-b9c6-6fdaf1b1595b",
+          "nombre": "Piña colada con licor",
+          "precio": 24000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": "1bfdff49-ee18-4aa6-878b-c2c954992f74.webp",
+          "id": "25dc3f21-3361-4c65-a177-72af402d0672",
+          "nombre": "Shot de tequila",
+          "precio": 20000
+        }
+      ]
+    },
+    {
+      "id": "69593f3a-e159-4baa-a29e-9e5c9334d90b",
       "nombre": "Cervezas",
       "nota": null,
       "platos": [
         {
           "agotado": false,
-          "descripcion": "Bien fría",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "98557f20-10f8-4cb8-a744-ccffd0df0223.webp",
-          "id": "bc6cf3b3-a149-44a1-9ace-168bf6abd24c",
-          "nombre": "Cerveza nacional",
+          "foto": null,
+          "id": "4c9f1bd6-231d-4161-aa02-75af6fb4460d",
+          "nombre": "Poker",
+          "precio": 6000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "d3d802de-0bf4-4871-bc9c-e4c28e91a1cd",
+          "nombre": "Club Colombia",
           "precio": 7000
         },
         {
           "agotado": false,
-          "descripcion": "Pregunte las del día",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "df6eb152-00fe-4e64-a653-caa6549264cc.webp",
-          "id": "3d5971f6-613a-4bf5-b370-eab0f31b93c1",
-          "nombre": "Cerveza artesanal",
-          "precio": 12000
+          "foto": null,
+          "id": "577d0c90-ff50-4208-b52b-771e0a6a6682",
+          "nombre": "Águila Light",
+          "precio": 7000
         },
         {
           "agotado": false,
-          "descripcion": "Limón, sal y la cerveza que prefiera",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "c8e4ec03-d764-4187-9d5f-38e672258cde.webp",
-          "id": "2951d861-271f-45d6-97c4-77362b1e6547",
-          "nombre": "Michelada",
+          "foto": null,
+          "id": "0e6cedea-fb35-4c4a-92fb-5200eebc9188",
+          "nombre": "Sol (botella)",
+          "precio": 11000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "104dea6b-a3f1-40b7-bade-083915e04071",
+          "nombre": "Sol (lata)",
           "precio": 9000
-        }
-      ]
-    },
-    {
-      "id": "c0eb93c7-2934-4a7f-bfc3-01aca40f00b1",
-      "nombre": "Bebidas",
-      "nota": null,
-      "platos": [
-        {
-          "agotado": false,
-          "descripcion": "En agua o en leche. Pregunte los sabores del día",
-          "etiqueta": null,
-          "foto": "5967fbea-4bc8-4277-a482-5141911216e1.webp",
-          "id": "04fdbe89-4d28-4646-aa32-28bf06602d31",
-          "nombre": "Jugo natural",
-          "precio": 8000
         },
         {
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "b153de36-126f-4c0e-9012-e0079dd079c5.webp",
-          "id": "fd0f8d66-962e-438a-92fe-a9e2e8757b80",
-          "nombre": "Limonada natural",
+          "foto": null,
+          "id": "796105f9-534e-4f69-b5fe-d700f366cb2c",
+          "nombre": "Heineken",
+          "precio": 11000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "71086f5b-0590-4cf9-bc06-44ccdc9dea4c",
+          "nombre": "Heineken pequeña",
           "precio": 7000
         },
         {
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "668b79db-2924-47cf-af1c-d9ba5e4b6378.webp",
-          "id": "3ef3d15d-f062-4f71-aea9-a410fb968cca",
-          "nombre": "Gaseosa",
-          "precio": 5000
-        }
-      ]
-    },
-    {
-      "id": "ea845762-e4be-40c3-b238-a251ec680212",
-      "nombre": "Postres",
-      "nota": null,
-      "platos": [
-        {
-          "agotado": false,
-          "descripcion": "Con azúcar y canela, para untar",
-          "etiqueta": null,
-          "foto": "e4023242-acd8-46cd-ba3d-e335c9bc8b95.webp",
-          "id": "8c8bfff6-5d4e-48c4-9b5d-754ad73ae193",
-          "nombre": "Churros con chocolate",
-          "precio": 14000
+          "foto": null,
+          "id": "e2414ef6-e04a-4c4e-8a5a-6162619ec728",
+          "nombre": "Coronita",
+          "precio": 7000
         },
         {
           "agotado": false,
-          "descripcion": "Tibio, con helado de vainilla",
+          "descripcion": null,
           "etiqueta": null,
-          "foto": "17826783-0820-42f8-b1f8-4fe0519ee087.webp",
-          "id": "28fff49d-3efb-4330-a477-e1fc97772aee",
-          "nombre": "Brownie",
-          "precio": 15000
+          "foto": null,
+          "id": "c107cb46-5b0b-4ab5-9218-a284cde0a04a",
+          "nombre": "3 Cordilleras",
+          "precio": 13000
+        },
+        {
+          "agotado": false,
+          "descripcion": null,
+          "etiqueta": null,
+          "foto": null,
+          "id": "1bb2b8a2-a2a2-4d1a-8ab0-beeedb5a69d6",
+          "nombre": "Andina o Tecate",
+          "precio": 6000
         }
       ]
     }
@@ -245,6 +853,6 @@
   "lugar": "Parque Artesanal Loma de la Cruz · Cali",
   "mapa": "https://maps.app.goo.gl/9h77zzrGRmh3XMmB6",
   "nombre": "Food and Friends",
-  "nota": "Precios, fotos y horario de ejemplo.",
+  "nota": "Nos inspiramos en brindarte platillos a la parrilla con historia, basados en momentos y experiencias de Cali, Colombia, a tu boca.",
   "telefono": "302 375 1571"
 }
