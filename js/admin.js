@@ -41,6 +41,7 @@
   }
   const miles = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const pesos = n => n == null ? 'Sin precio' : '$' + miles(n);
+  const textoEstado = agotado => agotado ? 'Agotado' : 'Disponible';
   const texto = v => { const t = (v || '').trim(); return t || null; };
   const categorias = () => estado.datos.categorias;
   const categoria = (lista, id) => lista.find(c => c.id === id);
@@ -299,27 +300,31 @@
     } else {
       mini = el('span', { class: 'miniatura vacia', texto: 'Foto' });
     }
-    const agotado = el('input', { type: 'checkbox', 'aria-label': 'Agotado: ' + p.nombre });
-    agotado.checked = !!p.agotado;
-    agotado.addEventListener('change', () => cambiarAgotado(c.id, p, agotado));
+    // Prendido = se está vendiendo; apagado = agotado. El texto dice el estado, no el nombre del botón
+    const disponible = el('input', { type: 'checkbox', 'aria-label': 'Disponible: ' + p.nombre });
+    disponible.checked = !p.agotado;
+    const estado = el('span', { texto: textoEstado(p.agotado) });
+    disponible.addEventListener('change', () => cambiarAgotado(c.id, p, disponible, estado));
     return el('li', { class: 'fila' + (p.agotado ? ' agotado' : '') },
       el('button', { class: 'abrir', type: 'button', onclick: () => editarPlato(c, p) },
         mini,
         el('span', { class: 'texto' },
           el('strong', { texto: p.nombre }),
           el('span', { texto: pesos(p.precio) + (p.etiqueta ? ' · ' + p.etiqueta : '') }))),
-      el('label', { class: 'interruptor' }, agotado, 'Agotado'));
+      el('label', { class: 'interruptor' }, disponible, estado));
   }
 
-  async function cambiarAgotado(catId, p, input) {
-    const valor = input.checked, fila = input.closest('.fila');
-    fila.classList.toggle('agotado', valor);
+  async function cambiarAgotado(catId, p, input, estado) {
+    const agotado = !input.checked, fila = input.closest('.fila');
+    fila.classList.toggle('agotado', agotado);
+    estado.textContent = textoEstado(agotado);
     try {
-      await cambiarCarta(cs => { categoria(cs, catId).platos.find(x => x.id === p.id).agotado = valor; });
-      aviso(valor ? p.nombre + ' quedó agotado' : p.nombre + ' está disponible otra vez');
+      await cambiarCarta(cs => { categoria(cs, catId).platos.find(x => x.id === p.id).agotado = agotado; });
+      aviso(agotado ? p.nombre + ' quedó agotado' : p.nombre + ' está disponible otra vez');
     } catch (e) {
-      input.checked = !valor;
-      fila.classList.toggle('agotado', !valor);
+      input.checked = agotado;
+      fila.classList.toggle('agotado', !agotado);
+      estado.textContent = textoEstado(!agotado);
       fallo(e);
     }
   }
@@ -345,7 +350,8 @@
     $('#plato-categoria').replaceChildren(...categorias().map(x => el('option', { value: x.id, texto: x.nombre })));
     $('#plato-categoria').value = c.id;
     $('#plato-etiqueta').value = (p && p.etiqueta) || '';
-    $('#plato-agotado').checked = !!(p && p.agotado);
+    $('#plato-disponible').checked = !(p && p.agotado);
+    $('#plato-estado').textContent = textoEstado(!!(p && p.agotado));
     $('#plato-posicion').hidden = !p;
     $('#plato-borrar').hidden = !p;
     reiniciarBorrar($('#plato-borrar'), 'Borrar plato');
@@ -388,6 +394,10 @@
       actualizarPosicion();
     });
   }
+
+  $('#plato-disponible').addEventListener('change', ev => {
+    $('#plato-estado').textContent = textoEstado(!ev.target.checked);
+  });
 
   $('#plato-precio').addEventListener('input', ev => {
     const d = ev.target.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 8);
@@ -442,7 +452,7 @@
       descripcion: texto($('#plato-descripcion').value),
       precio: digitos ? Number(digitos) : null,
       etiqueta: texto($('#plato-etiqueta').value),
-      agotado: $('#plato-agotado').checked
+      agotado: !$('#plato-disponible').checked
     };
     const anterior = (platoEditado() || {}).foto || null;
     const foto = ed.fotoNueva || (ed.fotoQuitada ? null : anterior);

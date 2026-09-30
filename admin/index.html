@@ -94,12 +94,14 @@
   .agregar { margin-top: 8px; }
   .nueva-categoria { margin: 28px 0 40px; }
 
-  /* Interruptor de agotado */
-  .interruptor { display: flex; flex: none; flex-direction: column; align-items: center; gap: 2px; margin: 0; font-size: .7rem; font-weight: 650; color: var(--suave); cursor: pointer; }
-  .interruptor input { appearance: none; position: relative; width: 46px; height: 28px; margin: 0; border-radius: 999px; background: #d8d0c5; cursor: pointer; transition: background .15s; }
+  /* Interruptor de disponible: prendido y verde = se está vendiendo; apagado y rojo = agotado */
+  .interruptor { display: flex; flex: none; flex-direction: column; align-items: center; gap: 3px; min-width: 74px; margin: 0; font-size: .72rem; font-weight: 700; color: var(--peligro); cursor: pointer; }
+  .interruptor:has(input:checked) { color: var(--bien); }
+  .interruptor input { appearance: none; position: relative; width: 46px; height: 28px; margin: 0; border-radius: 999px; background: var(--peligro); cursor: pointer; transition: background .15s; }
   .interruptor input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .2); transition: transform .15s; }
-  .interruptor input:checked { background: var(--peligro); }
+  .interruptor input:checked { background: var(--bien); }
   .interruptor input:checked::after { transform: translateX(18px); }
+  .interruptor.grande { flex-direction: row; justify-content: flex-start; gap: 12px; min-width: 0; margin: 18px 0 0; font-size: 1rem; }
 
   /* Datos del local */
   .formulario { padding-bottom: 40px; }
@@ -118,8 +120,6 @@
   .foto-editor .vista.vacia { display: grid; place-items: center; color: var(--suave); font-size: .8rem; font-weight: 650; }
   .foto-editor .botones { display: grid; gap: 8px; }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .check { display: flex; align-items: center; gap: 10px; margin: 18px 0 0; font-weight: 650; }
-  .check input { width: 22px; height: 22px; accent-color: var(--peligro); }
   .posicion { display: flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--suave); font-size: .9rem; }
   .pie-dialogo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
   .pie-dialogo .peligro { grid-column: 1 / -1; }
@@ -272,7 +272,8 @@
       <option value="Nuevo"></option><option value="La más pedida"></option><option value="Picante"></option>
       <option value="Para compartir"></option><option value="Recomendado"></option>
     </datalist>
-    <label class="check"><input type="checkbox" id="plato-agotado"> Agotado por ahora</label>
+    <label class="interruptor grande"><input type="checkbox" id="plato-disponible"><span id="plato-estado">Disponible</span></label>
+    <p class="ayuda">Si se acaba, apáguelo: en la carta sale tachado como agotado.</p>
     <div class="posicion" id="plato-posicion">
       Posición en la lista
       <button class="icono" type="button" id="plato-subir" aria-label="Subir"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
