@@ -19,7 +19,11 @@ async function leer(ruta) {
 
 const carta = await leer('restaurantes/' + encodeURIComponent(restaurante));
 mkdirSync(new URL('../datos/', import.meta.url), { recursive: true });
-writeFileSync(new URL(`../datos/${restaurante}.json`, import.meta.url), JSON.stringify(carta, null, 2) + '\n');
+// Firebase entrega los campos cada vez en otro orden: se ordenan para que el archivo solo cambie
+// cuando cambia la carta (si no, habría una copia "nueva" todos los días sin ningún cambio)
+const ordenado = v => Array.isArray(v) ? v.map(ordenado)
+  : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map(k => [k, ordenado(v[k])])) : v;
+writeFileSync(new URL(`../datos/${restaurante}.json`, import.meta.url), JSON.stringify(ordenado(carta), null, 2) + '\n');
 
 // Fotos: solo se bajan las nuevas y se quitan las que ya no usa ningún plato
 const carpeta = new URL(`../datos/fotos/${restaurante}/`, import.meta.url);
