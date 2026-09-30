@@ -183,6 +183,18 @@
     function medir() {
       document.documentElement.style.setProperty('--nav', nav.offsetHeight + 'px');
     }
+    // Lleva el botón de la categoría al centro de la barra (sin categoría, al comienzo). La posición se
+    // limita a lo que la barra de verdad puede correr: Safari de iPhone, si se le pide correr más allá
+    // del borde (centrar la primera), se queda ahí y deja un hueco a la izquierda
+    function centrar(a) {
+      let izquierda = 0;
+      if (a) {
+        const r = a.getBoundingClientRect(), rc = chips.getBoundingClientRect();
+        izquierda = chips.scrollLeft + r.left - rc.left - (rc.width - r.width) / 2;
+      }
+      const maximo = Math.max(0, chips.scrollWidth - chips.clientWidth);
+      chips.scrollTo({ left: Math.round(Math.min(Math.max(izquierda, 0), maximo)), behavior: 'smooth' });
+    }
     function marcar() {
       const limite = nav.offsetHeight + 40;
       let actual = null;
@@ -194,12 +206,8 @@
       if (actual === activa) return;
       if (activa) enlaces.get(activa).removeAttribute('aria-current');
       activa = actual;
-      if (activa) {
-        const a = enlaces.get(activa);
-        a.setAttribute('aria-current', 'true');
-        const r = a.getBoundingClientRect(), rc = chips.getBoundingClientRect();
-        chips.scrollBy({ left: r.left - rc.left - (rc.width - r.width) / 2, behavior: 'smooth' });
-      }
+      if (activa) enlaces.get(activa).setAttribute('aria-current', 'true');
+      centrar(activa && enlaces.get(activa));
     }
     let pendiente = false;
     addEventListener('scroll', () => {
