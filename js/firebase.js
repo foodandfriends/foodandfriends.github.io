@@ -48,6 +48,7 @@
     if (/USER_DISABLED/.test(c)) return 'Esta cuenta está desactivada.';
     if (/TOO_MANY_ATTEMPTS|RESOURCE_EXHAUSTED/.test(c) || estado === 429) return 'Demasiados intentos. Espere unos minutos y vuelva a intentar.';
     if (/WEAK_PASSWORD|PASSWORD_DOES_NOT_MEET/.test(c)) return 'La contraseña es muy corta o muy fácil. Use al menos 10 caracteres.';
+    if (/EXPIRED_OOB_CODE|INVALID_OOB_CODE/.test(c)) return 'Este enlace ya se usó o se venció. Pida otro en "Olvidé mi contraseña".';
     if (/CREDENTIAL_TOO_OLD/.test(c)) return 'Por seguridad, salga, vuelva a entrar y cambie la contraseña apenas entre.';
     if (/TOKEN_EXPIRED|INVALID_ID_TOKEN|INVALID_REFRESH_TOKEN|USER_NOT_FOUND/.test(c) || estado === 401) return 'La sesión terminó. Entre otra vez.';
     if (/FAILED_PRECONDITION/.test(c)) return 'La carta cambió desde otro celular. Ya se cargó lo último: repita el cambio.';
@@ -162,6 +163,13 @@
     // Firebase manda un correo con un enlace a su propia página para poner la contraseña nueva
     async recordar(email) {
       await llamar(AUTH + 'sendOobCode?key=' + LLAVE, { metodo: 'POST', cuerpo: { requestType: 'PASSWORD_RESET', email } });
+    },
+    // Con el código del enlace del correo: primero se revisa (devuelve el correo) y luego se pone la clave
+    async correoDelEnlace(codigo) {
+      return (await llamar(AUTH + 'resetPassword?key=' + LLAVE, { metodo: 'POST', cuerpo: { oobCode: codigo } })).email;
+    },
+    async restablecerClave(codigo, clave) {
+      await llamar(AUTH + 'resetPassword?key=' + LLAVE, { metodo: 'POST', cuerpo: { oobCode: codigo, newPassword: clave } });
     },
     async cambiarClave(clave) {
       const t = await token();

@@ -186,6 +186,25 @@
   </div>
 </section>
 
+<!-- El enlace de "Olvidé mi contraseña" que manda Firebase llega aquí (admin/?mode=resetPassword&oobCode=...) -->
+<section class="entrada" id="vista-restablecer" hidden>
+  <div class="tarjeta">
+    <img class="logo" src="../logo.webp" alt="">
+    <h1>Contraseña nueva</h1>
+    <p class="sub" id="restablecer-quien">Mínimo 10 caracteres. Mejor si mezcla letras y números.</p>
+    <form id="form-restablecer" novalidate>
+      <input id="restablecer-correo" type="email" autocomplete="username" hidden>
+      <label for="restablecer-1">Contraseña nueva</label>
+      <input id="restablecer-1" type="password" autocomplete="new-password" minlength="10" required>
+      <label for="restablecer-2">Repítala</label>
+      <input id="restablecer-2" type="password" autocomplete="new-password" minlength="10" required>
+      <p class="error" id="restablecer-error" role="alert"></p>
+      <button class="btn principal ancho" type="submit">Guardar y entrar</button>
+    </form>
+    <p class="pie"><a class="enlace" href="./" id="restablecer-volver" hidden>Pedir otro enlace</a></p>
+  </div>
+</section>
+
 <div id="vista-panel" hidden>
   <header class="barra">
     <div class="col">
@@ -318,8 +337,8 @@
 
 <div class="aviso" id="aviso" role="status" hidden></div>
 
-<script src="../js/config.js?v=202609301445"></script>
-<script src="../js/firebase.js?v=202609301445"></script>
-<script src="../js/admin.js?v=202609301445"></script>
+<script src="../js/config.js?v=202609301836"></script>
+<script src="../js/firebase.js?v=202609301836"></script>
+<script src="../js/admin.js?v=202609301836"></script>
 </body>
 </html>

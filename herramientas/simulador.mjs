@@ -44,6 +44,13 @@ http.createServer(async (req, res) => {
     return error(res, 400, 'INVALID_ARGUMENT', 'INVALID_LOGIN_CREDENTIALS');
   }
   if (ruta === '/idt/v1/accounts:sendOobCode') return enviar(res, 200, { email: JSON.parse(await cuerpo(req)).email });
+  // Enlace de "Olvidé mi contraseña": aquí el código siempre es "codigo-de-prueba"
+  if (ruta === '/idt/v1/accounts:resetPassword') {
+    const b = JSON.parse(await cuerpo(req));
+    if (b.oobCode !== 'codigo-de-prueba') return enviar(res, 400, { error: { message: 'INVALID_OOB_CODE' } });
+    if (b.newPassword) USUARIO.clave = b.newPassword;
+    return enviar(res, 200, { email: USUARIO.email, requestType: 'PASSWORD_RESET' });
+  }
   if (ruta === '/idt/v1/accounts:update') {
     const b = JSON.parse(await cuerpo(req));
     if (!String(b.idToken).startsWith('tok-' + USUARIO.id)) return error(res, 400, 'INVALID_ARGUMENT', 'INVALID_ID_TOKEN');

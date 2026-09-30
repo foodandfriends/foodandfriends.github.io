@@ -59,7 +59,7 @@
     temporizador = setTimeout(() => { a.hidden = true; }, error ? 5000 : 2500);
   }
   function mostrar(vista) {
-    for (const v of ['cargando', 'config', 'entrar', 'clave', 'panel']) $('#vista-' + v).hidden = v !== vista;
+    for (const v of ['cargando', 'config', 'entrar', 'clave', 'restablecer', 'panel']) $('#vista-' + v).hidden = v !== vista;
   }
   // Si la sesión venció se vuelve a entrar; si no, se muestra el error donde corresponda
   function fallo(e, dondeError) {
@@ -679,8 +679,50 @@
   // ---------------------------------------------------------------------------
   // Arranque
   // ---------------------------------------------------------------------------
+  // --- Contraseña nueva desde el enlace del correo (en vez de la página de Firebase) ---
+  let codigoEnlace = null;
+  async function abrirEnlace(codigo) {
+    codigoEnlace = codigo;
+    history.replaceState(null, '', location.pathname); // el código no queda en el historial
+    mostrar('cargando');
+    try {
+      const correo = await BD.correoDelEnlace(codigo);
+      $('#restablecer-correo').value = correo;
+      $('#restablecer-quien').textContent = 'Para ' + correo + '. Mínimo 10 caracteres; mejor si mezcla letras y números.';
+      mostrar('restablecer');
+      $('#restablecer-1').focus();
+    } catch (e) {
+      mostrar('restablecer');
+      $('#form-restablecer').hidden = true;
+      $('#restablecer-quien').textContent = e.message;
+      $('#restablecer-volver').hidden = false;
+    }
+  }
+  $('#form-restablecer').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const a = $('#restablecer-1').value, b = $('#restablecer-2').value, error = $('#restablecer-error');
+    error.textContent = '';
+    if (a.length < 10) { error.textContent = 'Use al menos 10 caracteres.'; return; }
+    if (a !== b) { error.textContent = 'Las dos contraseñas no son iguales.'; return; }
+    await ocupado(ev.target.querySelector('[type=submit]'), async () => {
+      try {
+        const correo = $('#restablecer-correo').value; // antes de limpiar el formulario, que también lo borra
+        await BD.restablecerClave(codigoEnlace, a);
+        ev.target.reset();
+        await BD.entrar(correo, a);
+        aviso('Contraseña guardada');
+        await abrirPanel();
+      } catch (e) {
+        error.textContent = e.message;
+        if (/OOB_CODE/.test(e.codigo)) $('#restablecer-volver').hidden = false;
+      }
+    });
+  });
+
   (async function arrancar() {
     if (!BD.configurado) return mostrar('config');
+    const enlace = new URLSearchParams(location.search);
+    if (enlace.get('mode') === 'resetPassword' && enlace.get('oobCode')) return abrirEnlace(enlace.get('oobCode'));
     if (await BD.sesionActiva()) return abrirPanel();
     mostrar('entrar');
   })();
