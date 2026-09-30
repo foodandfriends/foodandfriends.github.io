@@ -53,11 +53,29 @@
       otra.textContent = 'Intentar otra vez';
       otra.addEventListener('click', () => location.reload());
       aviso.after(otra);
+      quitarPortada();
       return;
     }
   }
   aviso.remove();
   window.pintarCarta(aCarta(datos));
+  quitarPortada();
+
+  // La pantalla negra con el logo se desvanece cuando la carta ya tiene sus letras y su logo,
+  // y se deja ver al menos un momento para que no parpadee (nunca espera más de 1,5 s)
+  function quitarPortada() {
+    const portada = document.getElementById('portada');
+    if (!portada) return;
+    const espera = ms => new Promise(ok => setTimeout(ok, ms));
+    const logo = document.querySelector('#cabecera .logo');
+    const logoListo = logo && !logo.complete ? new Promise(ok => { logo.onload = logo.onerror = ok; }) : null;
+    const lista = Promise.all([document.fonts.ready, logoListo, espera(Math.max(0, 700 - performance.now()))]);
+    Promise.race([lista, espera(1500)]).then(() => requestAnimationFrame(() => {
+      portada.classList.add('lista');
+      document.body.classList.remove('entrando');
+      setTimeout(() => portada.remove(), 700);
+    }));
+  }
 
   // Cada foto se pide cuando está por aparecer en pantalla
   const vista = new IntersectionObserver(entradas => {
