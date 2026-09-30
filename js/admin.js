@@ -1,6 +1,8 @@
 /*
   Panel del dueño: entrar, y cambiar platos, precios, fotos y datos del local.
-  Los permisos no se deciden aquí: todo cambio pasa por las reglas de Supabase (supabase/esquema.sql).
+  Toda la carta de un restaurante es un solo documento: cada cambio se arma sobre una copia y se guarda
+  con la versión que se leyó, así no se pisa lo que se haya cambiado desde otro celular.
+  Los permisos no se deciden aquí sino en las reglas de Firestore (firebase/reglas.rules).
 */
 (function () {
   // El panel no se deja mostrar dentro de otra página (evita que lo disfracen para robar clics)
@@ -8,7 +10,7 @@
 
   const C = window.CONFIG;
   const $ = s => document.querySelector(s);
-  const estado = { restaurantes: [], restaurante: null, categorias: [], platos: [] };
+  const estado = { slugs: [], slug: null, datos: null, version: null };
 
   // ---------------------------------------------------------------------------
   // Utilidades
@@ -40,9 +42,8 @@
   const miles = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const pesos = n => n == null ? 'Sin precio' : '$' + miles(n);
   const texto = v => { const t = (v || '').trim(); return t || null; };
-  const porOrden = (a, b) => a.orden - b.orden || (a.id < b.id ? -1 : 1);
-  const siguienteOrden = lista => lista.reduce((m, x) => Math.max(m, x.orden), -10) + 10;
-  const platosDe = categoriaId => estado.platos.filter(p => p.categoria_id === categoriaId).sort(porOrden);
+  const categorias = () => estado.datos.categorias;
+  const categoria = (lista, id) => lista.find(c => c.id === id);
 
   let temporizador;
   function aviso(mensaje, error) {
@@ -58,8 +59,8 @@
   }
   // Si la sesión venció se vuelve a entrar; si no, se muestra el error donde corresponda
   function fallo(e, dondeError) {
-    if (e && e.estado === 401) {
-      SB.salir();
+    if (e && (e.estado === 401 || /TOKEN_EXPIRED|INVALID_ID_TOKEN|INVALID_REFRESH_TOKEN|USER_NOT_FOUND/.test(e.codigo))) {
+      BD.salir();
       mostrar('entrar');
       $('#entrar-error').textContent = 'La sesión terminó. Entre otra vez.';
       return;
@@ -84,30 +85,53 @@
     boton.textContent = pregunta;
     setTimeout(() => reiniciarBorrar(boton, etiqueta), 5000);
   }
-  function preferido(id) {
-    try { return id ? localStorage.setItem('carta-restaurante', id) : localStorage.getItem('carta-restaurante'); } catch { return null; }
+  function preferido(slug) {
+    try { return slug ? localStorage.setItem('carta-restaurante', slug) : localStorage.getItem('carta-restaurante'); } catch { return null; }
+  }
+  function mostrarFoto(img, nombre) {
+    BD.foto(estado.slug, nombre).then(url => { img.src = url; }).catch(() => {});
   }
 
-  // Achica la foto en el celular antes de subirla: máximo 900 px y menos de 1 MB
+  // Achica la foto en el celular antes de subirla: máximo 500 px y 140 KB
   async function comprimir(archivo) {
     let imagen;
     try { imagen = await createImageBitmap(archivo); } catch {
       throw new Error('Esa imagen no se pudo abrir. Pruebe con otra foto.');
     }
-    const escala = Math.min(1, 900 / Math.max(imagen.width, imagen.height));
+    const escala = Math.min(1, 500 / Math.max(imagen.width, imagen.height));
     const lienzo = document.createElement('canvas');
     lienzo.width = Math.round(imagen.width * escala);
     lienzo.height = Math.round(imagen.height * escala);
     lienzo.getContext('2d').drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
-    for (const [tipo, calidad] of [['image/webp', 0.82], ['image/jpeg', 0.82], ['image/jpeg', 0.6]]) {
+    for (const [tipo, calidad] of [['image/webp', 0.75], ['image/webp', 0.55], ['image/jpeg', 0.72], ['image/jpeg', 0.5]]) {
       const blob = await new Promise(ok => lienzo.toBlob(ok, tipo, calidad));
-      if (blob && blob.type === tipo && blob.size < 1000000) return blob;
+      if (blob && blob.type === tipo && blob.size <= 140000) return blob;
     }
     throw new Error('La foto quedó muy pesada. Pruebe con otra.');
   }
 
   // ---------------------------------------------------------------------------
-  // Entrar, recordar contraseña, contraseña nueva
+  // Guardar: siempre sobre la versión que se leyó
+  // ---------------------------------------------------------------------------
+  async function guardar(cambios) {
+    try {
+      estado.version = await BD.guardarRestaurante(estado.slug, cambios, estado.version);
+      Object.assign(estado.datos, cambios);
+    } catch (e) {
+      // Si la cambiaron desde otro celular, se trae lo último para no pisarlo
+      if (/FAILED_PRECONDITION/.test(e.codigo)) await cargar().catch(() => {});
+      throw e;
+    }
+  }
+  async function cambiarCarta(modificar) {
+    const nuevas = structuredClone(categorias());
+    modificar(nuevas);
+    await guardar({ categorias: nuevas });
+    pintarPlatos();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Entrar, recordar contraseña, cambiar contraseña
   // ---------------------------------------------------------------------------
   $('#form-entrar').addEventListener('submit', async ev => {
     ev.preventDefault();
@@ -117,7 +141,7 @@
     if (!correo || !clave) { error.textContent = 'Escriba el correo y la contraseña.'; return; }
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        await SB.entrar(correo, clave);
+        await BD.entrar(correo, clave);
         $('#entrar-clave').value = '';
         await abrirPanel();
       } catch (e) {
@@ -138,7 +162,7 @@
     if (!correo) { error.textContent = 'Escriba su correo.'; return; }
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        await SB.recordar(correo, location.origin + location.pathname);
+        await BD.recordar(correo);
         aviso('Si ese correo tiene cuenta, le llegó un enlace. Revise también el correo no deseado.');
         $('#form-recordar').hidden = true;
       } catch (e) {
@@ -155,21 +179,22 @@
     if (a !== b) { error.textContent = 'Las dos contraseñas no son iguales.'; return; }
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        await SB.cambiarClave(a);
+        await BD.cambiarClave(a);
         ev.target.reset();
         aviso('Contraseña guardada');
-        await abrirPanel();
+        mostrar('panel');
       } catch (e) {
         fallo(e, '#clave-error');
       }
     });
   });
-  $('#ir-clave').addEventListener('click', () => { $('#clave-volver').hidden = false; mostrar('clave'); });
+  $('#ir-clave').addEventListener('click', () => { $('#clave-error').textContent = ''; mostrar('clave'); });
   $('#clave-volver').addEventListener('click', () => mostrar('panel'));
+  $('#clave-volver').hidden = false;
 
-  $('#salir').addEventListener('click', async () => {
-    await SB.salir();
-    estado.restaurante = null;
+  $('#salir').addEventListener('click', () => {
+    BD.salir();
+    estado.datos = null;
     $('#vista-entrar form').reset();
     mostrar('entrar');
   });
@@ -180,20 +205,17 @@
   async function abrirPanel() {
     mostrar('cargando');
     try {
-      const duenos = await SB.leer('duenos', 'select=restaurante_id');
-      if (!duenos.length) {
-        await SB.salir();
+      estado.slugs = await BD.misRestaurantes();
+      if (!estado.slugs.length) {
+        BD.salir();
         mostrar('entrar');
         $('#entrar-error').textContent = 'Esta cuenta no tiene un restaurante asignado.';
         return;
       }
-      const ids = duenos.map(d => d.restaurante_id).join(',');
-      estado.restaurantes = await SB.leer('restaurantes', 'id=in.(' + ids + ')&select=*&order=nombre.asc');
-      estado.restaurante = estado.restaurantes.find(r => r.id === preferido()) || estado.restaurantes[0];
+      estado.slug = estado.slugs.includes(preferido()) ? preferido() : estado.slugs[0];
+      await cargar();
       pintarSelector();
-      await cargarCarta();
-      $('#panel-correo').textContent = SB.usuario ? SB.usuario.email : '';
-      $('#clave-volver').hidden = true;
+      $('#panel-correo').textContent = BD.usuario ? BD.usuario.email : '';
       mostrar('panel');
     } catch (e) {
       mostrar('entrar');
@@ -201,26 +223,41 @@
     }
   }
 
-  async function cargarCarta() {
-    const r = estado.restaurante;
-    const filtro = 'restaurante_id=eq.' + r.id + '&order=orden.asc,id.asc&select=*';
-    [estado.categorias, estado.platos] = await Promise.all([SB.leer('categorias', filtro), SB.leer('platos', filtro)]);
-    $('#panel-nombre').textContent = r.nombre;
+  async function cargar() {
+    let r = await BD.leerRestaurante(estado.slug);
+    if (!r) r = await BD.crearRestaurante(estado.slug, await cartaInicial());
+    estado.datos = { horario: [], categorias: [], ...r.datos };
+    estado.version = r.version;
+    $('#panel-nombre').textContent = estado.datos.nombre;
     $('#ver-carta').href = C.raiz;
     pintarPlatos();
     pintarLocal();
   }
 
+  // La primera vez: los datos del local que ya estaban en la copia del sitio, sin platos
+  async function cartaInicial() {
+    let copia = {};
+    try {
+      const r = await fetch(C.raiz + 'datos/' + estado.slug + '.json');
+      if (r.ok) copia = await r.json();
+    } catch { /* sin copia */ }
+    const datos = { nombre: copia.nombre || estado.slug, horario: [], categorias: [] };
+    for (const k of ['lugar', 'direccion', 'telefono', 'whatsapp', 'mapa', 'instagram', 'facebook']) {
+      if (copia[k]) datos[k] = copia[k];
+    }
+    return datos;
+  }
+
   function pintarSelector() {
     const s = $('#elegir-restaurante');
-    s.hidden = estado.restaurantes.length < 2;
-    s.replaceChildren(...estado.restaurantes.map(r => el('option', { value: r.id, texto: r.nombre })));
-    s.value = estado.restaurante.id;
+    s.hidden = estado.slugs.length < 2;
+    s.replaceChildren(...estado.slugs.map(slug => el('option', { value: slug, texto: slug })));
+    s.value = estado.slug;
   }
   $('#elegir-restaurante').addEventListener('change', async ev => {
-    estado.restaurante = estado.restaurantes.find(r => r.id === ev.target.value);
-    preferido(estado.restaurante.id);
-    try { await cargarCarta(); } catch (e) { fallo(e); }
+    estado.slug = ev.target.value;
+    preferido(estado.slug);
+    try { await cargar(); } catch (e) { fallo(e); }
   });
 
   for (const [tab, panel] of [['#tab-platos', '#pestana-platos'], ['#tab-local', '#pestana-local']]) {
@@ -237,35 +274,36 @@
   // ---------------------------------------------------------------------------
   function pintarPlatos() {
     const cont = $('#categorias');
-    const cats = estado.categorias.slice().sort(porOrden);
+    const cats = categorias();
     if (!cats.length) {
       cont.replaceChildren(el('p', { class: 'vacio', texto: 'Todavía no hay categorías. Cree la primera, por ejemplo "Hamburguesas".' }));
       return;
     }
-    cont.replaceChildren(...cats.map((c, i) => {
-      const platos = platosDe(c.id);
-      return el('section', { class: 'categoria' },
-        el('div', { class: 'categoria-cab' },
-          el('h2', {}, c.nombre + ' ', el('small', { texto: '(' + platos.length + ')' })),
-          botonIcono('arriba', 'Subir categoría', i === 0, () => mover(cats, i, -1, 'categorias')),
-          botonIcono('abajo', 'Bajar categoría', i === cats.length - 1, () => mover(cats, i, 1, 'categorias')),
-          botonIcono('lapiz', 'Editar categoría', false, () => editarCategoria(c))),
-        platos.length
-          ? el('ul', { class: 'lista' }, ...platos.map(filaPlato))
-          : el('p', { class: 'vacio', texto: 'Sin platos todavía.' }),
-        el('button', { class: 'btn chico agregar', type: 'button', texto: '+ Agregar plato', onclick: () => editarPlato(null, c) }));
-    }));
+    cont.replaceChildren(...cats.map((c, i) => el('section', { class: 'categoria' },
+      el('div', { class: 'categoria-cab' },
+        el('h2', {}, c.nombre + ' ', el('small', { texto: '(' + c.platos.length + ')' })),
+        botonIcono('arriba', 'Subir categoría', i === 0, () => moverCategoria(i, -1)),
+        botonIcono('abajo', 'Bajar categoría', i === cats.length - 1, () => moverCategoria(i, 1)),
+        botonIcono('lapiz', 'Editar categoría', false, () => editarCategoria(c))),
+      c.platos.length
+        ? el('ul', { class: 'lista' }, ...c.platos.map(p => filaPlato(c, p)))
+        : el('p', { class: 'vacio', texto: 'Sin platos todavía.' }),
+      el('button', { class: 'btn chico agregar', type: 'button', texto: '+ Agregar plato', onclick: () => editarPlato(c, null) }))));
   }
 
-  function filaPlato(p) {
-    const mini = p.foto
-      ? el('img', { class: 'miniatura', src: SB.fotoUrl(p.foto), alt: '', loading: 'lazy' })
-      : el('span', { class: 'miniatura vacia', texto: 'Foto' });
+  function filaPlato(c, p) {
+    let mini;
+    if (p.foto) {
+      mini = el('img', { class: 'miniatura', alt: '' });
+      mostrarFoto(mini, p.foto);
+    } else {
+      mini = el('span', { class: 'miniatura vacia', texto: 'Foto' });
+    }
     const agotado = el('input', { type: 'checkbox', 'aria-label': 'Agotado: ' + p.nombre });
-    agotado.checked = p.agotado;
-    agotado.addEventListener('change', () => cambiarAgotado(p, agotado));
+    agotado.checked = !!p.agotado;
+    agotado.addEventListener('change', () => cambiarAgotado(c.id, p, agotado));
     return el('li', { class: 'fila' + (p.agotado ? ' agotado' : '') },
-      el('button', { class: 'abrir', type: 'button', onclick: () => editarPlato(p) },
+      el('button', { class: 'abrir', type: 'button', onclick: () => editarPlato(c, p) },
         mini,
         el('span', { class: 'texto' },
           el('strong', { texto: p.nombre }),
@@ -273,11 +311,11 @@
       el('label', { class: 'interruptor' }, agotado, 'Agotado'));
   }
 
-  async function cambiarAgotado(p, input) {
+  async function cambiarAgotado(catId, p, input) {
     const valor = input.checked, fila = input.closest('.fila');
     fila.classList.toggle('agotado', valor);
     try {
-      Object.assign(p, await SB.cambiar('platos', p.id, { agotado: valor }));
+      await cambiarCarta(cs => { categoria(cs, catId).platos.find(x => x.id === p.id).agotado = valor; });
       aviso(valor ? p.nombre + ' quedó agotado' : p.nombre + ' está disponible otra vez');
     } catch (e) {
       input.checked = !valor;
@@ -286,63 +324,67 @@
     }
   }
 
-  // Cambia el orden y guarda solo lo que se movió
-  async function mover(lista, i, delta, tabla) {
-    const j = i + delta;
-    if (j < 0 || j >= lista.length) return;
-    const nueva = lista.slice();
-    [nueva[i], nueva[j]] = [nueva[j], nueva[i]];
-    const cambios = nueva.map((x, k) => [x, k * 10]).filter(([x, orden]) => x.orden !== orden);
+  async function moverCategoria(i, delta) {
     try {
-      await Promise.all(cambios.map(async ([x, orden]) => Object.assign(x, await SB.cambiar(tabla, x.id, { orden }))));
+      await cambiarCarta(cs => { [cs[i], cs[i + delta]] = [cs[i + delta], cs[i]]; });
     } catch (e) {
       fallo(e);
-      await cargarCarta().catch(() => {});
     }
-    pintarPlatos();
   }
 
   // --- Editor de plato ---
-  const ed = { plato: null, fotoNueva: null, fotoQuitada: false, subiendo: false, vista: null };
+  const ed = { catId: null, platoId: null, fotoNueva: null, fotoQuitada: false, subiendo: false, vista: null };
+  const platoEditado = () => ed.platoId && categoria(categorias(), ed.catId).platos.find(p => p.id === ed.platoId);
 
-  function editarPlato(p, cat) {
-    Object.assign(ed, { plato: p, fotoNueva: null, fotoQuitada: false });
+  function editarPlato(c, p) {
+    Object.assign(ed, { catId: c.id, platoId: p ? p.id : null, fotoNueva: null, fotoQuitada: false });
     $('#plato-titulo').textContent = p ? 'Editar plato' : 'Nuevo plato';
     $('#plato-nombre').value = p ? p.nombre : '';
     $('#plato-descripcion').value = (p && p.descripcion) || '';
     $('#plato-precio').value = p && p.precio != null ? miles(p.precio) : '';
-    $('#plato-categoria').replaceChildren(...estado.categorias.slice().sort(porOrden).map(c => el('option', { value: c.id, texto: c.nombre })));
-    $('#plato-categoria').value = p ? p.categoria_id : cat.id;
+    $('#plato-categoria').replaceChildren(...categorias().map(x => el('option', { value: x.id, texto: x.nombre })));
+    $('#plato-categoria').value = c.id;
     $('#plato-etiqueta').value = (p && p.etiqueta) || '';
     $('#plato-agotado').checked = !!(p && p.agotado);
     $('#plato-posicion').hidden = !p;
     $('#plato-borrar').hidden = !p;
     reiniciarBorrar($('#plato-borrar'), 'Borrar plato');
     $('#plato-error').textContent = '';
-    pintarFoto(p && p.foto ? SB.fotoUrl(p.foto) : null);
+    pintarFoto(p && p.foto ? { nombre: p.foto } : null);
     actualizarPosicion();
     $('#editor-plato').showModal();
     if (!p) $('#plato-nombre').focus();
   }
 
-  function pintarFoto(url) {
-    const nueva = url
-      ? el('img', { class: 'vista', id: 'plato-vista', src: url, alt: 'Foto del plato' })
-      : el('div', { class: 'vista vacia', id: 'plato-vista', texto: 'Sin foto' });
+  function pintarFoto(foto) {
+    let nueva;
+    if (foto) {
+      nueva = el('img', { class: 'vista', id: 'plato-vista', alt: 'Foto del plato' });
+      if (foto.url) nueva.src = foto.url; else mostrarFoto(nueva, foto.nombre);
+    } else {
+      nueva = el('div', { class: 'vista vacia', id: 'plato-vista', texto: 'Sin foto' });
+    }
     $('#plato-vista').replaceWith(nueva);
-    $('#plato-quitar-foto').hidden = !url;
+    $('#plato-quitar-foto').hidden = !foto;
   }
 
   function actualizarPosicion() {
-    if (!ed.plato) return;
-    const lista = platosDe(ed.plato.categoria_id), i = lista.indexOf(ed.plato);
+    const p = platoEditado();
+    if (!p) return;
+    const lista = categoria(categorias(), ed.catId).platos, i = lista.indexOf(p);
     $('#plato-subir').disabled = i <= 0;
     $('#plato-bajar').disabled = i >= lista.length - 1;
   }
   for (const [boton, delta] of [['#plato-subir', -1], ['#plato-bajar', 1]]) {
     $(boton).addEventListener('click', async () => {
-      const lista = platosDe(ed.plato.categoria_id);
-      await mover(lista, lista.indexOf(ed.plato), delta, 'platos');
+      try {
+        await cambiarCarta(cs => {
+          const lista = categoria(cs, ed.catId).platos, i = lista.findIndex(p => p.id === ed.platoId);
+          [lista[i], lista[i + delta]] = [lista[i + delta], lista[i]];
+        });
+      } catch (e) {
+        fallo(e, '#plato-error');
+      }
       actualizarPosicion();
     });
   }
@@ -357,33 +399,32 @@
     const archivo = ev.target.files[0];
     ev.target.value = '';
     if (!archivo) return;
-    const elegir = $('#plato-elegir-foto'), guardar = $('#plato-guardar');
+    const elegir = $('#plato-elegir-foto'), guardarBoton = $('#plato-guardar');
     ed.subiendo = true;
-    guardar.disabled = elegir.disabled = true;
+    guardarBoton.disabled = elegir.disabled = true;
     elegir.textContent = 'Subiendo foto…';
     $('#plato-error').textContent = '';
     try {
       const blob = await comprimir(archivo);
-      const ruta = estado.restaurante.id + '/' + crypto.randomUUID() + (blob.type === 'image/webp' ? '.webp' : '.jpg');
-      await SB.subirFoto(ruta, blob);
+      const nombre = await BD.subirFoto(estado.slug, blob);
       // si cerraron el editor mientras subía, la foto no se usa
-      if (!$('#editor-plato').open) { SB.borrarFotos([ruta]); return; }
-      if (ed.fotoNueva) SB.borrarFotos([ed.fotoNueva]);
-      ed.fotoNueva = ruta;
+      if (!$('#editor-plato').open) { BD.borrarFotos(estado.slug, [nombre]); return; }
+      if (ed.fotoNueva) BD.borrarFotos(estado.slug, [ed.fotoNueva]);
+      ed.fotoNueva = nombre;
       ed.fotoQuitada = false;
       if (ed.vista) URL.revokeObjectURL(ed.vista);
       ed.vista = URL.createObjectURL(blob);
-      pintarFoto(ed.vista);
+      pintarFoto({ url: ed.vista });
     } catch (e) {
       fallo(e, '#plato-error');
     } finally {
       ed.subiendo = false;
-      guardar.disabled = elegir.disabled = false;
+      guardarBoton.disabled = elegir.disabled = false;
       elegir.textContent = 'Tomar o escoger foto';
     }
   });
   $('#plato-quitar-foto').addEventListener('click', () => {
-    if (ed.fotoNueva) { SB.borrarFotos([ed.fotoNueva]); ed.fotoNueva = null; }
+    if (ed.fotoNueva) { BD.borrarFotos(estado.slug, [ed.fotoNueva]); ed.fotoNueva = null; }
     ed.fotoQuitada = true;
     pintarFoto(null);
   });
@@ -400,27 +441,29 @@
       nombre,
       descripcion: texto($('#plato-descripcion').value),
       precio: digitos ? Number(digitos) : null,
-      categoria_id: $('#plato-categoria').value,
       etiqueta: texto($('#plato-etiqueta').value),
       agotado: $('#plato-agotado').checked
     };
-    const anterior = ed.plato && ed.plato.foto;
-    if (ed.fotoNueva) datos.foto = ed.fotoNueva;
-    else if (ed.fotoQuitada) datos.foto = null;
+    const anterior = (platoEditado() || {}).foto || null;
+    const foto = ed.fotoNueva || (ed.fotoQuitada ? null : anterior);
+    const destino = $('#plato-categoria').value;
     await ocupado($('#plato-guardar'), async () => {
       try {
-        if (ed.plato) {
-          if (datos.categoria_id !== ed.plato.categoria_id) datos.orden = siguienteOrden(platosDe(datos.categoria_id));
-          Object.assign(ed.plato, await SB.cambiar('platos', ed.plato.id, datos));
-        } else {
-          datos.restaurante_id = estado.restaurante.id;
-          datos.orden = siguienteOrden(platosDe(datos.categoria_id));
-          estado.platos.push(await SB.crear('platos', datos));
-        }
-        if (anterior && 'foto' in datos && datos.foto !== anterior) SB.borrarFotos([anterior]);
+        await cambiarCarta(cs => {
+          let plato;
+          if (ed.platoId) {
+            const origen = categoria(cs, ed.catId), i = origen.platos.findIndex(p => p.id === ed.platoId);
+            plato = origen.platos[i];
+            if (destino !== ed.catId) { origen.platos.splice(i, 1); categoria(cs, destino).platos.push(plato); }
+          } else {
+            plato = { id: crypto.randomUUID() };
+            categoria(cs, destino).platos.push(plato);
+          }
+          Object.assign(plato, datos, { foto });
+        });
+        if (anterior && anterior !== foto) BD.borrarFotos(estado.slug, [anterior]);
         ed.fotoNueva = null; // ya quedó guardada: no se borra al cerrar
         $('#editor-plato').close();
-        pintarPlatos();
         aviso('Guardado');
       } catch (e) {
         fallo(e, '#plato-error');
@@ -431,21 +474,22 @@
   $('#plato-cancelar').addEventListener('click', () => $('#editor-plato').close());
   // Al cerrar sin guardar, la foto que se alcanzó a subir se borra
   $('#editor-plato').addEventListener('close', () => {
-    if (ed.fotoNueva) { SB.borrarFotos([ed.fotoNueva]); ed.fotoNueva = null; }
+    if (ed.fotoNueva) { BD.borrarFotos(estado.slug, [ed.fotoNueva]); ed.fotoNueva = null; }
     if (ed.vista) { URL.revokeObjectURL(ed.vista); ed.vista = null; }
   });
 
   $('#plato-borrar').addEventListener('click', ev => {
     const boton = ev.currentTarget;
     confirmarDosVeces(boton, 'Borrar plato', '¿Seguro? Toque otra vez para borrar', () => ocupado(boton, async () => {
-      const p = ed.plato;
+      const p = platoEditado();
       try {
-        await SB.borrar('platos', p.id);
-        estado.platos = estado.platos.filter(x => x !== p);
-        SB.borrarFotos([p.foto, ed.fotoNueva].filter(Boolean));
+        await cambiarCarta(cs => {
+          const lista = categoria(cs, ed.catId).platos;
+          lista.splice(lista.findIndex(x => x.id === p.id), 1);
+        });
+        BD.borrarFotos(estado.slug, [p.foto, ed.fotoNueva]);
         ed.fotoNueva = null;
         $('#editor-plato').close();
-        pintarPlatos();
         aviso(p.nombre + ' se borró');
       } catch (e) {
         fallo(e, '#plato-error');
@@ -454,10 +498,10 @@
   });
 
   // --- Editor de categoría ---
-  let catEditada = null;
+  let catEditadaId = null;
 
   function editarCategoria(c) {
-    catEditada = c;
+    catEditadaId = c ? c.id : null;
     $('#categoria-titulo').textContent = c ? 'Editar categoría' : 'Nueva categoría';
     $('#categoria-nombre').value = c ? c.nombre : '';
     $('#categoria-nota').value = (c && c.nota) || '';
@@ -478,15 +522,11 @@
     if (!datos.nombre) { error.textContent = 'Escriba el nombre de la categoría.'; return; }
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        if (catEditada) {
-          Object.assign(catEditada, await SB.cambiar('categorias', catEditada.id, datos));
-        } else {
-          datos.restaurante_id = estado.restaurante.id;
-          datos.orden = siguienteOrden(estado.categorias);
-          estado.categorias.push(await SB.crear('categorias', datos));
-        }
+        await cambiarCarta(cs => {
+          if (catEditadaId) Object.assign(categoria(cs, catEditadaId), datos);
+          else cs.push({ id: crypto.randomUUID(), ...datos, platos: [] });
+        });
         $('#editor-categoria').close();
-        pintarPlatos();
         aviso('Guardado');
       } catch (e) {
         fallo(e, '#categoria-error');
@@ -495,18 +535,15 @@
   });
 
   $('#categoria-borrar').addEventListener('click', ev => {
-    const boton = ev.currentTarget, c = catEditada, platos = platosDe(c.id);
-    const pregunta = platos.length
-      ? '¿Seguro? Se borran también sus ' + platos.length + ' platos. Toque otra vez'
+    const boton = ev.currentTarget, c = categoria(categorias(), catEditadaId);
+    const pregunta = c.platos.length
+      ? '¿Seguro? Se borran también sus ' + c.platos.length + ' platos. Toque otra vez'
       : '¿Seguro? Toque otra vez para borrar';
     confirmarDosVeces(boton, 'Borrar categoría', pregunta, () => ocupado(boton, async () => {
       try {
-        await SB.borrar('categorias', c.id);
-        estado.categorias = estado.categorias.filter(x => x !== c);
-        estado.platos = estado.platos.filter(p => p.categoria_id !== c.id);
-        SB.borrarFotos(platos.map(p => p.foto).filter(Boolean));
+        await cambiarCarta(cs => { cs.splice(cs.findIndex(x => x.id === c.id), 1); });
+        BD.borrarFotos(estado.slug, c.platos.map(p => p.foto));
         $('#editor-categoria').close();
-        pintarPlatos();
         aviso(c.nombre + ' se borró');
       } catch (e) {
         fallo(e, '#categoria-error');
@@ -521,12 +558,11 @@
   const NOMBRES = { mapa: 'Google Maps', instagram: 'Instagram', facebook: 'Facebook', telefono: 'teléfono', whatsapp: 'WhatsApp' };
 
   function pintarLocal() {
-    const r = estado.restaurante;
-    for (const k of CAMPOS) $('#local-' + k).value = r[k] || '';
-    $('#local-horario').replaceChildren(...(r.horario || []).map(filaHorario));
+    for (const k of CAMPOS) $('#local-' + k).value = estado.datos[k] || '';
+    $('#local-horario').replaceChildren(...estado.datos.horario.map(filaHorario));
     $('#local-error').textContent = '';
   }
-  function filaHorario([dias, horas] = ['', '']) {
+  function filaHorario({ dias, horas } = {}) {
     const fila = el('div', { class: 'horario-fila' },
       el('input', { type: 'text', maxlength: 40, placeholder: 'Martes a jueves', 'aria-label': 'Días', value: dias || '' }),
       el('input', { type: 'text', maxlength: 40, placeholder: '4:00 – 10:30 p. m.', 'aria-label': 'Horas', value: horas || '' }),
@@ -554,13 +590,12 @@
       if (datos[k] && !/^https:\/\/[^\s"<>]+$/.test(datos[k])) { error.textContent = 'El enlace de ' + NOMBRES[k] + ' debe empezar por https://'; return; }
     }
     datos.horario = [...$('#local-horario').children]
-      .map(f => [...f.querySelectorAll('input')].map(i => i.value.trim()))
-      .filter(([d, h]) => d || h);
+      .map(f => { const [dias, horas] = [...f.querySelectorAll('input')].map(i => i.value.trim()); return { dias, horas }; })
+      .filter(h => h.dias || h.horas);
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        Object.assign(estado.restaurante, await SB.cambiar('restaurantes', estado.restaurante.id, datos));
-        $('#panel-nombre').textContent = estado.restaurante.nombre;
-        pintarSelector();
+        await guardar(datos);
+        $('#panel-nombre').textContent = estado.datos.nombre;
         aviso('Datos guardados');
       } catch (e) {
         fallo(e, '#local-error');
@@ -572,16 +607,8 @@
   // Arranque
   // ---------------------------------------------------------------------------
   (async function arrancar() {
-    if (!SB.configurado) return mostrar('config');
-    const hash = new URLSearchParams(location.hash.slice(1));
-    if (hash.get('error')) {
-      history.replaceState(null, '', location.pathname + location.search);
-      mostrar('entrar');
-      $('#entrar-error').textContent = 'Ese enlace ya no sirve (vence rápido). Pida uno nuevo con "Olvidé mi contraseña".';
-      return;
-    }
-    if (SB.sesionDelEnlace() === 'recovery') return mostrar('clave');
-    if (await SB.sesionActiva()) return abrirPanel();
+    if (!BD.configurado) return mostrar('config');
+    if (await BD.sesionActiva()) return abrirPanel();
     mostrar('entrar');
   })();
 })();

@@ -48,6 +48,7 @@
         img.src = p.foto;
         img.alt = p.nombre;
         img.loading = 'lazy';
+        if (p.fotoId) img.dataset.foto = p.fotoId; // la página que la pinta carga la foto de verdad
         return img;
       }
       const vacia = el('div', 'foto vacia');

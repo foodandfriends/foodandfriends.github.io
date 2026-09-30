@@ -1,0 +1,79 @@
+rules_version = '2';
+
+// ============================================================================
+// CARTA DIGITAL: reglas de seguridad de Firestore
+//
+// Se pegan completas en Firebase → Firestore Database → Rules → Publish.
+//
+// Quién puede qué:
+//   * Cualquiera (el cliente con el QR) puede LEER las cartas y sus fotos.
+//   * El dueño de un restaurante puede cambiar SOLO la carta de su restaurante.
+//   * Quién es dueño de qué lo dice duenos/<uid del dueño> (campo "restaurantes"),
+//     y ese documento solo se crea desde la consola de Firebase: nadie lo puede
+//     cambiar desde la página.
+//
+// Datos:
+//   restaurantes/<slug>             la carta completa (datos del local + categorías con sus platos)
+//   restaurantes/<slug>/fotos/<id>  una foto comprimida (máximo 150 KB)
+//   duenos/<uid>                    { restaurantes: ["<slug>", ...] }
+// ============================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function esDueno(slug) {
+      let dueno = /databases/$(database)/documents/duenos/$(request.auth.uid);
+      return request.auth != null && exists(dueno) && slug in get(dueno).data.restaurantes;
+    }
+
+    function textoOpcional(d, campo, maximo) {
+      return !(campo in d) || d[campo] == null || (d[campo] is string && d[campo].size() <= maximo);
+    }
+    function telefonoOpcional(d, campo) {
+      return !(campo in d) || d[campo] == null || (d[campo] is string && d[campo].matches('^[0-9 +]{7,20}$'));
+    }
+    // Solo enlaces https (nada de javascript: ni cosas raras)
+    function enlaceOpcional(d, campo) {
+      return !(campo in d) || d[campo] == null
+        || (d[campo] is string && d[campo].size() <= 300 && d[campo].matches('^https://[^\\s"<>]+$'));
+    }
+    function cartaValida(d) {
+      return d.keys().hasOnly(['nombre', 'lugar', 'direccion', 'telefono', 'whatsapp', 'mapa', 'instagram',
+                               'facebook', 'horario', 'nota', 'categorias'])
+        && d.nombre is string && d.nombre.size() > 0 && d.nombre.size() <= 80
+        && textoOpcional(d, 'lugar', 120) && textoOpcional(d, 'direccion', 160) && textoOpcional(d, 'nota', 200)
+        && telefonoOpcional(d, 'telefono') && telefonoOpcional(d, 'whatsapp')
+        && enlaceOpcional(d, 'mapa') && enlaceOpcional(d, 'instagram') && enlaceOpcional(d, 'facebook')
+        && d.horario is list && d.horario.size() <= 14
+        && d.categorias is list && d.categorias.size() <= 40;
+    }
+
+    match /restaurantes/{slug} {
+      allow read: if true;
+      // El dueño crea su carta la primera vez que entra al panel; después solo la cambia
+      allow create, update: if esDueno(slug) && cartaValida(request.resource.data);
+      allow delete: if false;
+
+      match /fotos/{foto} {
+        allow read: if true;
+        allow create: if esDueno(slug)
+          && foto.matches('^[0-9a-f-]{36}[.](webp|jpg)$')
+          && request.resource.data.keys().hasOnly(['datos', 'tipo'])
+          && request.resource.data.datos is bytes
+          && request.resource.data.datos.size() <= 150000
+          && request.resource.data.tipo in ['image/webp', 'image/jpeg'];
+        allow delete: if esDueno(slug);
+        allow update: if false;
+      }
+    }
+
+    match /duenos/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // Todo lo demás, cerrado
+    match /{cualquierCosa=**} {
+      allow read, write: if false;
+    }
+  }
+}

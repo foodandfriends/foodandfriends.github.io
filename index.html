@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://*.supabase.co; connect-src 'self' https://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
 <title>Carta</title>
 <meta name="description" content="La carta del restaurante: platos, precios y fotos.">
 <meta name="theme-color" content="#120e0c">
@@ -118,7 +118,7 @@
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p></noscript>
 <script src="js/config.js"></script>
-<script src="js/supabase.js"></script>
+<script src="js/firebase.js"></script>
 <script src="js/carta.js"></script>
 <script src="js/carta-publica.js"></script>
 </body>

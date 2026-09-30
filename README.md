@@ -7,69 +7,84 @@ donde el dueño cambia platos, precios, fotos y agotados desde su celular.
 - **Panel del dueño:** https://roypitw3.github.io/menu-food-friends/admin/
 - **Propuestas de diseño que se le mostraron al dueño:** https://roypitw3.github.io/menu-food-friends/disenos/
 
-Costo: $0. La página vive en GitHub Pages y los datos en el plan gratis de Supabase.
+Costo: $0. La página vive en GitHub Pages y los datos en el plan gratis de Firebase (Spark), que no pide
+tarjeta y no se apaga por falta de uso.
 
 ## Cómo funciona
 
 | Pieza | Dónde | Qué hace |
 |---|---|---|
-| Carta pública | `index.html`, `js/carta-publica.js` | Trae la carta de Supabase y la pinta con `js/carta.js` |
+| Carta pública | `index.html`, `js/carta-publica.js` | Trae la carta de Firebase y la pinta con `js/carta.js` |
 | Panel | `admin/index.html`, `js/admin.js` | Login del dueño; platos, categorías, fotos, agotados y datos del local |
-| Conexión | `js/supabase.js`, `js/config.js` | Habla con Supabase sin librerías externas |
-| Base de datos | `supabase/esquema.sql` | Tablas, reglas de seguridad y carpeta de fotos |
-| Respaldo | `scripts/respaldo.mjs`, `.github/workflows/respaldo.yml` | Copia diaria de la carta en `datos/` |
+| Conexión | `js/firebase.js`, `js/config.js` | Habla con Firebase por su API, sin librerías externas |
+| Reglas de seguridad | `firebase/reglas.rules` | Quién puede leer y cambiar qué |
+| Respaldo | `scripts/respaldo.mjs`, `.github/workflows/respaldo.yml` | Copia diaria de la carta y sus fotos en `datos/` |
 
-Si Supabase no responde (o todavía no está configurado), la carta pública sale de la copia en
+Toda la carta de un restaurante es un solo documento de Firestore (`restaurantes/<slug>`): abrir la carta
+cuesta una sola lectura. Las fotos van comprimidas (máximo 500 px) en documentos aparte
+(`restaurantes/<slug>/fotos/<id>`). La copia diaria las deja también en `datos/fotos/`, y la carta las pide
+primero de ahí, que es gratis; Firebase solo se usa para las fotos del mismo día. Cada celular guarda las
+fotos que ya vio.
+
+Si Firebase no responde (o todavía no está configurado), la carta pública sale de la copia en
 `datos/food-friends.json`, así que el QR nunca muestra una página vacía.
 
 ## Seguridad
 
-- **Las reglas viven en la base de datos**, no en la página. Cualquiera puede leer la carta; solo la cuenta
-  de un dueño puede cambiar la carta de *su* restaurante. Aunque alguien copie el código o use la API directo,
-  Supabase rechaza el cambio. Ver `supabase/esquema.sql`.
-- **Nadie se puede registrar.** Las cuentas de los dueños se crean a mano en Supabase.
-- Contraseñas cifradas por Supabase, con límite de intentos. Mínimo 10 caracteres.
-- Permisos columna por columna: el dueño no puede cambiar el slug, crear restaurantes ni hacerse dueño de otro.
-- Fotos: solo webp o jpg, máximo 1 MB, solo en la carpeta de su restaurante y máximo 400. El panel las achica
-  en el celular antes de subirlas (queda cada una en unos 50 a 150 KB).
-- Datos validados en la base (links solo `https://`, teléfonos solo números, textos con largo máximo) y la
-  página muestra todo como texto, nunca como código.
-- Las páginas solo cargan código propio (Content-Security-Policy) y el panel no se deja mostrar dentro de otra página.
-- En `js/config.js` va solo la clave pública. **La clave `service_role` y la contraseña de la base nunca van
-  en el repositorio.**
-- `supabase/probar-reglas.mjs` ataca las reglas en el Supabase real y confirma que todo lo indebido queda bloqueado.
+- **Las reglas viven en Firebase**, no en la página. Cualquiera puede leer la carta; solo la cuenta de un
+  dueño puede cambiar la carta de *su* restaurante. Aunque alguien copie el código o use la API directo,
+  Firebase rechaza el cambio. Ver `firebase/reglas.rules`.
+- **Nadie se puede registrar.** Las cuentas de los dueños se crean a mano en la consola de Firebase, y quién
+  es dueño de qué (`duenos/<uid>`) solo se cambia desde la consola.
+- Contraseñas cifradas por Firebase, con bloqueo por intentos. Mínimo 10 caracteres.
+- El dueño no puede borrar la carta, crear otros restaurantes, agregar campos raros ni poner enlaces que no
+  sean `https://`.
+- Fotos: solo webp o jpg, máximo 150 KB, solo en su restaurante, y una foto subida no se puede reemplazar
+  (solo borrar). El panel las achica en el celular antes de subirlas.
+- Si el dueño cambia la carta desde dos celulares a la vez, el segundo cambio no pisa el primero: el panel
+  recarga lo último y le pide repetirlo.
+- La página muestra todo como texto, nunca como código; solo carga código propio (Content-Security-Policy),
+  y el panel no se deja mostrar dentro de otra página.
+- En `js/config.js` va solo el `apiKey` web, que es público por diseño. **Nunca va una contraseña ni un
+  archivo de cuenta de servicio.**
+- `firebase/probar-reglas.mjs` ataca las reglas en el Firebase real y confirma que todo lo indebido queda bloqueado.
 
-## Conectar Supabase (una sola vez)
+## Conectar Firebase (una sola vez)
 
-1. En [supabase.com](https://supabase.com) entrar con GitHub y crear un proyecto nuevo en el plan **Free**,
-   región **São Paulo** (la más cerca de Colombia). Guardar la contraseña de la base en un lugar seguro.
-2. **SQL Editor** → pegar todo `supabase/esquema.sql` → **Run**.
-3. **Authentication → Sign In / Providers:** apagar **Allow new users to sign up** y poner la contraseña
-   mínima en 10 caracteres.
-4. **Authentication → URL Configuration:** en **Site URL** y en **Redirect URLs** poner
-   `https://roypitw3.github.io/menu-food-friends/admin/` (para el enlace de "Olvidé mi contraseña").
-5. **Authentication → Users → Add user → Create new user:** la cuenta del dueño y la suya, con
-   **Auto Confirm User** marcado.
-6. **SQL Editor** → `supabase/nuevo-restaurante.sql` con los correos de esas cuentas → **Run**.
-7. **Project Settings → API Keys:** copiar la **Project URL** y la clave pública (**anon** o **publishable**)
-   en `js/config.js`, hacer commit y push.
-8. Probar las reglas:
+1. En [console.firebase.google.com](https://console.firebase.google.com) → **Crear un proyecto** (`cartas`),
+   sin Google Analytics. Queda en el plan **Spark** (gratis).
+2. **Authentication** → **Comenzar** → **Correo electrónico/contraseña** → activarlo (sin "vínculo de correo").
+   En **Configuración**: en **Acciones del usuario** quitar **Habilitar la creación (registro)** y
+   **Habilitar la eliminación**; en **Política de contraseñas**, mínimo 10 caracteres.
+3. **Firestore Database** → **Crear base de datos** → ubicación `southamerica-east1 (São Paulo)` → modo de
+   **producción**. En la pestaña **Reglas** pegar todo `firebase/reglas.rules` → **Publicar**.
+4. **Authentication → Usuarios → Agregar usuario**: el correo y la contraseña de cada dueño. Copiar el
+   **UID** que le asigna.
+5. **Firestore → Iniciar colección** `duenos` → ID del documento: el **UID** → campo `restaurantes`, tipo
+   **array**, con un valor string `food-friends`.
+6. **Configuración del proyecto** (engranaje) → **Tus apps** → **Web** (`</>`) → registrarla sin Hosting →
+   copiar `apiKey` y `projectId` en `js/config.js`, hacer commit y push.
+7. Entrar al panel: la primera vez crea la carta con los datos del local.
+8. Probar las reglas (pide la contraseña sin mostrarla):
 
 ```bash
-DUENO_CORREO=correo@del-dueno.com DUENO_CLAVE='su-clave' node supabase/probar-reglas.mjs
+DUENO_CORREO=correo@del-dueno.com node firebase/probar-reglas.mjs
 ```
+
+Opcional: en Google Cloud → **APIs y servicios → Credenciales**, restringir el `apiKey` al sitio
+(`https://roypitw3.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
 
 ## Otro restaurante
 
-La base ya sirve para varios restaurantes. Para uno nuevo: crear la cuenta del dueño (paso 5), correr
-`supabase/nuevo-restaurante.sql` con otro slug, y publicar una copia de esta página con ese slug en
+Las reglas ya sirven para varios restaurantes. Para uno nuevo: crear la cuenta del dueño (paso 4), su
+documento en `duenos` con el slug nuevo (paso 5), y publicar una copia de esta página con ese slug en
 `js/config.js` (y su logo).
 
 ## Límites del plan gratis
 
-500 MB de datos, 1 GB de fotos y 50.000 usuarios al mes. Supabase pausa los proyectos gratis tras 7 días
-sin uso: las visitas a la carta y el respaldo diario lo mantienen activo. GitHub apaga las tareas programadas
-de un repositorio que pasa 60 días sin cambios; si llega un correo de GitHub avisándolo, se reactiva en la
+Por proyecto: 1 GiB guardado, 50.000 lecturas y 20.000 escrituras al día, y 10 GiB de transferencia al mes.
+Abrir la carta es 1 lectura; las fotos salen casi siempre del sitio. GitHub apaga las tareas programadas de
+un repositorio que pasa 60 días sin cambios; si llega un correo de GitHub avisándolo, se reactiva en la
 pestaña **Actions**.
 
 ## Las propuestas de diseño

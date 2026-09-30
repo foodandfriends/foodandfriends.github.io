@@ -1,26 +1,17 @@
 /*
-  Carta pública: trae la carta del restaurante desde Supabase y la pinta con carta.js.
-  Si Supabase no responde (o todavía no está configurado), usa la copia de datos/<restaurante>.json,
+  Carta pública: trae la carta del restaurante desde Firebase y la pinta con carta.js.
+  Si Firebase no responde (o todavía no está configurado), usa la copia de datos/<restaurante>.json,
   que la tarea diaria de GitHub mantiene al día (.github/workflows/respaldo.yml).
+  Las fotos se cargan a medida que la persona baja por la carta.
 */
 (async function () {
   const C = window.CONFIG;
   const slug = C.restaurante;
   const aviso = document.getElementById('cargando');
+  const TRANSPARENTE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 
   function conLimite(promesa, ms) {
-    return Promise.race([promesa, new Promise((_, no) => setTimeout(() => no(new Error('Supabase no respondió')), ms))]);
-  }
-
-  async function deSupabase() {
-    const [r] = await SB.leer('restaurantes', 'slug=eq.' + encodeURIComponent(slug) + '&select=*', true);
-    if (!r) throw new Error('No existe el restaurante ' + slug);
-    const filtro = 'restaurante_id=eq.' + r.id + '&order=orden.asc,id.asc';
-    const [categorias, platos] = await Promise.all([
-      SB.leer('categorias', filtro + '&select=id,nombre,nota', true),
-      SB.leer('platos', filtro + '&select=categoria_id,nombre,descripcion,precio,etiqueta,agotado,foto', true)
-    ]);
-    return { restaurante: r, categorias, platos };
+    return Promise.race([promesa, new Promise((_, no) => setTimeout(() => no(new Error('Firebase no respondió')), ms))]);
   }
 
   async function deRespaldo() {
@@ -29,18 +20,19 @@
     return r.json();
   }
 
-  function aCarta({ restaurante: r, categorias, platos }) {
+  function aCarta(r) {
     return {
       negocio: {
         nombre: r.nombre, logo: C.raiz + C.logo, lugar: r.lugar, direccion: r.direccion,
         telefono: r.telefono, whatsapp: r.whatsapp, mapa: r.mapa, facebook: r.facebook,
-        instagram: r.instagram, horario: r.horario, nota: r.nota
+        instagram: r.instagram, nota: r.nota,
+        horario: (r.horario || []).map(h => [h.dias, h.horas])
       },
-      categorias: categorias.map(c => ({
+      categorias: (r.categorias || []).map(c => ({
         id: c.id, nombre: c.nombre, nota: c.nota,
-        platos: platos.filter(p => p.categoria_id === c.id).map(p => ({
-          nombre: p.nombre, descripcion: p.descripcion, precio: p.precio,
-          etiqueta: p.etiqueta, agotado: p.agotado, foto: SB.fotoUrl(p.foto)
+        platos: (c.platos || []).map(p => ({
+          nombre: p.nombre, descripcion: p.descripcion, precio: p.precio, etiqueta: p.etiqueta,
+          agotado: p.agotado, foto: p.foto ? TRANSPARENTE : '', fotoId: p.foto
         }))
       }))
     };
@@ -48,8 +40,8 @@
 
   let datos;
   try {
-    if (!SB.configurado) throw new Error('Supabase sin configurar');
-    datos = await conLimite(deSupabase(), 6000);
+    if (!BD.configurado) throw new Error('Firebase sin configurar');
+    datos = await conLimite(BD.carta(slug), 6000);
   } catch (e) {
     console.warn('Carta desde la copia de respaldo:', e.message);
     try {
@@ -66,4 +58,16 @@
   }
   aviso.remove();
   window.pintarCarta(aCarta(datos));
+
+  // Cada foto se pide cuando está por aparecer en pantalla
+  const vista = new IntersectionObserver(entradas => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue;
+      vista.unobserve(e.target);
+      BD.foto(slug, e.target.dataset.foto)
+        .then(url => { e.target.src = url; })
+        .catch(() => e.target.remove());
+    }
+  }, { rootMargin: '400px 0px' });
+  document.querySelectorAll('img[data-foto]').forEach(img => vista.observe(img));
 })();

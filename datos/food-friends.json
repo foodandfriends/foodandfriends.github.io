@@ -1,318 +1,252 @@
 {
-  "restaurante": {
-    "id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-    "slug": "food-friends",
-    "nombre": "Food and Friends",
-    "lugar": "Parque Artesanal Loma de la Cruz · Cali",
-    "direccion": "Parque Artesanal, Cra. 16 #3-57, Cali, Valle del Cauca",
-    "telefono": "302 375 1571",
-    "whatsapp": null,
-    "mapa": "https://maps.app.goo.gl/9h77zzrGRmh3XMmB6",
-    "instagram": null,
-    "facebook": "https://www.facebook.com/foodandfriendscali/",
-    "horario": [
-      [
-        "Martes a jueves",
-        "4:00 – 10:30 p. m."
-      ],
-      [
-        "Viernes a domingo",
-        "4:00 – 11:30 p. m."
-      ]
-    ],
-    "nota": "Carta de muestra: los precios y el horario son de ejemplo."
-  },
+  "nombre": "Food and Friends",
+  "lugar": "Parque Artesanal Loma de la Cruz · Cali",
+  "direccion": "Parque Artesanal, Cra. 16 #3-57, Cali, Valle del Cauca",
+  "telefono": "302 375 1571",
+  "whatsapp": null,
+  "mapa": "https://maps.app.goo.gl/9h77zzrGRmh3XMmB6",
+  "instagram": null,
+  "facebook": "https://www.facebook.com/foodandfriendscali/",
+  "nota": "Carta de muestra: los precios y el horario son de ejemplo.",
+  "horario": [
+    {
+      "dias": "Martes a jueves",
+      "horas": "4:00 – 10:30 p. m."
+    },
+    {
+      "dias": "Viernes a domingo",
+      "horas": "4:00 – 11:30 p. m."
+    }
+  ],
   "categorias": [
     {
       "id": "0e7ee268-2978-4e6c-8944-fa182c99dd3b",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Hamburguesas",
       "nota": "Pan artesanal y carne de res de 150 g.",
-      "orden": 0
+      "platos": [
+        {
+          "id": "d662d688-ba28-4a63-be3b-494485b3260e",
+          "nombre": "Clásica de la casa",
+          "descripcion": "Queso, lechuga, tomate, cebolla y salsa de la casa",
+          "precio": 25000,
+          "etiqueta": "La más pedida",
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "6dc751e5-80de-4853-b0d0-98a67c060ae8",
+          "nombre": "Doble queso",
+          "descripcion": "Doble carne, doble cheddar y cebolla caramelizada",
+          "precio": 31000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "3c62d40c-9f41-4b80-9c90-a176c491ed37",
+          "nombre": "BBQ con tocineta",
+          "descripcion": "Tocineta crocante, aros de cebolla y salsa BBQ",
+          "precio": 33000,
+          "etiqueta": null,
+          "agotado": true,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "2f26efb4-1991-4141-a2ba-d48ba65ce48a",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Minipizzas",
       "nota": null,
-      "orden": 10
+      "platos": [
+        {
+          "id": "0e749335-dd7c-4131-bbf6-48615549b69c",
+          "nombre": "Hawaiana",
+          "descripcion": "Jamón, piña y queso mozzarella",
+          "precio": 18000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "812d456a-81c7-4924-ad6f-32d670dc2220",
+          "nombre": "Pepperoni",
+          "descripcion": "Pepperoni y queso mozzarella",
+          "precio": 19000,
+          "etiqueta": "Nuevo",
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "6232c605-0935-4deb-88c8-00a2fc14ad59",
+          "nombre": "De la casa",
+          "descripcion": "Pollo, champiñones, maíz y tocineta",
+          "precio": 22000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "4b5da8a7-23c5-40e8-9cd8-94bf789782ee",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Para picar",
       "nota": null,
-      "orden": 20
+      "platos": [
+        {
+          "id": "f94e5d27-53d4-497c-87c1-7750b9c32a43",
+          "nombre": "Picada de la casa",
+          "descripcion": "Carnes, chorizo, papa criolla, maduro y arepa. Para 2 o 3",
+          "precio": 52000,
+          "etiqueta": "Para compartir",
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "4e8e9f64-6d1f-4e3f-ac46-e0759879203f",
+          "nombre": "Chorizo con arepa",
+          "descripcion": "A la parrilla, con arepa y limón",
+          "precio": 14000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "3b9c9a39-7858-4a48-bdc7-cb6d8bc9162f",
+          "nombre": "Nachos",
+          "descripcion": "Queso fundido, frijol, pico de gallo y guacamole",
+          "precio": 26000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "fa228b25-0884-4a40-b745-b9c9e238a641",
+          "nombre": "Alitas mango habanero",
+          "descripcion": "Bañadas en salsa de mango y habanero",
+          "precio": 28000,
+          "etiqueta": "Picante",
+          "agotado": false,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "8520ebf0-cf68-4390-bfc0-465efef2d28a",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Mexicano",
       "nota": null,
-      "orden": 30
+      "platos": [
+        {
+          "id": "eca8b5cc-d840-48a6-bf59-dc4b906242f6",
+          "nombre": "Tacos",
+          "descripcion": "Tres tortillas con carne, cebolla, cilantro y salsa",
+          "precio": 30000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "72c1a72f-326e-460f-b70a-b1d41ee177cc",
+          "nombre": "Burrito",
+          "descripcion": "Tortilla de harina, carne, arroz, frijol y queso",
+          "precio": 34000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "36532a84-42fe-410d-8d11-332e4c465bdc",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Cervezas",
       "nota": null,
-      "orden": 40
+      "platos": [
+        {
+          "id": "d6754137-939d-423f-8b49-e5eccf9dfa0b",
+          "nombre": "Cerveza nacional",
+          "descripcion": "Bien fría",
+          "precio": 7000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "343f16ba-14d2-4bb6-8483-f615c2053049",
+          "nombre": "Cerveza artesanal",
+          "descripcion": "Pregunte las del día",
+          "precio": 12000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "115ffcc4-b873-4a0c-8227-cb91fc7a7be7",
+          "nombre": "Michelada",
+          "descripcion": "Limón, sal y la cerveza que prefiera",
+          "precio": 9000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "a4640090-2496-483a-a76d-e1a9499976cd",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Bebidas",
       "nota": null,
-      "orden": 50
+      "platos": [
+        {
+          "id": "37bad9d2-a145-4dc9-9f45-87c59ac70aa9",
+          "nombre": "Jugo natural",
+          "descripcion": "En agua o en leche. Pregunte los sabores del día",
+          "precio": 8000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "e9d67448-ff7a-45ad-9e61-dbdca80ba879",
+          "nombre": "Limonada natural",
+          "descripcion": null,
+          "precio": 7000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "5a10a95b-e7c1-4f84-b793-e9947311eb3b",
+          "nombre": "Gaseosa",
+          "descripcion": null,
+          "precio": 5000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        }
+      ]
     },
     {
       "id": "5ce619ea-7ac3-487e-b474-0e8fd362035c",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
       "nombre": "Postres",
       "nota": null,
-      "orden": 60
-    }
-  ],
-  "platos": [
-    {
-      "id": "d662d688-ba28-4a63-be3b-494485b3260e",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "0e7ee268-2978-4e6c-8944-fa182c99dd3b",
-      "nombre": "Clásica de la casa",
-      "descripcion": "Queso, lechuga, tomate, cebolla y salsa de la casa",
-      "precio": 25000,
-      "etiqueta": "La más pedida",
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "6dc751e5-80de-4853-b0d0-98a67c060ae8",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "0e7ee268-2978-4e6c-8944-fa182c99dd3b",
-      "nombre": "Doble queso",
-      "descripcion": "Doble carne, doble cheddar y cebolla caramelizada",
-      "precio": 31000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "3c62d40c-9f41-4b80-9c90-a176c491ed37",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "0e7ee268-2978-4e6c-8944-fa182c99dd3b",
-      "nombre": "BBQ con tocineta",
-      "descripcion": "Tocineta crocante, aros de cebolla y salsa BBQ",
-      "precio": 33000,
-      "etiqueta": null,
-      "agotado": true,
-      "foto": null,
-      "orden": 20
-    },
-    {
-      "id": "0e749335-dd7c-4131-bbf6-48615549b69c",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "2f26efb4-1991-4141-a2ba-d48ba65ce48a",
-      "nombre": "Hawaiana",
-      "descripcion": "Jamón, piña y queso mozzarella",
-      "precio": 18000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "812d456a-81c7-4924-ad6f-32d670dc2220",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "2f26efb4-1991-4141-a2ba-d48ba65ce48a",
-      "nombre": "Pepperoni",
-      "descripcion": "Pepperoni y queso mozzarella",
-      "precio": 19000,
-      "etiqueta": "Nuevo",
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "6232c605-0935-4deb-88c8-00a2fc14ad59",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "2f26efb4-1991-4141-a2ba-d48ba65ce48a",
-      "nombre": "De la casa",
-      "descripcion": "Pollo, champiñones, maíz y tocineta",
-      "precio": 22000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 20
-    },
-    {
-      "id": "f94e5d27-53d4-497c-87c1-7750b9c32a43",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "4b5da8a7-23c5-40e8-9cd8-94bf789782ee",
-      "nombre": "Picada de la casa",
-      "descripcion": "Carnes, chorizo, papa criolla, maduro y arepa. Para 2 o 3",
-      "precio": 52000,
-      "etiqueta": "Para compartir",
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "4e8e9f64-6d1f-4e3f-ac46-e0759879203f",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "4b5da8a7-23c5-40e8-9cd8-94bf789782ee",
-      "nombre": "Chorizo con arepa",
-      "descripcion": "A la parrilla, con arepa y limón",
-      "precio": 14000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "3b9c9a39-7858-4a48-bdc7-cb6d8bc9162f",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "4b5da8a7-23c5-40e8-9cd8-94bf789782ee",
-      "nombre": "Nachos",
-      "descripcion": "Queso fundido, frijol, pico de gallo y guacamole",
-      "precio": 26000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 20
-    },
-    {
-      "id": "fa228b25-0884-4a40-b745-b9c9e238a641",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "4b5da8a7-23c5-40e8-9cd8-94bf789782ee",
-      "nombre": "Alitas mango habanero",
-      "descripcion": "Bañadas en salsa de mango y habanero",
-      "precio": 28000,
-      "etiqueta": "Picante",
-      "agotado": false,
-      "foto": null,
-      "orden": 30
-    },
-    {
-      "id": "eca8b5cc-d840-48a6-bf59-dc4b906242f6",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "8520ebf0-cf68-4390-bfc0-465efef2d28a",
-      "nombre": "Tacos",
-      "descripcion": "Tres tortillas con carne, cebolla, cilantro y salsa",
-      "precio": 30000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "72c1a72f-326e-460f-b70a-b1d41ee177cc",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "8520ebf0-cf68-4390-bfc0-465efef2d28a",
-      "nombre": "Burrito",
-      "descripcion": "Tortilla de harina, carne, arroz, frijol y queso",
-      "precio": 34000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "d6754137-939d-423f-8b49-e5eccf9dfa0b",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "36532a84-42fe-410d-8d11-332e4c465bdc",
-      "nombre": "Cerveza nacional",
-      "descripcion": "Bien fría",
-      "precio": 7000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "343f16ba-14d2-4bb6-8483-f615c2053049",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "36532a84-42fe-410d-8d11-332e4c465bdc",
-      "nombre": "Cerveza artesanal",
-      "descripcion": "Pregunte las del día",
-      "precio": 12000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "115ffcc4-b873-4a0c-8227-cb91fc7a7be7",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "36532a84-42fe-410d-8d11-332e4c465bdc",
-      "nombre": "Michelada",
-      "descripcion": "Limón, sal y la cerveza que prefiera",
-      "precio": 9000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 20
-    },
-    {
-      "id": "37bad9d2-a145-4dc9-9f45-87c59ac70aa9",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "a4640090-2496-483a-a76d-e1a9499976cd",
-      "nombre": "Jugo natural",
-      "descripcion": "En agua o en leche. Pregunte los sabores del día",
-      "precio": 8000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "e9d67448-ff7a-45ad-9e61-dbdca80ba879",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "a4640090-2496-483a-a76d-e1a9499976cd",
-      "nombre": "Limonada natural",
-      "descripcion": null,
-      "precio": 7000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
-    },
-    {
-      "id": "5a10a95b-e7c1-4f84-b793-e9947311eb3b",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "a4640090-2496-483a-a76d-e1a9499976cd",
-      "nombre": "Gaseosa",
-      "descripcion": null,
-      "precio": 5000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 20
-    },
-    {
-      "id": "0d8320d8-46c8-41a8-a1f8-a8d48398a4a5",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "5ce619ea-7ac3-487e-b474-0e8fd362035c",
-      "nombre": "Churros con chocolate",
-      "descripcion": "Con azúcar y canela, para untar",
-      "precio": 14000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 0
-    },
-    {
-      "id": "e8710250-a0cc-414f-941e-ab8b0f4ec4ce",
-      "restaurante_id": "8caee933-a1f6-42d6-b7e9-fe2460a1359c",
-      "categoria_id": "5ce619ea-7ac3-487e-b474-0e8fd362035c",
-      "nombre": "Brownie",
-      "descripcion": "Tibio, con helado de vainilla",
-      "precio": 15000,
-      "etiqueta": null,
-      "agotado": false,
-      "foto": null,
-      "orden": 10
+      "platos": [
+        {
+          "id": "0d8320d8-46c8-41a8-a1f8-a8d48398a4a5",
+          "nombre": "Churros con chocolate",
+          "descripcion": "Con azúcar y canela, para untar",
+          "precio": 14000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        },
+        {
+          "id": "e8710250-a0cc-414f-941e-ab8b0f4ec4ce",
+          "nombre": "Brownie",
+          "descripcion": "Tibio, con helado de vainilla",
+          "precio": 15000,
+          "etiqueta": null,
+          "agotado": false,
+          "foto": null
+        }
+      ]
     }
   ]
 }

@@ -1,15 +1,15 @@
 /*
   Datos de conexión de la carta.
 
-  La clave "anon" de Supabase es pública a propósito: con ella sola no se puede cambiar nada.
-  Quién edita qué lo deciden las reglas de la base de datos (supabase/esquema.sql).
-  NUNCA poner aquí la clave "service_role" ni la contraseña de la base de datos.
+  El "apiKey" de Firebase es público a propósito: con él solo no se puede cambiar nada.
+  Quién edita qué lo deciden las reglas de Firestore (firebase/reglas.rules).
+  NUNCA poner aquí contraseñas ni archivos de "cuenta de servicio" de Firebase.
 
-  Mientras supabaseUrl esté vacío, la carta sale de la copia guardada en datos/<restaurante>.json.
+  Mientras firebaseApiKey esté vacío, la carta sale de la copia guardada en datos/<restaurante>.json.
 */
 window.CONFIG = {
-  supabaseUrl: "",          // la "Project URL", por ejemplo https://abcdefgh.supabase.co
-  supabaseAnon: "",         // la clave "anon public"
+  firebaseApiKey: "",       // "apiKey" de la configuración web de Firebase
+  firebaseProyecto: "",     // "projectId"
   restaurante: "food-friends",
   logo: "logo.webp"         // desde la raíz del sitio
 };

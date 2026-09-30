@@ -1,6 +1,6 @@
 name: Respaldo diario de la carta
 
-# Guarda una copia de la carta en datos/ y de paso mantiene activo el proyecto gratis de Supabase.
+# Guarda una copia de la carta y de sus fotos en datos/. La carta pública sirve las fotos desde ahí.
 on:
   schedule:
     - cron: "17 11 * * *"   # todos los días a las 6:17 a. m. hora de Colombia
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Bajar la carta de Supabase
+      - name: Bajar la carta de Firebase
         run: node scripts/respaldo.mjs
       - name: Guardar la copia si cambió
         run: |

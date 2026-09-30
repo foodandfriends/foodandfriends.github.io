@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co; connect-src https://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <title>Panel de la carta</title>
@@ -134,8 +134,8 @@
 
 <section class="entrada" id="vista-config" hidden>
   <div class="tarjeta">
-    <h1>Falta conectar Supabase</h1>
-    <p class="sub">Escriba la dirección del proyecto y la clave pública en js/config.js.</p>
+    <h1>Falta conectar Firebase</h1>
+    <p class="sub">Escriba el apiKey y el projectId de Firebase en js/config.js.</p>
   </div>
 </section>
 
@@ -156,7 +156,7 @@
     <form id="form-recordar" novalidate hidden>
       <label for="recordar-correo">Su correo</label>
       <input id="recordar-correo" type="email" autocomplete="username" required>
-      <p class="ayuda">Le llega un enlace para crear una contraseña nueva.</p>
+      <p class="ayuda">Le llega un correo con un enlace para crear una contraseña nueva.</p>
       <p class="error" id="recordar-error" role="alert"></p>
       <button class="btn ancho" type="submit">Enviar enlace</button>
     </form>
@@ -306,7 +306,7 @@
 <div class="aviso" id="aviso" role="status" hidden></div>
 
 <script src="../js/config.js"></script>
-<script src="../js/supabase.js"></script>
+<script src="../js/firebase.js"></script>
 <script src="../js/admin.js"></script>
 </body>
 </html>
