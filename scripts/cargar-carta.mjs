@@ -8,11 +8,12 @@
 // platos, pregunta antes de reemplazarla. Pide la contraseña del dueño sin mostrarla.
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { CONFIG, firestore, aCampos, deCampos, entrar, preguntar } from './comun.mjs';
 
 const slug = CONFIG.restaurante;
-const archivo = process.argv[2] || new URL('../disenos/muestra.js', import.meta.url).pathname;
+const archivo = process.argv[2] || fileURLToPath(new URL('../disenos/muestra.js', import.meta.url));
 const correo = process.env.DUENO_CORREO;
 if (!correo) {
   console.log('Falta DUENO_CORREO. Uso: DUENO_CORREO=correo@del-dueno.com node scripts/cargar-carta.mjs [archivo]');
