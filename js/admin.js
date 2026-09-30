@@ -32,12 +32,15 @@
     lapiz: '<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>',
     equis: '<path d="M6 6l12 12M18 6 6 18"/>'
   };
-  function botonIcono(icono, etiqueta, deshabilitado, accion) {
+  function dibujo(icono) {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     s.setAttribute('viewBox', '0 0 24 24');
     s.setAttribute('aria-hidden', 'true');
     s.innerHTML = TRAZOS[icono];
-    return el('button', { class: 'icono', type: 'button', 'aria-label': etiqueta, title: etiqueta, disabled: deshabilitado, onclick: accion }, s);
+    return s;
+  }
+  function botonIcono(icono, etiqueta, deshabilitado, accion) {
+    return el('button', { class: 'icono', type: 'button', 'aria-label': etiqueta, title: etiqueta, disabled: deshabilitado, onclick: accion }, dibujo(icono));
   }
   const miles = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   const pesos = n => n == null ? 'Sin precio' : '$' + miles(n);
@@ -348,6 +351,9 @@
         el('span', { class: 'texto' },
           el('strong', { texto: p.nombre }),
           el('span', { texto: pesos(p.precio) + (p.etiqueta ? ' · ' + p.etiqueta : '') }))),
+      // Toda la fila abre el editor, pero el botón deja claro que ahí se cambian precio, foto y nombre
+      el('button', { class: 'editar', type: 'button', 'aria-label': 'Editar ' + p.nombre, onclick: () => editarPlato(c, p) },
+        dibujo('lapiz'), el('span', { texto: 'Editar' })),
       el('label', { class: 'interruptor' }, disponible, estado));
   }
 

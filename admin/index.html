@@ -8,6 +8,8 @@
 <meta name="referrer" content="no-referrer">
 <title>Panel de la carta</title>
 <meta name="theme-color" content="#f6f3ee">
+<!-- Siempre en claro: que el modo oscuro del celular o del navegador no le cambie los colores -->
+<meta name="color-scheme" content="only light">
 <link rel="icon" href="../logo.webp">
 <style>
   :root {
@@ -20,7 +22,7 @@
     --acento-suave: #fff1e6;
     --peligro: #b42318;
     --bien: #1f7a4d;
-    color-scheme: light;
+    color-scheme: only light;
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
@@ -94,6 +96,10 @@
   .vacio { margin: 10px 0 0; padding: 14px; border: 1.5px dashed var(--linea); border-radius: 14px; color: var(--suave); text-align: center; }
   .agregar { margin-top: 8px; }
   .nueva-categoria { margin: 28px 0 40px; }
+
+  /* Botón de editar cada plato: lápiz con la palabra debajo, como el interruptor */
+  .editar { display: flex; flex: none; flex-direction: column; align-items: center; gap: 3px; padding: 0; border: 0; background: none; color: var(--acento); font-size: .72rem; font-weight: 700; cursor: pointer; }
+  .editar svg { width: 38px; height: 28px; padding: 5px 0; border: 1.5px solid var(--linea); border-radius: 10px; background: var(--superficie); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
   /* Interruptor de disponible: prendido y verde = se está vendiendo; apagado y rojo = agotado */
   .interruptor { display: flex; flex: none; flex-direction: column; align-items: center; gap: 3px; min-width: 74px; margin: 0; font-size: .72rem; font-weight: 700; color: var(--peligro); cursor: pointer; }
@@ -312,8 +318,8 @@
 
 <div class="aviso" id="aviso" role="status" hidden></div>
 
-<script src="../js/config.js?v=202609301421"></script>
-<script src="../js/firebase.js?v=202609301421"></script>
-<script src="../js/admin.js?v=202609301421"></script>
+<script src="../js/config.js?v=202609301426"></script>
+<script src="../js/firebase.js?v=202609301426"></script>
+<script src="../js/admin.js?v=202609301426"></script>
 </body>
 </html>
