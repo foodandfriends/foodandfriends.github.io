@@ -7,6 +7,7 @@
   - h1 > img.logo si el negocio tiene logo; si no, h1 > .w por palabra y .y para el "and" / "&" / "y"
   - h2 > .num ("01") + .tit
   - .plato > .fila (.nombre > .marca, .puntos, .precio) + .desc (+ .foto)
+  - p.historia (debajo del subtítulo) si el negocio tiene historia
   - body[data-subtitulo] cambia el "La carta" de la cabecera; body[data-botones="no"] quita los botones de arriba
   - body[data-fotos] pone la foto de cada plato; sin foto sale un espacio con un dibujo de la categoría.
     Con data-fotos="si-hay" solo salen las fotos que existen, sin espacio para las que faltan.
@@ -99,6 +100,7 @@
     }
     cab.append(h1);
     cab.append(el('p', 'subtitulo', document.body.dataset.subtitulo || 'La carta'));
+    if (N.historia) cab.append(el('p', 'historia', N.historia));
     // Con body[data-botones="no"] la cabecera no lleva "Cómo llegar" ni "Llamar" (quien la lee ya está en el local)
     if (document.body.dataset.botones !== 'no') {
       const acciones = el('div', 'acciones');
