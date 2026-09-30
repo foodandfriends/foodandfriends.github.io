@@ -8,8 +8,8 @@
   Mientras firebaseApiKey esté vacío, la carta sale de la copia guardada en datos/<restaurante>.json.
 */
 window.CONFIG = {
-  firebaseApiKey: "",       // "apiKey" de la configuración web de Firebase
-  firebaseProyecto: "",     // "projectId"
+  firebaseApiKey: "AIzaSyBWi2lwUOZCibPTQCVeTb7HrwoYh9W8wS4",   // "apiKey" de la configuración web de Firebase
+  firebaseProyecto: "cartas-574bf",                            // "projectId"
   restaurante: "food-friends",
   logo: "logo.webp"         // desde la raíz del sitio
 };
