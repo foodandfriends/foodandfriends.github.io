@@ -71,6 +71,18 @@ Si Firebase no responde (o todavía no está configurado), la carta pública sal
 DUENO_CORREO=correo@del-dueno.com node firebase/probar-reglas.mjs
 ```
 
+## Cargar una carta completa de una vez
+
+Para no meter plato por plato en el panel: `scripts/cargar-carta.mjs` sube una carta entera con sus fotos
+(pide la contraseña del dueño sin mostrarla, y pregunta antes de reemplazar una carta que ya tenga platos).
+Sin archivo carga la carta de muestra de la propuesta (`disenos/muestra.js`).
+
+```bash
+DUENO_CORREO=correo@del-dueno.com node scripts/cargar-carta.mjs [archivo]
+```
+
+Después conviene correr `node scripts/respaldo.mjs` y subir `datos/` para que las fotos salgan del sitio.
+
 Opcional: en Google Cloud → **APIs y servicios → Credenciales**, restringir el `apiKey` al sitio
 (`https://roypitw3.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
 

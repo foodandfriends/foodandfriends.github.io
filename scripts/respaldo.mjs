@@ -2,40 +2,22 @@
 // La corre GitHub Actions todos los días (.github/workflows/respaldo.yml); a mano: node scripts/respaldo.mjs
 // Sirve de respaldo (el plan gratis de Firebase no hace copias), la carta pública la usa si Firebase
 // no responde, y las fotos se sirven desde aquí (gratis) en vez de gastar el límite de Firebase.
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from 'node:fs';
-import vm from 'node:vm';
+import { writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from 'node:fs';
+import { CONFIG, firestore, deCampos } from './comun.mjs';
 
-const contexto = { URL, window: {}, document: { currentScript: { src: 'https://sitio/js/config.js' } } };
-vm.createContext(contexto);
-vm.runInContext(readFileSync(new URL('../js/config.js', import.meta.url), 'utf8'), contexto);
-const { firebaseApiKey, firebaseProyecto, restaurante } = contexto.window.CONFIG;
-
+const { firebaseApiKey, firebaseProyecto, restaurante } = CONFIG;
 if (!firebaseApiKey || !firebaseProyecto) {
   console.log('Firebase todavía no está configurado en js/config.js: no hay nada que respaldar.');
   process.exit(0);
 }
 
-const DOCS = `https://firestore.googleapis.com/v1/projects/${firebaseProyecto}/databases/(default)/documents/`;
 async function leer(ruta) {
-  const r = await fetch(DOCS + ruta + '?key=' + firebaseApiKey);
-  if (!r.ok) throw new Error(`${ruta}: ${r.status} ${await r.text()}`);
-  return r.json();
-}
-function valor(v) {
-  if ('stringValue' in v) return v.stringValue;
-  if ('integerValue' in v) return Number(v.integerValue);
-  if ('doubleValue' in v) return v.doubleValue;
-  if ('booleanValue' in v) return v.booleanValue;
-  if ('arrayValue' in v) return (v.arrayValue.values || []).map(valor);
-  if ('mapValue' in v) return campos(v.mapValue.fields);
-  if ('bytesValue' in v) return v.bytesValue;
-  return null;
-}
-function campos(f = {}) {
-  return Object.fromEntries(Object.entries(f).map(([k, v]) => [k, valor(v)]));
+  const r = await firestore(ruta);
+  if (!r.ok) throw new Error(`${ruta}: ${r.estado} ${JSON.stringify(r.datos)}`);
+  return deCampos(r.datos.fields);
 }
 
-const carta = campos((await leer('restaurantes/' + encodeURIComponent(restaurante))).fields);
+const carta = await leer('restaurantes/' + encodeURIComponent(restaurante));
 mkdirSync(new URL('../datos/', import.meta.url), { recursive: true });
 writeFileSync(new URL(`../datos/${restaurante}.json`, import.meta.url), JSON.stringify(carta, null, 2) + '\n');
 
@@ -46,7 +28,7 @@ const usadas = new Set((carta.categorias || []).flatMap(c => (c.platos || []).ma
 let nuevas = 0, quitadas = 0;
 for (const nombre of usadas) {
   if (!/^[0-9a-f-]{36}\.(webp|jpg)$/.test(nombre) || existsSync(new URL(nombre, carpeta))) continue;
-  const foto = campos((await leer(`restaurantes/${encodeURIComponent(restaurante)}/fotos/${nombre}`)).fields);
+  const foto = await leer(`restaurantes/${encodeURIComponent(restaurante)}/fotos/${nombre}`);
   writeFileSync(new URL(nombre, carpeta), Buffer.from(foto.datos, 'base64'));
   nuevas++;
 }

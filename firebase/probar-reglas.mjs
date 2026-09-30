@@ -5,43 +5,16 @@
 //
 // Pide la contraseña del dueño sin mostrarla. Correrlo después de haber entrado una vez al panel
 // (la primera entrada crea la carta). Lo que la prueba crea lo borra al final.
-import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
-import readline from 'node:readline';
-import vm from 'node:vm';
+import { CONFIG, firestore as api, entrar } from '../scripts/comun.mjs';
 
-const contexto = { URL, window: {}, document: { currentScript: { src: 'https://sitio/js/config.js' } } };
-vm.createContext(contexto);
-vm.runInContext(readFileSync(new URL('../js/config.js', import.meta.url), 'utf8'), contexto);
-const { firebaseApiKey: LLAVE, firebaseProyecto, restaurante: slug } = contexto.window.CONFIG;
-const DOCS = `https://firestore.googleapis.com/v1/projects/${firebaseProyecto}/databases/(default)/documents/`;
+const slug = CONFIG.restaurante;
 const correo = process.env.DUENO_CORREO;
-if (!LLAVE || !firebaseProyecto || !correo) {
+if (!CONFIG.firebaseApiKey || !CONFIG.firebaseProyecto || !correo) {
   console.log('Falta firebaseApiKey / firebaseProyecto en js/config.js, o DUENO_CORREO');
   process.exit(1);
 }
 
-async function preguntarClave() {
-  if (process.env.DUENO_CLAVE) return process.env.DUENO_CLAVE;
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
-  const respuesta = new Promise(ok => rl.question('Contraseña del dueño (no se ve al escribir): ', ok));
-  rl._writeToOutput = () => {}; // ya salió la pregunta: lo que se escriba no se muestra
-  const clave = await respuesta;
-  rl.close();
-  process.stdout.write('\n');
-  return clave;
-}
-
-async function api(ruta, { metodo = 'GET', campos, token, extra = '' } = {}) {
-  const h = {};
-  if (token) h.Authorization = 'Bearer ' + token;
-  let body;
-  if (campos) { h['Content-Type'] = 'application/json'; body = JSON.stringify({ fields: campos }); }
-  const r = await fetch(DOCS + ruta + '?key=' + LLAVE + extra, { method: metodo, headers: h, body });
-  const texto = await r.text();
-  let datos; try { datos = JSON.parse(texto); } catch { datos = texto; }
-  return { ok: r.ok, estado: r.status, datos };
-}
 const texto = s => ({ stringValue: s });
 const bytes = b => ({ bytesValue: Buffer.from(b).toString('base64') });
 const mascara = (...c) => c.map(x => '&updateMask.fieldPaths=' + x).join('');
@@ -71,18 +44,18 @@ espera('no ve los dueños', await api('duenos/' + randomUUID()), bloqueado);
 espera('no sube fotos', await crearFoto(fotoNueva(), WEBP), bloqueado);
 espera('no ve otras colecciones', await api('usuarios/cualquiera'), bloqueado);
 
-const clave = await preguntarClave();
-const sesion = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + LLAVE, {
-  method: 'POST', headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email: correo, password: clave, returnSecureToken: true })
-}).then(r => r.json());
-if (!sesion.idToken) { console.log('No se pudo entrar como dueño: ' + JSON.stringify(sesion.error)); process.exit(1); }
-const token = sesion.idToken;
+let token, uid;
+try {
+  ({ token, uid } = await entrar(correo));
+} catch (e) {
+  console.log(e.message);
+  process.exit(1);
+}
 const creadas = [];
 
 try {
   console.log('Dueño en su restaurante');
-  espera('ve su documento de dueño', await api('duenos/' + sesion.localId, { token }), paso);
+  espera('ve su documento de dueño', await api('duenos/' + uid, { token }), paso);
   espera('no ve el de otro dueño', await api('duenos/' + randomUUID(), { token }), bloqueado);
   if (carta.ok) {
     const nombre = carta.datos.fields.nombre;
@@ -108,7 +81,7 @@ try {
   espera('no crea otro restaurante', await api('restaurantes', { metodo: 'POST', token, extra: '&documentId=' + otro, campos: { nombre: texto('x'), horario: { arrayValue: {} }, categorias: { arrayValue: {} } } }), bloqueado);
   espera('no cambia otro restaurante', await api('restaurantes/' + otro, { metodo: 'PATCH', token, extra: mascara('nombre'), campos: { nombre: texto('hack') } }), bloqueado);
   espera('no sube fotos a otro restaurante', await crearFoto(`restaurantes/${otro}/fotos/${randomUUID()}.webp`, WEBP, token), bloqueado);
-  espera('no se vuelve dueño de otro', await api('duenos/' + sesion.localId, { metodo: 'PATCH', token, extra: mascara('restaurantes'), campos: { restaurantes: { arrayValue: { values: [texto(slug), texto(otro)] } } } }), bloqueado);
+  espera('no se vuelve dueño de otro', await api('duenos/' + uid, { metodo: 'PATCH', token, extra: mascara('restaurantes'), campos: { restaurantes: { arrayValue: { values: [texto(slug), texto(otro)] } } } }), bloqueado);
 } finally {
   for (const ruta of creadas) await api(ruta, { metodo: 'DELETE', token });
 }
