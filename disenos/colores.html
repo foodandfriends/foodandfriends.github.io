@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Opciones de color para que el dueño escoja (sin rojo). No es la carta: que Google no la muestre -->
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="only light">
+<title>Colores para la carta · Food and Friends</title>
+<meta property="og:title" content="Colores para la carta de Food and Friends">
+<meta property="og:description" content="Cuatro opciones de color, sin rojo. Escoja la que más le guste.">
+<link rel="icon" href="../logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: only light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #efe9e3; color: #1c1512; font: 16px/1.45 "Oswald", "Arial Narrow", sans-serif; }
+  .intro { max-width: 760px; margin: 0 auto; padding: 28px 20px 8px; text-align: center; }
+  .intro h1 { margin: 0; font-size: 1.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; }
+  .intro p { margin: 6px 0 0; color: #5f534a; font-size: 1.05rem; }
+  .opciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 28px; padding: 20px 16px 48px; }
+  .opcion { width: 340px; max-width: 100%; }
+  .opcion > h2 { margin: 0 0 4px; font-size: 1.35rem; font-weight: 700; text-transform: uppercase; }
+  .opcion > p { margin: 0 0 10px; color: #5f534a; font-size: .98rem; min-height: 2.9em; }
+  .muestras { display: flex; gap: 6px; margin-bottom: 12px; }
+  .muestras span { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
+
+  /* Un celular con el comienzo de la carta, con los colores de cada opción */
+  .cel { overflow: hidden; border: 8px solid #1c1512; border-radius: 30px; background: #fff; box-shadow: 0 14px 34px rgba(0, 0, 0, .18); }
+  .cinta { overflow: hidden; padding: 6px 0; background: var(--cinta-fondo); color: var(--cinta-texto); white-space: nowrap; font-size: .68rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+  .hero { padding: 20px 16px 18px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, var(--brillo), transparent 70%); }
+  .hero img { width: 116px; height: 116px; filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .18)); }
+  .lugar { margin: 10px 0 0; color: #6f6259; font-size: .7rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+  .sub { margin: 0; font-family: "Kaushan Script", cursive; font-size: 1.7rem; line-height: 1.2; color: var(--subtitulo); }
+  .historia { margin: 10px auto 0; padding-top: 10px; border-top: 2px solid var(--acento); font-family: "Kaushan Script", cursive; font-size: .95rem; line-height: 1.5; }
+  .chips { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid #ece3db; border-bottom: 1px solid #ece3db; overflow: hidden; }
+  .chips span { flex: none; padding: 7px 12px; border-radius: 999px; background: #f7f2ed; border: 1px solid #ece3db; font-size: .8rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+  .chips span.activo { background: var(--chip-fondo); border-color: var(--chip-fondo); color: var(--chip-texto); }
+  .seccion { padding: 18px 16px 4px; }
+  .seccion h3 { display: inline-block; margin: 0; font-weight: 700; font-style: italic; font-size: 1.75rem; line-height: 1.05; text-transform: uppercase; color: var(--titulo); background: var(--resaltado, none); padding: var(--resaltado-espacio, 0); }
+  .seccion h3::after { content: ""; display: var(--raya, block); width: 46px; height: 4px; margin-top: 6px; border-radius: 2px; background: var(--acento); }
+  .plato { display: grid; grid-template-columns: minmax(0, 1fr) 84px; gap: 10px; align-items: start; margin-top: 12px; }
+  .fila { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+  .nombre { font-weight: 500; font-size: .95rem; line-height: 1.25; letter-spacing: .02em; text-transform: uppercase; }
+  .puntos { flex: 1 1 10px; min-width: 10px; border-bottom: 2px dotted #d6c6b8; transform: translateY(-4px); }
+  .precio { flex: none; font-weight: 600; font-size: .98rem; color: var(--precio); }
+  .plato img { width: 84px; height: 66px; border-radius: 9px; object-fit: cover; background: #f7f2ed; }
+  .fin { height: 14px; }
+
+  /* Las opciones */
+  .naranja  { --cinta-fondo: #1c1512; --cinta-texto: #fa7a0b; --brillo: rgba(250, 122, 11, .12); --subtitulo: #c2410c; --acento: #fa7a0b; --chip-fondo: #fa7a0b; --chip-texto: #1a0d03; --titulo: #c2410c; --precio: #c2410c; }
+  .verde    { --cinta-fondo: #1d5c47; --cinta-texto: #ffffff; --brillo: rgba(29, 92, 71, .10); --subtitulo: #d4580a; --acento: #fa7a0b; --chip-fondo: #1d5c47; --chip-texto: #ffffff; --titulo: #1d5c47; --precio: #1d5c47; }
+  .amarillo { --cinta-fondo: #1c1512; --cinta-texto: #f5c400; --brillo: rgba(245, 196, 0, .16); --subtitulo: #1c1512; --acento: #f5c400; --chip-fondo: #f5c400; --chip-texto: #1c1512; --titulo: #1c1512; --precio: #1c1512;
+              --resaltado: linear-gradient(transparent 52%, #f5c400 52%, #f5c400 92%, transparent 92%); --resaltado-espacio: 0 6px; --raya: none; }
+  .cafe     { --cinta-fondo: #3b2314; --cinta-texto: #f5a524; --brillo: rgba(245, 165, 36, .14); --subtitulo: #9a3412; --acento: #f5a524; --chip-fondo: #3b2314; --chip-texto: #ffffff; --titulo: #9a3412; --precio: #9a3412; }
+  .actual   { --cinta-fondo: #e30b00; --cinta-texto: #ffffff; --brillo: rgba(250, 122, 11, .10); --subtitulo: #e30b00; --acento: #fa7a0b; --chip-fondo: #fa7a0b; --chip-texto: #1a0d03; --titulo: #e30b00; --precio: #b80900; }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>Colores para la carta</h1>
+  <p>Cuatro opciones sin rojo, con los mismos platos, fotos y letra. Al final está la de ahora, para comparar.</p>
+</header>
+<main class="opciones" id="opciones"></main>
+<script src="colores.js"></script>
+</body>
+</html>
