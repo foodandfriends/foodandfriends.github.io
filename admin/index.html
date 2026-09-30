@@ -211,7 +211,9 @@
         <input id="local-lugar" type="text" maxlength="120" placeholder="Parque Artesanal Loma de la Cruz · Cali">
         <label for="local-direccion">Dirección</label>
         <input id="local-direccion" type="text" maxlength="160">
-        <div class="dos">
+        <!-- Teléfono, WhatsApp, redes y horario no salen en la carta (quien la lee ya está en el local):
+             se ocultan aquí, pero se guardan igual por si algún día se vuelven a mostrar -->
+        <div class="dos" hidden>
           <div>
             <label for="local-telefono">Teléfono</label>
             <input id="local-telefono" type="tel" inputmode="tel" maxlength="20" placeholder="302 375 1571">
@@ -223,15 +225,18 @@
         </div>
         <label for="local-mapa">Enlace de Google Maps</label>
         <input id="local-mapa" type="url" inputmode="url" maxlength="300" placeholder="https://maps.app.goo.gl/…">
-        <label for="local-instagram">Instagram</label>
-        <input id="local-instagram" type="url" inputmode="url" maxlength="300" placeholder="https://www.instagram.com/…">
-        <label for="local-facebook">Facebook</label>
-        <input id="local-facebook" type="url" inputmode="url" maxlength="300" placeholder="https://www.facebook.com/…">
-        <label>Horario</label>
-        <div class="horario" id="local-horario"></div>
-        <button class="btn chico agregar" type="button" id="agregar-horario">+ Agregar día</button>
-        <label for="local-nota">Nota al final de la carta</label>
-        <input id="local-nota" type="text" maxlength="200" placeholder="Precios en pesos colombianos.">
+        <div hidden>
+          <label for="local-instagram">Instagram</label>
+          <input id="local-instagram" type="url" inputmode="url" maxlength="300" placeholder="https://www.instagram.com/…">
+          <label for="local-facebook">Facebook</label>
+          <input id="local-facebook" type="url" inputmode="url" maxlength="300" placeholder="https://www.facebook.com/…">
+          <label>Horario</label>
+          <div class="horario" id="local-horario"></div>
+          <button class="btn chico agregar" type="button" id="agregar-horario">+ Agregar día</button>
+        </div>
+        <label for="local-nota">Nota al final de la carta (opcional)</label>
+        <input id="local-nota" type="text" maxlength="200" placeholder="Por ejemplo: Pregunte por el plato del día.">
+        <p class="ayuda">Los avisos de ley (precios con impuestos, propina voluntaria, venta de alcohol) ya salen solos al final.</p>
         <p class="error" id="local-error" role="alert"></p>
         <div class="acciones-form">
           <button class="btn principal" type="submit">Guardar datos</button>
@@ -307,8 +312,8 @@
 
 <div class="aviso" id="aviso" role="status" hidden></div>
 
-<script src="../js/config.js?v=202609301412"></script>
-<script src="../js/firebase.js?v=202609301412"></script>
-<script src="../js/admin.js?v=202609301412"></script>
+<script src="../js/config.js?v=202609301416"></script>
+<script src="../js/firebase.js?v=202609301416"></script>
+<script src="../js/admin.js?v=202609301416"></script>
 </body>
 </html>

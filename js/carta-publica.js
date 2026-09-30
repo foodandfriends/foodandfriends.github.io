@@ -22,11 +22,11 @@
 
   function aCarta(r) {
     return {
+      // Al final de la carta solo va "Dónde estamos", la nota del dueño y los avisos legales:
+      // quien la lee ya está en el local, así que no se muestran teléfono, horario ni redes
       negocio: {
         nombre: r.nombre, logo: C.raiz + C.logo, lugar: r.lugar, direccion: r.direccion,
-        telefono: r.telefono, whatsapp: r.whatsapp, mapa: r.mapa, facebook: r.facebook,
-        instagram: r.instagram, nota: r.nota,
-        horario: (r.horario || []).map(h => [h.dias, h.horas])
+        mapa: r.mapa, nota: r.nota, legal: C.textoLegal
       },
       categorias: (r.categorias || []).map(c => ({
         id: c.id, nombre: c.nombre, nota: c.nota,

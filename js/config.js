@@ -11,7 +11,10 @@ window.CONFIG = {
   firebaseApiKey: "AIzaSyBWi2lwUOZCibPTQCVeTb7HrwoYh9W8wS4",   // "apiKey" de la configuración web de Firebase
   firebaseProyecto: "cartas-574bf",                            // "projectId"
   restaurante: "food-friends",
-  logo: "logo.webp"         // desde la raíz del sitio
+  logo: "logo.webp",        // desde la raíz del sitio
+  // Avisos que pide la ley (SIC): va fijo al final de la carta. Confirmado con el dueño el 30-sep-2026
+  textoLegal: "Precios en pesos colombianos, con impuestos incluidos. La propina es voluntaria. " +
+    "Prohibido el expendio de bebidas alcohólicas a menores de edad. El exceso de alcohol es perjudicial para la salud."
 };
 
 // Raíz del sitio (la carpeta de arriba de js/), para armar rutas desde cualquier página

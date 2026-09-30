@@ -173,6 +173,7 @@
       bloque('Síganos').append(redes);
     }
     if (N.nota) pie.append(el('p', 'pie-nota', N.nota));
+    if (N.legal) pie.append(el('p', 'pie-legal', N.legal));
     pie.append(enlace('arriba', 'Volver arriba ↑', '#arriba'));
 
     // Categoría resaltada según por dónde va la persona
