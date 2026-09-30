@@ -93,22 +93,59 @@
     BD.foto(estado.slug, nombre).then(url => { img.src = url; }).catch(() => {});
   }
 
-  // Achica la foto en el celular antes de subirla: máximo 500 px y 140 KB
+  // La foto de un plato en la carta: 500 x 392 px (la forma del recuadro) y menos de 140 KB
+  const FOTO = { ancho: 500, alto: 392, maximo: 140000 };
+
+  // Abre la foto como venga (jpg, png, webp, heic en iPhone...). Si el navegador no puede de una forma, prueba la otra
+  async function abrirImagen(archivo) {
+    try {
+      const imagen = await createImageBitmap(archivo, { imageOrientation: 'from-image' });
+      return { imagen, ancho: imagen.width, alto: imagen.height, soltar: () => imagen.close() };
+    } catch { /* se intenta con una imagen normal */ }
+    const url = URL.createObjectURL(archivo);
+    const imagen = new Image();
+    imagen.src = url;
+    try {
+      await imagen.decode();
+    } catch {
+      URL.revokeObjectURL(url);
+      throw new Error('Esa foto no se pudo abrir en este navegador. Escójala desde el celular o guárdela como JPG.');
+    }
+    return { imagen, ancho: imagen.naturalWidth, alto: imagen.naturalHeight, soltar: () => URL.revokeObjectURL(url) };
+  }
+
+  // Cualquier foto, de cualquier peso, queda lista: se recorta al centro con la forma de la carta, se achica
+  // (sin agrandar las pequeñas) y se baja la calidad, y si hace falta el tamaño, hasta que pese menos del máximo
   async function comprimir(archivo) {
-    let imagen;
-    try { imagen = await createImageBitmap(archivo); } catch {
-      throw new Error('Esa imagen no se pudo abrir. Pruebe con otra foto.');
+    const { imagen, ancho, alto, soltar } = await abrirImagen(archivo);
+    try {
+      const forma = FOTO.ancho / FOTO.alto;
+      const recorteAncho = Math.min(ancho, alto * forma), recorteAlto = recorteAncho / forma;
+      const x = (ancho - recorteAncho) / 2, y = (alto - recorteAlto) / 2;
+      const lienzo = document.createElement('canvas');
+      const pincel = lienzo.getContext('2d');
+      let ultimo = null;
+      for (const escala of [1, 0.8, 0.6, 0.45]) {
+        lienzo.width = Math.max(1, Math.round(Math.min(FOTO.ancho, recorteAncho) * escala));
+        lienzo.height = Math.max(1, Math.round(lienzo.width / forma));
+        pincel.fillStyle = '#fff'; // las fotos con fondo transparente no quedan negras
+        pincel.fillRect(0, 0, lienzo.width, lienzo.height);
+        pincel.imageSmoothingQuality = 'high';
+        pincel.drawImage(imagen, x, y, recorteAncho, recorteAlto, 0, 0, lienzo.width, lienzo.height);
+        for (const tipo of ['image/webp', 'image/jpeg']) {
+          for (const calidad of [0.8, 0.7, 0.6, 0.5, 0.4]) {
+            const blob = await new Promise(ok => lienzo.toBlob(ok, tipo, calidad));
+            if (!blob || blob.type !== tipo) break; // este navegador no hace webp: se sigue con jpg
+            if (blob.size <= FOTO.maximo) return blob;
+            ultimo = blob;
+          }
+        }
+      }
+      if (ultimo && ultimo.size <= 150000) return ultimo;
+      throw new Error('No se pudo achicar esa foto. Pruebe con otra.');
+    } finally {
+      soltar();
     }
-    const escala = Math.min(1, 500 / Math.max(imagen.width, imagen.height));
-    const lienzo = document.createElement('canvas');
-    lienzo.width = Math.round(imagen.width * escala);
-    lienzo.height = Math.round(imagen.height * escala);
-    lienzo.getContext('2d').drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
-    for (const [tipo, calidad] of [['image/webp', 0.75], ['image/webp', 0.55], ['image/jpeg', 0.72], ['image/jpeg', 0.5]]) {
-      const blob = await new Promise(ok => lienzo.toBlob(ok, tipo, calidad));
-      if (blob && blob.type === tipo && blob.size <= 140000) return blob;
-    }
-    throw new Error('La foto quedó muy pesada. Pruebe con otra.');
   }
 
   // ---------------------------------------------------------------------------
@@ -412,10 +449,11 @@
     const elegir = $('#plato-elegir-foto'), guardarBoton = $('#plato-guardar');
     ed.subiendo = true;
     guardarBoton.disabled = elegir.disabled = true;
-    elegir.textContent = 'Subiendo foto…';
+    elegir.textContent = 'Preparando foto…';
     $('#plato-error').textContent = '';
     try {
       const blob = await comprimir(archivo);
+      elegir.textContent = 'Subiendo foto…';
       const nombre = await BD.subirFoto(estado.slug, blob);
       // si cerraron el editor mientras subía, la foto no se usa
       if (!$('#editor-plato').open) { BD.borrarFotos(estado.slug, [nombre]); return; }
