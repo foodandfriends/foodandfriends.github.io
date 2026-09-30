@@ -24,9 +24,9 @@ if (!LLAVE || !firebaseProyecto || !correo) {
 async function preguntarClave() {
   if (process.env.DUENO_CLAVE) return process.env.DUENO_CLAVE;
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
-  process.stdout.write('Contraseña del dueño (no se ve al escribir): ');
-  rl._writeToOutput = () => {};
-  const clave = await new Promise(ok => rl.question('', ok));
+  const respuesta = new Promise(ok => rl.question('Contraseña del dueño (no se ve al escribir): ', ok));
+  rl._writeToOutput = () => {}; // ya salió la pregunta: lo que se escriba no se muestra
+  const clave = await respuesta;
   rl.close();
   process.stdout.write('\n');
   return clave;
