@@ -49,7 +49,9 @@
     animation: correr 38s linear infinite;
   }
   .cinta span { padding-right: 1.2em; }
-  @keyframes correr { to { transform: translateX(-50%); } }
+  /* La frase va 8 veces y cada vuelta corre una sola (1/8 del ancho): siempre queda texto de sobra,
+     aunque la pantalla sea muy ancha, y al volver a empezar no se nota el salto */
+  @keyframes correr { to { transform: translateX(-12.5%); } }
 
   .hero { padding: 34px 0 30px; text-align: center; background: radial-gradient(70% 60% at 50% 35%, rgba(250, 122, 11, .16), transparent 70%); }
   h1 { margin: 0; line-height: 0; }
@@ -122,6 +124,12 @@
 <body data-fotos="si-hay" data-botones="no" class="entrando">
 <div class="portada" id="portada" aria-hidden="true"><img src="logo.webp" alt=""></div>
 <div class="cinta" id="arriba" aria-hidden="true"><div>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
+  <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
   <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
   <span>Rock · Food home made · Friends · Pub · Beer · Burgers &amp; Minipizzas · Since 2013 ·</span>
 </div></div>
