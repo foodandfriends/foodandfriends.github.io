@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://*.supabase.co; connect-src https://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Panel de la carta</title>
+<meta name="theme-color" content="#f6f3ee">
+<link rel="icon" href="../logo.webp">
+<style>
+  :root {
+    --fondo: #f6f3ee;
+    --superficie: #ffffff;
+    --tinta: #1f1a16;
+    --suave: #6f665e;
+    --linea: #e3dbd0;
+    --acento: #c2410c;
+    --acento-suave: #fff1e6;
+    --peligro: #b42318;
+    --bien: #1f7a4d;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--fondo); color: var(--tinta); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--acento); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; border-radius: 8px; }
+  .col { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 18px;
+    border: 1.5px solid var(--linea); border-radius: 12px; background: var(--superficie); font-weight: 650; text-decoration: none; cursor: pointer;
+  }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn.principal { background: var(--acento); border-color: var(--acento); color: #fff; }
+  .btn.peligro { color: var(--peligro); border-color: #f1c7c2; }
+  .btn.peligro.confirmar { background: var(--peligro); border-color: var(--peligro); color: #fff; }
+  .btn.chico { min-height: 38px; padding: 0 12px; border-radius: 10px; font-size: .9rem; }
+  .btn.ancho { width: 100%; }
+  .enlace { padding: 0; border: 0; background: none; color: var(--acento); font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+  label { display: block; margin: 16px 0 6px; font-size: .9rem; font-weight: 650; }
+  .ayuda { margin: 4px 0 0; color: var(--suave); font-size: .82rem; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="url"], input[type="tel"], select, textarea {
+    width: 100%; min-height: 46px; padding: 10px 12px; border: 1.5px solid var(--linea); border-radius: 12px; background: var(--superficie);
+  }
+  textarea { min-height: 76px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { border-color: var(--acento); outline: none; }
+  .error { margin: 12px 0 0; color: var(--peligro); font-size: .92rem; font-weight: 600; }
+  .error:empty { display: none; }
+
+  /* Pantallas de entrada */
+  .entrada { min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px; }
+  .tarjeta { width: 100%; max-width: 400px; padding: 28px 22px; border: 1px solid var(--linea); border-radius: 20px; background: var(--superficie); }
+  .tarjeta .logo { display: block; width: 88px; height: 88px; margin: 0 auto 10px; }
+  .tarjeta h1 { margin: 0; font-size: 1.35rem; text-align: center; }
+  .tarjeta .sub { margin: 4px 0 8px; color: var(--suave); text-align: center; }
+  .tarjeta .btn.ancho { margin-top: 22px; }
+  .tarjeta .pie { margin: 16px 0 0; text-align: center; font-size: .92rem; }
+
+  /* Panel */
+  .barra { position: sticky; top: 0; z-index: 5; background: rgba(246, 243, 238, .96); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--linea); }
+  .barra .col { display: flex; align-items: center; gap: 10px; padding-top: calc(10px + env(safe-area-inset-top)); padding-bottom: 10px; }
+  .barra img { width: 40px; height: 40px; }
+  .barra .quien { flex: 1; min-width: 0; }
+  .barra strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .barra small { display: block; color: var(--suave); font-size: .78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pestanas { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding-bottom: 10px; }
+  .pestanas button { min-height: 42px; border: 0; border-radius: 10px; background: transparent; color: var(--suave); font-weight: 650; cursor: pointer; }
+  .pestanas button[aria-selected="true"] { background: var(--superficie); color: var(--tinta); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+  select.restaurante { min-height: 40px; margin-bottom: 10px; }
+
+  .categoria { margin-top: 22px; }
+  .categoria-cab { display: flex; align-items: center; gap: 6px; }
+  .categoria-cab h2 { flex: 1; min-width: 0; margin: 0; font-size: 1.15rem; }
+  .categoria-cab h2 small { color: var(--suave); font-weight: 500; font-size: .85rem; }
+  .icono { display: grid; place-items: center; width: 38px; height: 38px; border: 1.5px solid var(--linea); border-radius: 10px; background: var(--superficie); cursor: pointer; }
+  .icono:disabled { opacity: .35; cursor: default; }
+  .icono svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .lista { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
+  .fila { display: flex; align-items: center; gap: 10px; padding: 8px 10px 8px 8px; border: 1px solid var(--linea); border-radius: 14px; background: var(--superficie); }
+  .fila .abrir { display: flex; flex: 1; min-width: 0; align-items: center; gap: 12px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
+  .miniatura { flex: none; width: 52px; height: 52px; border-radius: 10px; object-fit: cover; background: var(--fondo); }
+  .miniatura.vacia { display: grid; place-items: center; color: var(--suave); font-size: .7rem; font-weight: 700; }
+  .fila .texto { min-width: 0; }
+  .fila .texto strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fila .texto span { color: var(--suave); font-size: .9rem; }
+  .fila.agotado .texto { opacity: .5; }
+  .vacio { margin: 10px 0 0; padding: 14px; border: 1.5px dashed var(--linea); border-radius: 14px; color: var(--suave); text-align: center; }
+  .agregar { margin-top: 8px; }
+  .nueva-categoria { margin: 28px 0 40px; }
+
+  /* Interruptor de agotado */
+  .interruptor { display: flex; flex: none; flex-direction: column; align-items: center; gap: 2px; margin: 0; font-size: .7rem; font-weight: 650; color: var(--suave); cursor: pointer; }
+  .interruptor input { appearance: none; position: relative; width: 46px; height: 28px; margin: 0; border-radius: 999px; background: #d8d0c5; cursor: pointer; transition: background .15s; }
+  .interruptor input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .2); transition: transform .15s; }
+  .interruptor input:checked { background: var(--peligro); }
+  .interruptor input:checked::after { transform: translateX(18px); }
+
+  /* Datos del local */
+  .formulario { padding-bottom: 40px; }
+  .horario { display: grid; gap: 8px; }
+  .horario-fila { display: grid; grid-template-columns: 1fr 1fr 38px; gap: 8px; }
+  .acciones-form { display: flex; gap: 10px; margin-top: 24px; }
+
+  /* Ventanas de edición */
+  dialog { width: min(560px, 100%); max-height: 92dvh; margin: auto auto 0; padding: 0; border: 0; border-radius: 22px 22px 0 0; background: var(--superficie); color: var(--tinta); }
+  dialog::backdrop { background: rgba(20, 16, 12, .45); }
+  @media (min-width: 600px) { dialog { margin: auto; border-radius: 22px; } }
+  dialog form { padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); }
+  dialog h2 { margin: 0; font-size: 1.2rem; }
+  .foto-editor { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .foto-editor .vista { flex: none; width: 112px; height: 88px; border-radius: 12px; object-fit: cover; background: var(--fondo); }
+  .foto-editor .vista.vacia { display: grid; place-items: center; color: var(--suave); font-size: .8rem; font-weight: 650; }
+  .foto-editor .botones { display: grid; gap: 8px; }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .check { display: flex; align-items: center; gap: 10px; margin: 18px 0 0; font-weight: 650; }
+  .check input { width: 22px; height: 22px; accent-color: var(--peligro); }
+  .posicion { display: flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--suave); font-size: .9rem; }
+  .pie-dialogo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+  .pie-dialogo .peligro { grid-column: 1 / -1; }
+
+  .aviso { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: var(--tinta); color: #fff; font-weight: 600; transform: translateX(-50%); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+  .aviso.error { background: var(--peligro); }
+</style>
+</head>
+<body>
+
+<section class="entrada" id="vista-cargando" aria-busy="true"><p class="sub">Cargando…</p></section>
+
+<section class="entrada" id="vista-config" hidden>
+  <div class="tarjeta">
+    <h1>Falta conectar Supabase</h1>
+    <p class="sub">Escriba la dirección del proyecto y la clave pública en js/config.js.</p>
+  </div>
+</section>
+
+<section class="entrada" id="vista-entrar" hidden>
+  <div class="tarjeta">
+    <img class="logo" src="../logo.webp" alt="">
+    <h1>Panel de la carta</h1>
+    <p class="sub">Entre para cambiar platos, precios y fotos.</p>
+    <form id="form-entrar" novalidate>
+      <label for="entrar-correo">Correo</label>
+      <input id="entrar-correo" type="email" autocomplete="username" required>
+      <label for="entrar-clave">Contraseña</label>
+      <input id="entrar-clave" type="password" autocomplete="current-password" required>
+      <p class="error" id="entrar-error" role="alert"></p>
+      <button class="btn principal ancho" type="submit">Entrar</button>
+    </form>
+    <p class="pie"><button class="enlace" type="button" id="ir-recordar">Olvidé mi contraseña</button></p>
+    <form id="form-recordar" novalidate hidden>
+      <label for="recordar-correo">Su correo</label>
+      <input id="recordar-correo" type="email" autocomplete="username" required>
+      <p class="ayuda">Le llega un enlace para crear una contraseña nueva.</p>
+      <p class="error" id="recordar-error" role="alert"></p>
+      <button class="btn ancho" type="submit">Enviar enlace</button>
+    </form>
+  </div>
+</section>
+
+<section class="entrada" id="vista-clave" hidden>
+  <div class="tarjeta">
+    <h1>Contraseña nueva</h1>
+    <p class="sub">Mínimo 10 caracteres. Mejor si mezcla letras y números.</p>
+    <form id="form-clave" novalidate>
+      <label for="clave-1">Contraseña nueva</label>
+      <input id="clave-1" type="password" autocomplete="new-password" minlength="10" required>
+      <label for="clave-2">Repítala</label>
+      <input id="clave-2" type="password" autocomplete="new-password" minlength="10" required>
+      <p class="error" id="clave-error" role="alert"></p>
+      <button class="btn principal ancho" type="submit">Guardar contraseña</button>
+    </form>
+    <p class="pie"><button class="enlace" type="button" id="clave-volver" hidden>Volver al panel</button></p>
+  </div>
+</section>
+
+<div id="vista-panel" hidden>
+  <header class="barra">
+    <div class="col">
+      <img src="../logo.webp" alt="">
+      <div class="quien"><strong id="panel-nombre"></strong><small id="panel-correo"></small></div>
+      <a class="btn chico" id="ver-carta" target="_blank" rel="noopener">Ver carta</a>
+      <button class="btn chico" type="button" id="salir">Salir</button>
+    </div>
+    <div class="col">
+      <select class="restaurante" id="elegir-restaurante" aria-label="Restaurante" hidden></select>
+      <div class="pestanas" role="tablist">
+        <button type="button" role="tab" aria-selected="true" aria-controls="pestana-platos" id="tab-platos">Platos</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="pestana-local" id="tab-local">Datos del local</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="col">
+    <section id="pestana-platos" role="tabpanel" aria-labelledby="tab-platos">
+      <div id="categorias"></div>
+      <button class="btn ancho nueva-categoria" type="button" id="nueva-categoria">+ Nueva categoría</button>
+    </section>
+
+    <section id="pestana-local" role="tabpanel" aria-labelledby="tab-local" hidden>
+      <form id="form-local" class="formulario" novalidate>
+        <label for="local-nombre">Nombre del restaurante</label>
+        <input id="local-nombre" type="text" maxlength="80" required>
+        <label for="local-lugar">Lugar (sale arriba en la carta)</label>
+        <input id="local-lugar" type="text" maxlength="120" placeholder="Parque Artesanal Loma de la Cruz · Cali">
+        <label for="local-direccion">Dirección</label>
+        <input id="local-direccion" type="text" maxlength="160">
+        <div class="dos">
+          <div>
+            <label for="local-telefono">Teléfono</label>
+            <input id="local-telefono" type="tel" inputmode="tel" maxlength="20" placeholder="302 375 1571">
+          </div>
+          <div>
+            <label for="local-whatsapp">WhatsApp</label>
+            <input id="local-whatsapp" type="tel" inputmode="tel" maxlength="20">
+          </div>
+        </div>
+        <label for="local-mapa">Enlace de Google Maps</label>
+        <input id="local-mapa" type="url" inputmode="url" maxlength="300" placeholder="https://maps.app.goo.gl/…">
+        <label for="local-instagram">Instagram</label>
+        <input id="local-instagram" type="url" inputmode="url" maxlength="300" placeholder="https://www.instagram.com/…">
+        <label for="local-facebook">Facebook</label>
+        <input id="local-facebook" type="url" inputmode="url" maxlength="300" placeholder="https://www.facebook.com/…">
+        <label>Horario</label>
+        <div class="horario" id="local-horario"></div>
+        <button class="btn chico agregar" type="button" id="agregar-horario">+ Agregar día</button>
+        <label for="local-nota">Nota al final de la carta</label>
+        <input id="local-nota" type="text" maxlength="200" placeholder="Precios en pesos colombianos.">
+        <p class="error" id="local-error" role="alert"></p>
+        <div class="acciones-form">
+          <button class="btn principal" type="submit">Guardar datos</button>
+          <button class="btn" type="button" id="ir-clave">Cambiar mi contraseña</button>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+
+<dialog id="editor-plato" aria-labelledby="plato-titulo">
+  <form method="dialog" id="form-plato" novalidate>
+    <h2 id="plato-titulo">Plato</h2>
+    <div class="foto-editor">
+      <div class="vista vacia" id="plato-vista">Sin foto</div>
+      <div class="botones">
+        <button class="btn chico" type="button" id="plato-elegir-foto">Tomar o escoger foto</button>
+        <button class="btn chico" type="button" id="plato-quitar-foto" hidden>Quitar foto</button>
+        <input type="file" id="plato-archivo" accept="image/*" hidden>
+      </div>
+    </div>
+    <label for="plato-nombre">Nombre</label>
+    <input id="plato-nombre" type="text" maxlength="80" required>
+    <label for="plato-descripcion">Descripción</label>
+    <textarea id="plato-descripcion" maxlength="240" placeholder="Ingredientes o detalle, en una o dos líneas"></textarea>
+    <div class="dos">
+      <div>
+        <label for="plato-precio">Precio</label>
+        <input id="plato-precio" type="text" inputmode="numeric" placeholder="25.000" maxlength="12">
+      </div>
+      <div>
+        <label for="plato-categoria">Categoría</label>
+        <select id="plato-categoria"></select>
+      </div>
+    </div>
+    <label for="plato-etiqueta">Etiqueta (opcional)</label>
+    <input id="plato-etiqueta" type="text" maxlength="30" list="etiquetas" placeholder="Nuevo, Picante, La más pedida…">
+    <datalist id="etiquetas">
+      <option value="Nuevo"></option><option value="La más pedida"></option><option value="Picante"></option>
+      <option value="Para compartir"></option><option value="Recomendado"></option>
+    </datalist>
+    <label class="check"><input type="checkbox" id="plato-agotado"> Agotado por ahora</label>
+    <div class="posicion" id="plato-posicion">
+      Posición en la lista
+      <button class="icono" type="button" id="plato-subir" aria-label="Subir"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+      <button class="icono" type="button" id="plato-bajar" aria-label="Bajar"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+    </div>
+    <p class="error" id="plato-error" role="alert"></p>
+    <div class="pie-dialogo">
+      <button class="btn" type="button" id="plato-cancelar">Cancelar</button>
+      <button class="btn principal" type="submit" id="plato-guardar">Guardar</button>
+      <button class="btn peligro" type="button" id="plato-borrar">Borrar plato</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="editor-categoria" aria-labelledby="categoria-titulo">
+  <form method="dialog" id="form-categoria" novalidate>
+    <h2 id="categoria-titulo">Categoría</h2>
+    <label for="categoria-nombre">Nombre</label>
+    <input id="categoria-nombre" type="text" maxlength="60" required placeholder="Hamburguesas">
+    <label for="categoria-nota">Nota (opcional)</label>
+    <input id="categoria-nota" type="text" maxlength="200" placeholder="Todas vienen con papas">
+    <p class="error" id="categoria-error" role="alert"></p>
+    <div class="pie-dialogo">
+      <button class="btn" type="button" id="categoria-cancelar">Cancelar</button>
+      <button class="btn principal" type="submit">Guardar</button>
+      <button class="btn peligro" type="button" id="categoria-borrar">Borrar categoría</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="aviso" id="aviso" role="status" hidden></div>
+
+<script src="../js/config.js"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>
