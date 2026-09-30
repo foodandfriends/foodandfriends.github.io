@@ -3,9 +3,9 @@
 La carta del restaurante para verla en el celular con el QR de la mesa, con el diseño "Rock", y un panel
 donde el dueño cambia platos, precios, fotos y agotados desde su celular.
 
-- **Carta pública:** https://roypitw3.github.io/menu-food-friends/
-- **Panel del dueño:** https://roypitw3.github.io/menu-food-friends/admin/
-- **Propuestas de diseño que se le mostraron al dueño:** https://roypitw3.github.io/menu-food-friends/disenos/
+- **Carta pública:** https://foodandfriends.github.io/
+- **Panel del dueño:** https://foodandfriends.github.io/admin/
+- **Propuestas de diseño que se le mostraron al dueño:** https://foodandfriends.github.io/disenos/
 
 Costo: $0. La página vive en GitHub Pages y los datos en el plan gratis de Firebase (Spark), que no pide
 tarjeta y no se apaga por falta de uso.
@@ -84,7 +84,7 @@ DUENO_CORREO=correo@del-dueno.com node scripts/cargar-carta.mjs [archivo]
 Después conviene correr `node scripts/respaldo.mjs` y subir `datos/` para que las fotos salgan del sitio.
 
 Opcional: en Google Cloud → **APIs y servicios → Credenciales**, restringir el `apiKey` al sitio
-(`https://roypitw3.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
+(`https://foodandfriends.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
 
 ## Otro restaurante
 
