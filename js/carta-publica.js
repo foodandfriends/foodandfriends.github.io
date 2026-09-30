@@ -70,11 +70,11 @@
     const logo = document.querySelector('#cabecera .logo');
     const logoListo = logo && !logo.complete ? new Promise(ok => { logo.onload = logo.onerror = ok; }) : null;
     const lista = Promise.all([document.fonts.ready, logoListo, espera(Math.max(0, 700 - performance.now()))]);
-    Promise.race([lista, espera(1500)]).then(() => requestAnimationFrame(() => {
+    Promise.race([lista, espera(1500)]).then(() => {
       portada.classList.add('lista');
       document.body.classList.remove('entrando');
       setTimeout(() => portada.remove(), 700);
-    }));
+    });
   }
 
   // Cada foto se pide cuando está por aparecer en pantalla
