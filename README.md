@@ -86,6 +86,17 @@ Después conviene correr `node scripts/respaldo.mjs` y subir `datos/` para que l
 Opcional: en Google Cloud → **APIs y servicios → Credenciales**, restringir el `apiKey` al sitio
 (`https://foodandfriends.github.io/*`) y a las APIs Identity Toolkit, Token Service y Cloud Firestore.
 
+## Probar cambios sin tocar Firebase
+
+`herramientas/simulador.mjs` imita Firebase en este computador y sirve la carta y el panel apuntando a él:
+
+```bash
+node herramientas/simulador.mjs
+```
+
+Carta en http://localhost:3212 y panel en http://localhost:3212/admin/ (entra con `dueno@prueba.co` /
+`clave-de-prueba-123`, que solo existen ahí). Empieza sin carta y se borra todo al cerrarlo.
+
 ## Otro restaurante
 
 Las reglas ya sirven para varios restaurantes. Para uno nuevo: crear la cuenta del dueño (paso 4), su
