@@ -241,17 +241,12 @@
         <input id="local-lugar" type="text" maxlength="120" placeholder="Parque Artesanal Loma de la Cruz · Cali">
         <label for="local-direccion">Dirección</label>
         <input id="local-direccion" type="text" maxlength="160">
-        <!-- Teléfono, WhatsApp, redes y horario no salen en la carta (quien la lee ya está en el local):
-             se ocultan aquí, pero se guardan igual por si algún día se vuelven a mostrar -->
-        <div class="dos" hidden>
-          <div>
-            <label for="local-telefono">Teléfono</label>
-            <input id="local-telefono" type="tel" inputmode="tel" maxlength="20" placeholder="302 375 1571">
-          </div>
-          <div>
-            <label for="local-whatsapp">WhatsApp</label>
-            <input id="local-whatsapp" type="tel" inputmode="tel" maxlength="20">
-          </div>
+        <label for="local-telefono">Celular del local (sale al final de la carta)</label>
+        <input id="local-telefono" type="tel" inputmode="tel" maxlength="20" placeholder="302 375 1571">
+        <!-- WhatsApp, redes y horario no salen en la carta: se ocultan aquí, pero se guardan igual por si algún día se muestran -->
+        <div hidden>
+          <label for="local-whatsapp">WhatsApp</label>
+          <input id="local-whatsapp" type="tel" inputmode="tel" maxlength="20">
         </div>
         <label for="local-mapa">Enlace de Google Maps</label>
         <input id="local-mapa" type="url" inputmode="url" maxlength="300" placeholder="https://maps.app.goo.gl/…">
@@ -342,8 +337,8 @@
 
 <div class="aviso" id="aviso" role="status" hidden></div>
 
-<script src="../js/config.js?v=202609302156"></script>
-<script src="../js/firebase.js?v=202609302156"></script>
-<script src="../js/admin.js?v=202609302156"></script>
+<script src="../js/config.js?v=202610022008"></script>
+<script src="../js/firebase.js?v=202610022008"></script>
+<script src="../js/admin.js?v=202610022008"></script>
 </body>
 </html>

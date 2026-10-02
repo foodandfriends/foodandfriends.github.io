@@ -166,7 +166,7 @@
       N.horario.forEach(f => { dl.append(el('dt', '', f[0])); dl.append(el('dd', '', f[1])); });
       b.append(dl);
     }
-    if (digitos(N.telefono)) bloque('Contacto').append(enlace('', N.telefono, 'tel:+57' + digitos(N.telefono)));
+    if (digitos(N.telefono)) bloque('Celular').append(enlace('', N.telefono, 'tel:+57' + digitos(N.telefono)));
     if (N.instagram || N.facebook) {
       const redes = el('div', 'redes');
       [['Instagram', N.instagram], ['Facebook', N.facebook]].forEach(([nombre, url]) => {

@@ -22,11 +22,11 @@
 
   function aCarta(r) {
     return {
-      // La "nota" del panel es la historia del restaurante, que va arriba. Al final solo va "Dónde estamos"
-      // y los avisos legales: quien la lee ya está en el local, así que no se muestran teléfono, horario ni redes
+      // La "nota" del panel es la historia del restaurante, que va arriba. Al final va "Dónde estamos", el celular
+      // del local (se toca para llamar) y los avisos legales; horario y redes no se muestran
       negocio: {
         nombre: r.nombre, logo: C.raiz + C.logo, lugar: r.lugar, direccion: r.direccion,
-        mapa: r.mapa, historia: r.nota, legal: C.textoLegal
+        mapa: r.mapa, telefono: r.telefono, historia: r.nota, legal: C.textoLegal
       },
       categorias: (r.categorias || []).map(c => ({
         id: c.id, nombre: c.nombre, nota: c.nota,
