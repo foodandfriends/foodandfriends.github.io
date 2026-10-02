@@ -92,7 +92,10 @@
   .miniatura { flex: none; width: 52px; height: 52px; border-radius: 10px; object-fit: cover; background: var(--fondo); }
   .miniatura.vacia { display: grid; place-items: center; color: var(--suave); font-size: .7rem; font-weight: 700; }
   .fila .texto { min-width: 0; }
-  .fila .texto strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* El nombre ocupa hasta dos líneas: en una sola, "Limonada de coco" y "Limonada de cereza" quedaban iguales ("Limonada de c…") */
+  .fila .texto strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; line-height: 1.25; overflow-wrap: break-word; }
+  /* En celulares muy angostos no cabe el nombre al lado de la miniatura: se quita la miniatura (la foto se ve al tocar Editar) */
+  @media (max-width: 360px) { .fila .miniatura { display: none; } .fila .texto strong { -webkit-line-clamp: 3; line-clamp: 3; } }
   .fila .texto span { color: var(--suave); font-size: .9rem; }
   .fila.agotado .texto { opacity: .5; }
   .vacio { margin: 10px 0 0; padding: 14px; border: 1.5px dashed var(--linea); border-radius: 14px; color: var(--suave); text-align: center; }
