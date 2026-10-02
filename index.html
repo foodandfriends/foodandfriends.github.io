@@ -108,13 +108,15 @@
   h2 .num { display: none; }
   .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .98rem; }
   .platos { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
-  /* Cada plato en una línea, como en el menú impreso: NOMBRE ······ $PRECIO (y la foto a la derecha si tiene) */
+  /* Cada plato en una línea, como en el menú impreso: NOMBRE a la izquierda y $PRECIO a la derecha (y la foto si tiene) */
   .plato { display: grid; grid-template-columns: minmax(0, 1fr) 104px; column-gap: 14px; grid-template-areas: "fila foto" "desc foto"; grid-template-rows: auto 1fr; }
   .plato:not(:has(.foto)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "fila" "desc"; }
-  .fila { grid-area: fila; display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-  .nombre { flex: 0 1 auto; min-width: 0; font-weight: 500; font-size: 1.1rem; line-height: 1.25; letter-spacing: .02em; text-transform: uppercase; }
-  .puntos { flex: 1 1 12px; min-width: 12px; border-bottom: 2px dotted #d6c6b8; transform: translateY(-5px); }
-  .precio { flex: none; font-weight: 600; font-size: 1.12rem; color: var(--precio); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* El precio va al lado del nombre si cabe; en un celular angosto baja a la línea de abajo, pero las palabras
+     del nombre nunca se parten por la mitad */
+  .fila { grid-area: fila; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; min-width: 0; }
+  .nombre { flex: 1 1 0; min-width: min-content; overflow-wrap: break-word; font-weight: 500; font-size: 1.1rem; line-height: 1.25; letter-spacing: .02em; text-transform: uppercase; }
+  .puntos { display: none; } /* sin puntos entre el nombre y el precio: así lo pidió Willy */
+  .precio { flex: none; margin-left: auto; font-weight: 600; font-size: 1.12rem; color: var(--precio); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .desc { grid-area: desc; margin: 1px 0 0; color: var(--suave); font-size: .98rem; }
   .foto { grid-area: foto; width: 104px; height: 82px; border-radius: 10px; object-fit: cover; background: var(--fondo-2); }
   .marca {
