@@ -157,13 +157,14 @@
   // Los cambios se guardan de a uno, en el orden en que se hicieron. Si se marcan dos platos seguidos,
   // el segundo espera al primero: si salieran juntos, el segundo llevaría la versión vieja y Firebase
   // lo rechazaría como si la carta la hubieran cambiado desde otro celular
-  let cola = Promise.resolve(), enEspera = 0;
-  function enOrden(tarea) {
+  let cola = Promise.resolve(), enEspera = 0, porPintar = false;
+  function enOrden(tarea, pintar = true) {
     enEspera++;
+    if (pintar) porPintar = true;
     const hecha = cola.then(tarea).finally(() => {
       // La lista se vuelve a pintar cuando ya no queda nada por guardar, así no se ve un interruptor
       // devolverse un momento mientras espera su turno
-      if (--enEspera === 0 && estado.datos) pintarPlatos();
+      if (--enEspera === 0 && estado.datos && porPintar) { porPintar = false; pintarPlatos(); }
     });
     cola = hecha.catch(() => {});
     return hecha;
@@ -280,6 +281,7 @@
       pintarSelector();
       $('#panel-correo').textContent = BD.usuario ? BD.usuario.email : '';
       mostrar('panel');
+      vigilar();
     } catch (e) {
       mostrar('entrar');
       fallo(e, '#entrar-error');
@@ -420,6 +422,9 @@
 
   function editarPlato(c, p) {
     Object.assign(ed, { catId: c.id, platoId: p ? p.id : null, fotoNueva: null, fotoQuitada: false });
+    // Cómo estaba el plato al abrir el editor: al guardar se aplica solo lo que se cambió aquí, así no se
+    // devuelve a como estaba lo que se haya cambiado de ese plato desde otro dispositivo mientras tanto
+    ed.base = p ? { nombre: p.nombre, descripcion: p.descripcion || null, precio: p.precio ?? null, etiqueta: p.etiqueta || null, agotado: !!p.agotado } : null;
     $('#plato-titulo').textContent = p ? 'Editar plato' : 'Nuevo plato';
     $('#plato-nombre').value = p ? p.nombre : '';
     $('#plato-descripcion').value = (p && p.descripcion) || '';
@@ -536,6 +541,8 @@
     };
     const anterior = (platoEditado() || {}).foto || null;
     const foto = ed.fotoNueva || (ed.fotoQuitada ? null : anterior);
+    const cambios = ed.base ? Object.fromEntries(Object.entries(datos).filter(([k, v]) => !igual(v, ed.base[k]))) : datos;
+    if (!ed.platoId || ed.fotoNueva || ed.fotoQuitada) cambios.foto = foto; // la foto, solo si se cambió aquí
     const destino = $('#plato-categoria').value;
     await ocupado($('#plato-guardar'), async () => {
       try {
@@ -552,7 +559,7 @@
             plato = { id: crypto.randomUUID() };
             categoria(cs, destino).platos.push(plato);
           }
-          Object.assign(plato, datos, { foto });
+          Object.assign(plato, cambios);
         });
         if (anterior && anterior !== foto) BD.borrarFotos(estado.slug, [anterior]);
         ed.fotoNueva = null; // ya quedó guardada: no se borra al cerrar
@@ -715,17 +722,40 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Varios dispositivos: al volver al panel (otra pestaña, o el celular que estaba bloqueado) se trae lo
-  // último que se haya cambiado desde otro lado. No se hace si hay algo a medio editar
+  // Varios dispositivos, en vivo: mientras el panel está a la vista se revisa cada 10 segundos si la carta
+  // cambió desde otro lado (otro celular, el computador) y se muestra lo nuevo: un plato borrado desaparece,
+  // uno agotado sale agotado. Cada revisión es una lectura de Firebase (el plan gratis da 50.000 al día):
+  // con el celular bloqueado o en otra app no se revisa, y si nadie toca el panel en 10 minutos, se revisa
+  // cada minuto. Al volver al panel se revisa de una vez
   // ---------------------------------------------------------------------------
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible' || !estado.datos || $('#vista-panel').hidden) return;
-    if (enEspera || document.querySelector('dialog[open]')) return;
-    enOrden(async () => {
+  const CADA = 10000, CADA_QUIETO = 60000, QUIETO = 10 * 60000;
+  let ultimoToque = Date.now(), reloj = null;
+  for (const e of ['pointerdown', 'keydown']) addEventListener(e, () => { ultimoToque = Date.now(); }, { passive: true });
+
+  function revisarCambios() {
+    if (!estado.datos || $('#vista-panel').hidden || document.visibilityState !== 'visible' || enEspera) return Promise.resolve();
+    return enOrden(async () => {
       const antes = estado.version;
       await traerUltima();
-      if (estado.version !== antes && !localSucio) pintarLocal(); // la lista de platos se repinta sola al terminar
-    }).catch(e => { if (e && (e.estado === 401 || /TOKEN|USER_NOT_FOUND/.test(e.codigo || ''))) fallo(e); }); // si falla el internet, no se molesta
+      if (estado.version === antes) return; // nada nuevo: no se repinta
+      porPintar = true;
+      if (!localSucio) pintarLocal();
+      // Si lo que se está editando lo borraron desde el otro dispositivo, se avisa en la misma ventana
+      if ($('#editor-plato').open && ed.platoId && !platoEditado()) $('#plato-error').textContent = 'Este plato lo borraron desde otro dispositivo. Toque Cancelar.';
+      else if ($('#editor-plato').open) actualizarPosicion();
+      if ($('#editor-categoria').open && catEditadaId && !categoria(categorias(), catEditadaId)) $('#categoria-error').textContent = 'Esta categoría la borraron desde otro dispositivo. Toque Cancelar.';
+      aviso('Se actualizó con cambios de otro dispositivo');
+    }, false).catch(e => { if (e && (e.estado === 401 || /TOKEN|USER_NOT_FOUND/.test(e.codigo || ''))) fallo(e); }); // si falla el internet, no se molesta
+  }
+  function vigilar() {
+    clearTimeout(reloj);
+    reloj = setTimeout(async () => {
+      await revisarCambios();
+      vigilar();
+    }, Date.now() - ultimoToque > QUIETO ? CADA_QUIETO : CADA);
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') { ultimoToque = Date.now(); revisarCambios(); }
   });
 
   // ---------------------------------------------------------------------------
