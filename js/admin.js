@@ -168,23 +168,30 @@
     cola = hecha.catch(() => {});
     return hecha;
   }
-  async function guardarYa(cambios) {
-    try {
-      estado.version = await BD.guardarRestaurante(estado.slug, cambios, estado.version);
-      Object.assign(estado.datos, cambios);
-    } catch (e) {
-      // Si la cambiaron desde otro celular, se trae lo último para no pisarlo
-      if (/FAILED_PRECONDITION/.test(e.codigo)) await cargar().catch(() => {});
-      throw e;
+  // La misma cuenta puede estar abierta en varios dispositivos (el celular de Willy, el computador...).
+  // Si la carta cambió desde otro, Firebase rechaza el guardado (la versión ya no es la que se leyó):
+  // entonces se trae lo último y el cambio se vuelve a armar encima, sin pedirle nada a nadie.
+  // Así nunca se pisa lo que hizo el otro dispositivo y tampoco hay que repetir el cambio
+  async function conReintento(armar) {
+    for (let intento = 1; ; intento++) {
+      const cambios = armar();
+      try {
+        estado.version = await BD.guardarRestaurante(estado.slug, cambios, estado.version);
+        Object.assign(estado.datos, cambios);
+        return;
+      } catch (e) {
+        if (!/FAILED_PRECONDITION/.test(e.codigo) || intento >= 3) throw e;
+        await traerUltima();
+      }
     }
   }
-  const guardar = cambios => enOrden(() => guardarYa(cambios));
+  const guardar = cambios => enOrden(() => conReintento(() => cambios));
   // El cambio se arma sobre la carta como esté cuando le llega el turno (con lo anterior ya guardado)
-  const cambiarCarta = modificar => enOrden(async () => {
+  const cambiarCarta = modificar => enOrden(() => conReintento(() => {
     const nuevas = structuredClone(categorias());
     modificar(nuevas);
-    await guardarYa({ categorias: nuevas });
-  });
+    return { categorias: nuevas };
+  }));
 
   // ---------------------------------------------------------------------------
   // Entrar, recordar contraseña, cambiar contraseña
@@ -279,12 +286,15 @@
     }
   }
 
-  async function cargar() {
+  async function traerUltima() {
     let r = await BD.leerRestaurante(estado.slug);
     if (!r) r = await BD.crearRestaurante(estado.slug, await cartaInicial());
     estado.datos = { horario: [], categorias: [], ...r.datos };
     estado.version = r.version;
     $('#panel-nombre').textContent = estado.datos.nombre;
+  }
+  async function cargar() {
+    await traerUltima();
     $('#ver-carta').href = C.raiz;
     pintarPlatos();
     pintarLocal();
@@ -338,8 +348,8 @@
     cont.replaceChildren(...cats.map((c, i) => el('section', { class: 'categoria' },
       el('div', { class: 'categoria-cab' },
         el('h2', {}, c.nombre + ' ', el('small', { texto: '(' + c.platos.length + ')' })),
-        botonIcono('arriba', 'Subir categoría', i === 0, () => moverCategoria(i, -1)),
-        botonIcono('abajo', 'Bajar categoría', i === cats.length - 1, () => moverCategoria(i, 1)),
+        botonIcono('arriba', 'Subir categoría', i === 0, () => moverCategoria(c.id, -1)),
+        botonIcono('abajo', 'Bajar categoría', i === cats.length - 1, () => moverCategoria(c.id, 1)),
         botonIcono('lapiz', 'Editar categoría', false, () => editarCategoria(c))),
       c.platos.length
         ? el('ul', { class: 'lista' }, ...c.platos.map(p => filaPlato(c, p)))
@@ -391,9 +401,13 @@
     }
   }
 
-  async function moverCategoria(i, delta) {
+  async function moverCategoria(id, delta) {
     try {
-      await cambiarCarta(cs => { [cs[i], cs[i + delta]] = [cs[i + delta], cs[i]]; });
+      await cambiarCarta(cs => {
+        const i = cs.findIndex(x => x.id === id);
+        if (i < 0 || !cs[i + delta]) return; // ya no está, o ya quedó de primera / de última
+        [cs[i], cs[i + delta]] = [cs[i + delta], cs[i]];
+      });
     } catch (e) {
       fallo(e);
     }
@@ -401,7 +415,8 @@
 
   // --- Editor de plato ---
   const ed = { catId: null, platoId: null, fotoNueva: null, fotoQuitada: false, subiendo: false, vista: null };
-  const platoEditado = () => ed.platoId && categoria(categorias(), ed.catId).platos.find(p => p.id === ed.platoId);
+  const platoEditado = () => ed.platoId && (categoria(categorias(), ed.catId) || { platos: [] }).platos.find(p => p.id === ed.platoId);
+  const YA_NO_ESTA = 'Ese plato ya no está en la carta: lo borraron desde otro dispositivo.';
 
   function editarPlato(c, p) {
     Object.assign(ed, { catId: c.id, platoId: p ? p.id : null, fotoNueva: null, fotoQuitada: false });
@@ -447,7 +462,9 @@
     $(boton).addEventListener('click', async () => {
       try {
         await cambiarCarta(cs => {
-          const lista = categoria(cs, ed.catId).platos, i = lista.findIndex(p => p.id === ed.platoId);
+          const lista = (categoria(cs, ed.catId) || { platos: [] }).platos, i = lista.findIndex(p => p.id === ed.platoId);
+          if (i < 0) throw new Error(YA_NO_ESTA);
+          if (!lista[i + delta]) return;
           [lista[i], lista[i + delta]] = [lista[i + delta], lista[i]];
         });
       } catch (e) {
@@ -525,10 +542,13 @@
         await cambiarCarta(cs => {
           let plato;
           if (ed.platoId) {
-            const origen = categoria(cs, ed.catId), i = origen.platos.findIndex(p => p.id === ed.platoId);
+            const origen = categoria(cs, ed.catId), i = origen ? origen.platos.findIndex(p => p.id === ed.platoId) : -1;
+            if (i < 0) throw new Error(YA_NO_ESTA);
+            if (!categoria(cs, destino)) throw new Error('Esa categoría ya no está: la borraron desde otro dispositivo.');
             plato = origen.platos[i];
             if (destino !== ed.catId) { origen.platos.splice(i, 1); categoria(cs, destino).platos.push(plato); }
           } else {
+            if (!categoria(cs, destino)) throw new Error('Esa categoría ya no está: la borraron desde otro dispositivo.');
             plato = { id: crypto.randomUUID() };
             categoria(cs, destino).platos.push(plato);
           }
@@ -554,11 +574,12 @@
   $('#plato-borrar').addEventListener('click', ev => {
     const boton = ev.currentTarget;
     confirmarDosVeces(boton, 'Borrar plato', '¿Seguro? Toque otra vez para borrar', () => ocupado(boton, async () => {
-      const p = platoEditado();
+      const p = platoEditado() || { id: ed.platoId, nombre: 'El plato', foto: null };
       try {
         await cambiarCarta(cs => {
-          const lista = categoria(cs, ed.catId).platos;
-          lista.splice(lista.findIndex(x => x.id === p.id), 1);
+          const lista = (categoria(cs, ed.catId) || { platos: [] }).platos;
+          const i = lista.findIndex(x => x.id === p.id);
+          if (i >= 0) lista.splice(i, 1); // si ya no está, ya lo borraron desde otro dispositivo
         });
         BD.borrarFotos(estado.slug, [p.foto, ed.fotoNueva]);
         ed.fotoNueva = null;
@@ -596,7 +617,11 @@
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
         await cambiarCarta(cs => {
-          if (catEditadaId) Object.assign(categoria(cs, catEditadaId), datos);
+          if (catEditadaId) {
+            const c = categoria(cs, catEditadaId);
+            if (!c) throw new Error('Esa categoría ya no está: la borraron desde otro dispositivo.');
+            Object.assign(c, datos);
+          }
           else cs.push({ id: crypto.randomUUID(), ...datos, platos: [] });
         });
         $('#editor-categoria').close();
@@ -608,13 +633,13 @@
   });
 
   $('#categoria-borrar').addEventListener('click', ev => {
-    const boton = ev.currentTarget, c = categoria(categorias(), catEditadaId);
+    const boton = ev.currentTarget, c = categoria(categorias(), catEditadaId) || { id: catEditadaId, nombre: 'La categoría', platos: [] };
     const pregunta = c.platos.length
       ? '¿Seguro? Se borran también sus ' + c.platos.length + ' platos. Toque otra vez'
       : '¿Seguro? Toque otra vez para borrar';
     confirmarDosVeces(boton, 'Borrar categoría', pregunta, () => ocupado(boton, async () => {
       try {
-        await cambiarCarta(cs => { cs.splice(cs.findIndex(x => x.id === c.id), 1); });
+        await cambiarCarta(cs => { const i = cs.findIndex(x => x.id === c.id); if (i >= 0) cs.splice(i, 1); });
         BD.borrarFotos(estado.slug, c.platos.map(p => p.foto));
         $('#editor-categoria').close();
         aviso(c.nombre + ' se borró');
@@ -630,7 +655,16 @@
   const CAMPOS = ['nombre', 'lugar', 'direccion', 'telefono', 'whatsapp', 'mapa', 'instagram', 'facebook', 'nota'];
   const NOMBRES = { mapa: 'Google Maps', instagram: 'Instagram', facebook: 'Facebook', telefono: 'teléfono', whatsapp: 'WhatsApp' };
 
+  let localSucio = false; // hay algo escrito en "Datos del local" que todavía no se guarda
+  let localBase = {};     // cómo estaban esos datos cuando se mostraron: se guardan solo los que cambien
+  $('#form-local').addEventListener('input', () => { localSucio = true; });
+  // Compara sin importar el orden de los campos (Firebase los devuelve en cualquier orden)
+  const ordenado = v => Array.isArray(v) ? v.map(ordenado) : v && typeof v === 'object'
+    ? Object.fromEntries(Object.keys(v).sort().map(k => [k, ordenado(v[k])])) : v ?? null;
+  const igual = (a, b) => JSON.stringify(ordenado(a)) === JSON.stringify(ordenado(b));
   function pintarLocal() {
+    localSucio = false;
+    localBase = structuredClone(Object.fromEntries([...CAMPOS, 'horario'].map(k => [k, estado.datos[k] ?? null])));
     for (const k of CAMPOS) $('#local-' + k).value = estado.datos[k] || '';
     $('#local-horario').replaceChildren(...estado.datos.horario.map(filaHorario));
     $('#local-error').textContent = '';
@@ -665,15 +699,33 @@
     datos.horario = [...$('#local-horario').children]
       .map(f => { const [dias, horas] = [...f.querySelectorAll('input')].map(i => i.value.trim()); return { dias, horas }; })
       .filter(h => h.dias || h.horas);
+    // Solo lo que se cambió aquí: si desde otro dispositivo cambiaron otro dato, no se devuelve a como estaba
+    const cambios = Object.fromEntries(Object.entries(datos).filter(([k, v]) => !igual(v, localBase[k])));
     await ocupado(ev.target.querySelector('[type=submit]'), async () => {
       try {
-        await guardar(datos);
+        if (Object.keys(cambios).length) await guardar(cambios);
+        Object.assign(localBase, structuredClone(cambios));
+        localSucio = false;
         $('#panel-nombre').textContent = estado.datos.nombre;
         aviso('Datos guardados');
       } catch (e) {
         fallo(e, '#local-error');
       }
     });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Varios dispositivos: al volver al panel (otra pestaña, o el celular que estaba bloqueado) se trae lo
+  // último que se haya cambiado desde otro lado. No se hace si hay algo a medio editar
+  // ---------------------------------------------------------------------------
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' || !estado.datos || $('#vista-panel').hidden) return;
+    if (enEspera || document.querySelector('dialog[open]')) return;
+    enOrden(async () => {
+      const antes = estado.version;
+      await traerUltima();
+      if (estado.version !== antes && !localSucio) pintarLocal(); // la lista de platos se repinta sola al terminar
+    }).catch(e => { if (e && (e.estado === 401 || /TOKEN|USER_NOT_FOUND/.test(e.codigo || ''))) fallo(e); }); // si falla el internet, no se molesta
   });
 
   // ---------------------------------------------------------------------------
