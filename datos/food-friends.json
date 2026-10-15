@@ -7,36 +7,36 @@
       "platos": [
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "lomo redondo queso, champiñon y maicitos acompañado con papas a la francesa, ensalada y arepitas",
           "etiqueta": null,
-          "foto": "cfa65d64-9b8b-42de-bda7-a1fc175ad5ff.webp",
+          "foto": "ac5b7830-3e5f-4d5a-bee9-2ea20ba7ceac.webp",
           "id": "9609608b-b3aa-4827-baf2-a3b3ec61425b",
           "nombre": "Especial de la casa",
           "precio": 43000
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "Platano verde con mixto, queso, maicitos, cabano, tocineta y salsa de la casa acompañado de ensalada y papas a la francesa.",
           "etiqueta": null,
-          "foto": "53ccc6a8-9c7f-4f72-847c-0cea60aaf520.webp",
+          "foto": "d385da54-4c2f-4a6e-811e-de9e744d8689.webp",
           "id": "24840ef5-46fb-4363-9b38-18873b4e76e2",
           "nombre": "Tostada especial",
           "precio": 35000
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "zanahoria, lechuga, tomate, maicitos, queso, pollo desmechado y vinagreta.",
           "etiqueta": null,
-          "foto": "127356f2-9c8f-4319-8153-bdb93eb41eaa.webp",
+          "foto": "7ecf1108-7d55-4862-a296-9893c294df10.webp",
           "id": "12cb2d07-84cf-471f-a1f5-33ae4ece2e2d",
           "nombre": "Ensalada especial",
           "precio": 27000
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "trozos de pollo apanado acompañados de papas a la francesa y salsa de la casa.",
           "etiqueta": null,
-          "foto": "77aa92af-99e9-4c19-9f04-4919a51fad3a.webp",
+          "foto": "11e9dc1c-87c6-49dc-83b7-336f6e36c597.webp",
           "id": "ab302be2-9b26-4cb5-81b3-8c0c58e83822",
           "nombre": "Tornado de pollo",
           "precio": 30500
@@ -45,13 +45,13 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "f8e83df0-d2d0-4aaa-a8cc-2e0a1e96537c.webp",
+          "foto": "b49f06b8-3cc0-4aab-b7af-34f2bb54a1df.webp",
           "id": "abced2dd-88b0-4fa9-8783-dd2f0a44fc45",
           "nombre": "Sándwich",
           "precio": 26000
         },
         {
-          "agotado": false,
+          "agotado": true,
           "descripcion": null,
           "etiqueta": null,
           "foto": "774764c7-3f59-490e-b186-61ea377cdb1c.webp",
@@ -68,18 +68,18 @@
       "platos": [
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "Tortilla de harina con mixto, maicitos, cabano, queso acompañado de ensalada y papas a la francesa.",
           "etiqueta": null,
-          "foto": "0ecb0ceb-1097-48e3-8caf-fc80673cf244.webp",
+          "foto": "a1c03953-0abb-44e3-877a-c7babc434238.webp",
           "id": "a2c0d386-9165-49cd-9d14-364671f1601d",
           "nombre": "Burrito mixto especial",
           "precio": 32000
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "tortilla de harina, chile con carne, jalapeños y queso acompañado de papas a la francesa y ensalada.",
           "etiqueta": null,
-          "foto": "7e24ea10-5f36-458d-99ab-b47052c971e0.webp",
+          "foto": "2bc76d19-46a7-464f-9197-f1f7fc1ee238.webp",
           "id": "957b0d0a-56a4-45e5-be42-3e24e8240037",
           "nombre": "Burrito endiablado",
           "precio": 33000
@@ -88,7 +88,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "ca2b76c2-0ef5-4231-a167-c6d456481b68.webp",
+          "foto": "742bf4df-57f2-4e98-8d79-35304741afe6.webp",
           "id": "9a90df5a-1ab7-443d-8965-46908b3ee9f8",
           "nombre": "Burrito vegetariano",
           "precio": 30000
@@ -97,7 +97,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "5ebf2e5b-c73a-48ef-bddd-62cd3ca2c108.webp",
+          "foto": "8ad2af2b-47ff-4ba6-8d01-be7b542df6fb.webp",
           "id": "e3c73050-9cea-4bba-87c5-42004f4958a2",
           "nombre": "Tortilla de pollo y jalapeño",
           "precio": 28500
@@ -106,7 +106,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "91736a01-2bf0-4976-9670-deb3c7f6cf19.webp",
+          "foto": "54c82dcc-adec-4b36-a0e5-17d4ce7386c0.webp",
           "id": "9a1e0f5b-7450-4f47-85f9-08df0636aa22",
           "nombre": "Tortilla de chile con carne",
           "precio": 28500
@@ -115,7 +115,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "e45375c8-9479-416b-bdd3-88978ab8df4b.webp",
+          "foto": "73d9d4b6-3136-4dec-b138-ac7efe612b3d.webp",
           "id": "890f1fd1-e8e1-41ac-8afe-f5235b533ee9",
           "nombre": "Nachos de chile con carne",
           "precio": 29000
@@ -124,7 +124,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "bed5bcce-2d09-4119-aaec-95a3c38800ea.webp",
+          "foto": "6b4b796e-44d5-412a-b1d0-65270559e4b6.webp",
           "id": "389e0efc-42d0-417e-b366-90b98ea84a8f",
           "nombre": "Nachos con salsa de queso",
           "precio": 21000
@@ -140,7 +140,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "82f487a9-6026-4e2b-bd6e-56f39435b2f6.webp",
+          "foto": "9cadcc2d-b5ea-4d3a-8222-536e2e1c5a6c.webp",
           "id": "3b929305-13c9-41e4-bf0f-5aadd4acda26",
           "nombre": "Perro especial x2",
           "precio": 32000
@@ -149,7 +149,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "b7825ae7-b69a-43f1-a420-488fc6d8fb78.webp",
+          "foto": "998857f0-14cb-45f4-a100-95f8a3c1314a.webp",
           "id": "375f554d-bf65-4509-bd05-7721dbb114f1",
           "nombre": "Alitas BBQ x2",
           "precio": 34000
@@ -158,7 +158,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "8193357a-3f84-4158-9fb7-946d1e0c3c46.webp",
+          "foto": "260c99c0-2ed3-4c03-a504-113e9ad355ad.webp",
           "id": "14928797-b8e9-49d5-89f4-b1cf07dedc5f",
           "nombre": "Arepa especial x2",
           "precio": 34000
@@ -167,7 +167,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "935494ee-206c-4913-87bb-f8a0278f15c4.webp",
+          "foto": "01edc621-ad2f-467d-9561-b55d05547d89.webp",
           "id": "a349729d-9c58-4124-8ad5-4680976dfab2",
           "nombre": "Arepa especial x1",
           "precio": 20000
@@ -176,7 +176,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "ced46cd1-bddf-446b-93d1-18222950dc7e.webp",
+          "foto": "ed810604-f438-4476-9647-cc075bee0756.webp",
           "id": "8855c35f-23a8-4a5d-a1dc-8724e85d1fe0",
           "nombre": "Arepa con queso",
           "precio": 10000
@@ -185,7 +185,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "6e87ab2e-d2a8-4bf4-94fc-5b720e6d9047.webp",
+          "foto": "f9a7bab0-8165-4fce-9079-0075d3ac13e7.webp",
           "id": "4186bc82-ae61-46c2-b6da-36736dd443eb",
           "nombre": "Lasaña x2",
           "precio": 42000
@@ -210,7 +210,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "623fa678-9aa3-4dc4-89f8-69ba8571e3d7.webp",
+          "foto": "61e420f1-c742-499b-b55d-7dec1e157c71.webp",
           "id": "aea4929b-5a02-4755-ad0e-84cf26272c3d",
           "nombre": "Salchipapa especial",
           "precio": 29000
@@ -219,7 +219,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "7e0b8aba-b838-4039-af6c-dd1d5cd7bc1d.webp",
+          "foto": "dc5523fa-f919-4c01-9e9a-6dba6313ecc3.webp",
           "id": "d2168e33-e96f-45af-a8ba-5c8d3402d3c0",
           "nombre": "Salchipapa sencilla",
           "precio": 22000
@@ -228,7 +228,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "69ff666f-130e-4a30-8129-dc7d5cf6bc6e.webp",
+          "foto": "177c1a5e-e395-4edd-b678-ea877bbf3da3.webp",
           "id": "59e606c5-e0b2-4212-9ffb-2556e3177c6e",
           "nombre": "Chicharrón con yuca",
           "precio": 27000
@@ -246,7 +246,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "0b1950c9-4619-4422-ae17-7e1fd3a798c7.webp",
+          "foto": "fa35089b-c90e-4eef-b5fa-9f4e893d4216.webp",
           "id": "855752ad-e3f5-449c-beb1-5248b91a2fca",
           "nombre": "Yuca con chorizo",
           "precio": 19900
@@ -255,7 +255,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "ec8a268f-145b-49e4-8578-8e57143ef195.webp",
+          "foto": "a79f0f73-3335-4f53-87f2-5913db8374e0.webp",
           "id": "5c2fa44c-8dac-4503-8924-ddecfb838e8c",
           "nombre": "Papas con tocineta",
           "precio": 15500
@@ -264,7 +264,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "7d10bdce-6cb1-417f-929d-8dfbb656121b.webp",
+          "foto": "c50a76dd-2c31-4c50-88da-e2722678d8ee.webp",
           "id": "62e8f099-eeaa-4976-b703-62c0a379cb92",
           "nombre": "Chorizo con arepa",
           "precio": 15000
@@ -289,7 +289,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "2254e73f-8ae4-4a3d-9d85-49d6dd5c016d.webp",
+          "foto": "2ec588a2-56b6-43eb-8f22-cc15dc18648b.webp",
           "id": "8a95af28-3c44-48eb-9582-f45a35bfc91a",
           "nombre": "Churrasco 250 g",
           "precio": 39000
@@ -298,7 +298,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "12d12bfd-5018-4217-b951-dbe82740e6fa.webp",
+          "foto": "242850b5-1773-4cda-a19c-ca2a044b1afc.webp",
           "id": "1fb41860-85fc-4011-bb0b-26cb1205ac9e",
           "nombre": "Churrasco de pollo",
           "precio": 35000
@@ -307,7 +307,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "d0b3e3d3-e53c-44df-937f-53ba31c5defe.webp",
+          "foto": "112d26ec-920d-4447-bfb5-343cab595cbb.webp",
           "id": "24a9f836-bb09-4c61-9585-5362ce1e1a20",
           "nombre": "Picada para dos",
           "precio": 38500
@@ -316,7 +316,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "cc8aa6af-4730-4bee-9b44-9a0481a80b61.webp",
+          "foto": "d1e10843-b0bd-4975-8e06-773097762f62.webp",
           "id": "804e397d-a36d-418f-994d-935f08751769",
           "nombre": "Picada para cuatro",
           "precio": 71900
@@ -325,7 +325,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "53c448b4-40eb-4cf9-a3f8-0807838adff2.webp",
+          "foto": "7e815160-8bba-4b00-bc77-bb9cd699e777.webp",
           "id": "45f4a2d6-1e9a-44e0-be5a-2507315214cc",
           "nombre": "Costilla San Luis 500 g",
           "precio": 38000
@@ -334,7 +334,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "ed4cd1c6-b665-4716-8d7b-2317e0bfb64b.webp",
+          "foto": "7344f1bb-81e1-4216-8da9-c5fc39459aa7.webp",
           "id": "3b9652e4-eb08-43c8-a1c7-997fb9bd747a",
           "nombre": "Pollo a la plancha 250 g",
           "precio": 35000
@@ -350,7 +350,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "ca9bf45d-42f2-4d01-a9f7-1590abf701b4.webp",
+          "foto": "fc7ce218-4cfa-4ab0-8c07-6e1982ae07a1.webp",
           "id": "fef62ac6-7bcc-463f-84d6-6fafa5ac8695",
           "nombre": "Angus importada 200 g",
           "precio": 32000
@@ -359,7 +359,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "bb7b4ea4-f574-454e-8c33-3fc164cb997a.webp",
+          "foto": "46d7030a-c53f-4bf6-acd8-c0ea7e48cec2.webp",
           "id": "4b9cee55-bed5-4ffe-9d24-56cc418b9706",
           "nombre": "De costilla",
           "precio": 31000
@@ -368,7 +368,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "b23dfd05-60b6-46c0-a2e5-468ba610f2f3.webp",
+          "foto": "2a211a17-41b8-4786-aac8-e46e164332d6.webp",
           "id": "40483b19-565a-4168-99cd-a5cc20eacefe",
           "nombre": "Ranchera",
           "precio": 31000
@@ -377,7 +377,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "9a8233f1-6ee2-49e9-a475-6028d4a67d8d.webp",
+          "foto": "3ffa2327-183b-4042-829a-b2f7b01b4033.webp",
           "id": "b4a4dc74-4835-4604-8365-6d22f92877d8",
           "nombre": "Montañera",
           "precio": 29000
@@ -386,7 +386,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "41da38db-0dc0-40af-8208-35c017bf9558.webp",
+          "foto": "e0336306-cdda-44f6-b4ad-ba9784ca664b.webp",
           "id": "bb4b4795-0c66-48fc-a4ac-d555eada6e2a",
           "nombre": "Res fusión x2",
           "precio": 33000
@@ -410,7 +410,7 @@
           "precio": 35000
         },
         {
-          "agotado": false,
+          "agotado": true,
           "descripcion": null,
           "etiqueta": null,
           "foto": "4cd729cb-6766-4874-8866-14f2d333e657.webp",
@@ -422,7 +422,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "b462bf8f-5307-440f-971a-f44a22cd3215.webp",
+          "foto": "816aa14b-f8b2-4180-9b99-b8c28a181ff1.webp",
           "id": "547fab09-e1e1-434b-993b-9273fdbf9648",
           "nombre": "Vegetariana",
           "precio": 24000
@@ -438,7 +438,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "64c8e47f-309b-42de-8898-11290d18536f.webp",
+          "foto": "31ffb8e6-d373-4dcc-a36a-646acd3be6d3.webp",
           "id": "d0937994-7fd1-46a5-8115-065b815eb737",
           "nombre": "Limonada de coco",
           "precio": 13500
@@ -447,7 +447,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "81a5294a-39dd-48fd-b0bc-4c049057a339.webp",
+          "foto": "ec9c5a6a-154d-4dc4-b04f-2e1c926c18d9.webp",
           "id": "8578f6fc-110c-423d-8162-99f66e045b66",
           "nombre": "Limonada de cereza",
           "precio": 13500
@@ -456,7 +456,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "cbeb7ccf-02a5-438e-a7bb-b701c0baec69.webp",
+          "foto": "e04c9a90-68da-4ce3-8f07-a0ea201131a5.webp",
           "id": "536882d6-dd67-40cd-a561-82b270f63479",
           "nombre": "Limonada de mango biche",
           "precio": 13500
@@ -474,7 +474,7 @@
           "agotado": false,
           "descripcion": null,
           "etiqueta": null,
-          "foto": "f9e012b9-9e40-4f67-ac27-793cc74bfcde.webp",
+          "foto": "102a6927-e754-4c42-952d-a813706de177.webp",
           "id": "0e835f84-3a6e-4fc6-ab3a-beb4f0d38f25",
           "nombre": "Limonada de hierbabuena",
           "precio": 11500
