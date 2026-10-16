@@ -43,7 +43,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "pan artesanal, lechuga, tomate, tocineta, queso, y pollo desmechado acompañado de papas a la francesa.",
           "etiqueta": null,
           "foto": "b49f06b8-3cc0-4aab-b7af-34f2bb54a1df.webp",
           "id": "abced2dd-88b0-4fa9-8783-dd2f0a44fc45",
@@ -86,7 +86,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "tortilla de harina, carne de lenteja, maiz, champiñones. acompañado de papas a la francesa y ensalda.",
           "etiqueta": null,
           "foto": "742bf4df-57f2-4e98-8d79-35304741afe6.webp",
           "id": "9a90df5a-1ab7-443d-8965-46908b3ee9f8",
@@ -95,7 +95,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "tortilla de maiz, con pollo desmechado, jalapeño pico de gallo y queso cheddar.",
           "etiqueta": null,
           "foto": "8ad2af2b-47ff-4ba6-8d01-be7b542df6fb.webp",
           "id": "e3c73050-9cea-4bba-87c5-42004f4958a2",
@@ -104,7 +104,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "tortilla de maiz, chile con carne, jalapeño, pico de gallo y queso cheddar",
           "etiqueta": null,
           "foto": "54c82dcc-adec-4b36-a0e5-17d4ce7386c0.webp",
           "id": "9a1e0f5b-7450-4f47-85f9-08df0636aa22",
@@ -113,7 +113,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "nachos, chile con carne, pico de gallo y queso cheddar",
           "etiqueta": null,
           "foto": "73d9d4b6-3136-4dec-b138-ac7efe612b3d.webp",
           "id": "890f1fd1-e8e1-41ac-8afe-f5235b533ee9",
@@ -122,7 +122,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "nachos, pico de gallo y queso cheddar.",
           "etiqueta": null,
           "foto": "6b4b796e-44d5-412a-b1d0-65270559e4b6.webp",
           "id": "389e0efc-42d0-417e-b366-90b98ea84a8f",
@@ -138,7 +138,7 @@
       "platos": [
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "Pan, salchicha americana, queso, tocineta, ripido y salsa de la casa.",
           "etiqueta": null,
           "foto": "9cadcc2d-b5ea-4d3a-8222-536e2e1c5a6c.webp",
           "id": "3b929305-13c9-41e4-bf0f-5aadd4acda26",
@@ -147,7 +147,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "8 porciones de alitas 4 en cada plato. \nbbq- miel mostaza o picantes\nacompañadas de papas a la francesa y ensalada.",
           "etiqueta": null,
           "foto": "998857f0-14cb-45f4-a100-95f8a3c1314a.webp",
           "id": "375f554d-bf65-4509-bd05-7721dbb114f1",
@@ -156,7 +156,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "2 arepas con mixto, chicharron, queso, ripido y salsa de la casa acompañado de papas a la francesa y ensalada.",
           "etiqueta": null,
           "foto": "260c99c0-2ed3-4c03-a504-113e9ad355ad.webp",
           "id": "14928797-b8e9-49d5-89f4-b1cf07dedc5f",
@@ -165,7 +165,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "1 arepa con mixto, chicharron, queso, ripido y salsa de la casa acompañado de papas a la francesa y ensalada",
           "etiqueta": null,
           "foto": "01edc621-ad2f-467d-9561-b55d05547d89.webp",
           "id": "a349729d-9c58-4124-8ad5-4680976dfab2",
@@ -174,7 +174,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "1 arepa con queso encima.",
           "etiqueta": null,
           "foto": "ed810604-f438-4476-9647-cc075bee0756.webp",
           "id": "8855c35f-23a8-4a5d-a1dc-8724e85d1fe0",
@@ -183,7 +183,7 @@
         },
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "2 lasagnas mixtas acompañadas de rodajas de pan.",
           "etiqueta": null,
           "foto": "f9a7bab0-8165-4fce-9079-0075d3ac13e7.webp",
           "id": "4186bc82-ae61-46c2-b6da-36736dd443eb",
@@ -199,7 +199,7 @@
       "platos": [
         {
           "agotado": false,
-          "descripcion": null,
+          "descripcion": "200 gramos de papas a la francesa",
           "etiqueta": null,
           "foto": "6fa5813a-3323-4aef-b9cb-a34cffe6f275.webp",
           "id": "2e0b3b17-9939-45cf-b374-c2427b3559ef",
