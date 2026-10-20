@@ -14,8 +14,13 @@
   - body[data-subtitulo] cambia el "La carta" de la cabecera; body[data-botones="no"] quita los botones de arriba
   - body[data-fotos] pone la foto de cada plato; sin foto sale un espacio con un dibujo de la categoría.
     Con data-fotos="si-hay" solo salen las fotos que existen, sin espacio para las que faltan.
+  Se puede llamar otra vez con datos nuevos: la carta se vuelve a armar de cero. window.actualizarPlatos(datos) cambia
+  en su sitio solo los platos (nombre, precio, descripción, agotado), sin volver a armar nada.
 */
 (function () {
+  // La categoría resaltada según por dónde va la persona: los avisos del navegador se ponen una sola vez y llaman a la
+  // carta que esté pintada
+  let alMoverse = null;
   // Se llama con los datos de la carta; si la página ya trae window.MENU, se pinta de una vez
   window.pintarCarta = function (M) {
     const N = M.negocio || {};
@@ -66,6 +71,17 @@
       vacia.append(svg, el('span', '', 'Foto'));
       return vacia;
     }
+    // Lo escrito de un plato: el nombre (con "Agotado" o su etiqueta), el precio y la descripción
+    function textosPlato(p) {
+      const fila = el('div', 'fila');
+      const nombre = el('span', 'nombre', p.nombre);
+      const marca = p.agotado ? 'Agotado' : p.etiqueta;
+      if (marca) nombre.append(' ', el('span', 'marca', marca));
+      fila.append(nombre, el('span', 'puntos'));
+      const precio = formatoPrecio(p.precio);
+      if (precio) fila.append(el('span', 'precio', precio));
+      return p.descripcion ? [fila, el('p', 'desc', p.descripcion)] : [fila];
+    }
     function enlace(clase, texto, href) {
       const a = el('a', clase, texto);
       a.href = href;
@@ -87,6 +103,8 @@
       : (p || '');
 
     document.title = (N.nombre || 'Carta') + ' · Carta';
+    // Si la carta se vuelve a armar (con lo de hoy, que llegó después), se empieza de cero
+    for (const id of ['cabecera', 'chips', 'carta', 'pie']) if ($(id)) $(id).textContent = '';
 
     // Cabecera
     const cab = $('cabecera');
@@ -179,15 +197,7 @@
       c.platos.forEach(p => {
         const item = el('li', 'plato' + (p.agotado ? ' agotado' : ''));
         if (p.id) item.dataset.id = p.id;
-        const fila = el('div', 'fila');
-        const nombre = el('span', 'nombre', p.nombre);
-        const marca = p.agotado ? 'Agotado' : p.etiqueta;
-        if (marca) nombre.append(' ', el('span', 'marca', marca));
-        fila.append(nombre, el('span', 'puntos'));
-        const precio = formatoPrecio(p.precio);
-        if (precio) fila.append(el('span', 'precio', precio));
-        item.append(fila);
-        if (p.descripcion) item.append(el('p', 'desc', p.descripcion));
+        item.append(...textosPlato(p));
         // .con-foto en vez de :has(.foto) en el CSS: algunos iPhone no entienden :has()
         if (fotos !== undefined && (p.foto || fotos !== 'si-hay')) { item.append(foto(p, c)); item.classList.add('con-foto'); }
         lista.append(item);
@@ -261,21 +271,47 @@
       if (activa) enlaces.get(activa).setAttribute('aria-current', 'true');
       centrar(activa && enlaces.get(activa));
     }
-    let pendiente = false;
-    addEventListener('scroll', () => {
-      if (pendiente) return;
-      pendiente = true;
-      requestAnimationFrame(() => { pendiente = false; marcar(); });
-    }, { passive: true });
-    addEventListener('resize', () => { medir(); marcar(); });
+    if (!alMoverse) {
+      let pendiente = false;
+      addEventListener('scroll', () => {
+        if (pendiente) return;
+        pendiente = true;
+        requestAnimationFrame(() => { pendiente = false; alMoverse.marcar(); });
+      }, { passive: true });
+      addEventListener('resize', () => { alMoverse.medir(); alMoverse.marcar(); });
+    }
+    alMoverse = { medir, marcar };
     medir();
     marcar();
+
+    // Lo de hoy, en su sitio: cada plato que cambió (nombre, precio, descripción, agotado) y su tarjeta de "Los más
+    // pedidos" (si se agotó, se esconde). Si cambió la foto, la nueva se pide y la vieja se ve mientras llega. Devuelve
+    // esas fotos, para que la página que pinta la carta las traiga
+    window.actualizarPlatos = function (M2) {
+      const cambiadas = [];
+      for (const c of M2.categorias || []) for (const p of c.platos || []) {
+        if (!p.id) continue;
+        carta.querySelectorAll('.cat .plato[data-id="' + p.id + '"]').forEach(item => {
+          item.querySelectorAll(':scope > .fila, :scope > .desc').forEach(e => e.remove());
+          item.prepend(...textosPlato(p));
+          item.classList.toggle('agotado', !!p.agotado);
+          const img = item.querySelector(':scope > img.foto');
+          if (img && p.fotoId && img.dataset.foto !== p.fotoId) { img.dataset.foto = p.fotoId; delete img.dataset.pedida; cambiadas.push(img); }
+        });
+        carta.querySelectorAll('.mas-pedidos .fav[data-id="' + p.id + '"]').forEach(t => {
+          t.querySelector('.fav-nombre').textContent = p.nombre;
+          t.querySelector('.precio').textContent = formatoPrecio(p.precio);
+          t.hidden = !!p.agotado;
+        });
+      }
+      return cambiadas;
+    };
 
     // Barra de la propuesta: solo cuando el diseño se abre desde la presentación (no dentro de un marco)
     const P = window.PROPUESTA;
     const pagina = location.pathname.split('/').pop().replace('.html', '');
     const i = P ? P.opciones.findIndex(o => o.id === pagina) : -1;
-    if (i < 0 || window.top !== window) return;
+    if (i < 0 || window.top !== window || document.querySelector('.propuesta-barra')) return;
     const total = P.opciones.length;
     const ir = n => P.opciones[(n + total) % total].id + '.html';
     const estilo = el('style');

@@ -86,6 +86,7 @@
     if (mas) mas.after(capsulas); else carta.prepend(capsulas);
     if (window.vigilarFotos) window.vigilarFotos(capsulas);
     // La fila de secciones de arriba (con la sección abierta)
+    fila.textContent = '';
     for (const s of secs) {
       const b = el('button', '', s.nombre);
       b.type = 'button';
@@ -136,12 +137,15 @@
     marco.classList.toggle('mas-izq', fila.scrollLeft > 2);
     marco.classList.toggle('mas-der', fila.scrollLeft < max - 2);
   }
-  // Sube o baja la página de una vez (el html tiene scroll-behavior: smooth)
+  // Sube o baja la página de una vez (el html tiene scroll-behavior: smooth). El cambio a "auto" se tiene que aplicar antes
+  // de mover (getComputedStyle lo obliga): si no, el navegador todavía lo tenía en suave y la página subía despacio
+  // ("empieza desde abajo y sube") al cambiar de sección o al volver a las cápsulas
   function irA(y) {
-    const estilo = document.documentElement.style, antes = estilo.scrollBehavior;
-    estilo.scrollBehavior = 'auto';
+    const html = document.documentElement, antes = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    void getComputedStyle(html).scrollBehavior;
     window.scrollTo(0, y);
-    estilo.scrollBehavior = antes;
+    html.style.scrollBehavior = antes;
   }
   function abrir(id, empujar) {
     if (!document.body.classList.contains('con-capsulas') || !document.getElementById(id)) return; // apagadas (ver prender) o ya no existe
@@ -187,8 +191,11 @@
     delete document.body.dataset.seccion;
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
     const y = dondeDe(ultima);
+    // Si el enfoque estaba en la barra (con el teclado), vuelve a la cápsula de la última sección que se vio
+    const conTeclado = barra.contains(document.activeElement);
     irA(y);
     requestAnimationFrame(() => irA(y));
+    if (conTeclado) { const c = capsulas.querySelector('.capsula[data-sec="' + CSS.escape(ultima) + '"]'); if (c) c.focus({ preventScroll: true }); }
   }
 
   function preparar() {
@@ -214,7 +221,13 @@
         if (window.resaltarPlato) window.resaltarPlato(plato);
       });
     }, true);
-    capsulas.addEventListener('click', ev => { const b = ev.target.closest('.capsula'); if (b) abrir(b.dataset.sec, true); });
+    capsulas.addEventListener('click', ev => {
+      const b = ev.target.closest('.capsula');
+      if (!b) return;
+      abrir(b.dataset.sec, true);
+      // Con el teclado (Enter o espacio), el enfoque pasa a la sección abierta en la fila: la cápsula ya no se ve
+      if (ev.detail === 0) { const actual = fila.querySelector('[aria-current="true"]'); if (actual) actual.focus({ preventScroll: true }); }
+    });
     // Apenas el dedo toca una cápsula se piden las fotos de su sección: cuando se abre, ya van llegando
     capsulas.addEventListener('touchstart', ev => {
       const b = ev.target.closest('.capsula');
@@ -226,6 +239,18 @@
     });
     const volver = barra.querySelector('.seccion-volver');
     volver.addEventListener('click', salir);
+    // En el computador, con el teclado: Esc vuelve a las cápsulas y las flechas de lado pasan a la sección de al lado
+    // (no si se está escribiendo o con una tecla de control apretada)
+    document.addEventListener('keydown', ev => {
+      if (!abierta || ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || /input|textarea|select/i.test(ev.target.tagName)) return;
+      if (ev.key === 'Escape') { ev.preventDefault(); salir(); return; }
+      const paso = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0;
+      if (!paso) return;
+      const ids = [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec), otra = ids[ids.indexOf(abierta) + paso];
+      if (!otra) return;
+      ev.preventDefault();
+      if (deslizador) deslizador.pasarA(otra); else abrir(otra, false);
+    });
     // "Volver arriba" del pie, con una sección abierta: sube dentro de la sección (el #arriba está escondido)
     document.addEventListener('click', ev => {
       if (!abierta || !ev.target.closest('a[href="#arriba"]')) return;
@@ -535,6 +560,10 @@
       fila0 = fila.scrollLeft;
       anchoFijo = sec.offsetWidth + ESPACIO;
       xSec = 0;
+      // Las preparadas, a la altura donde va la página ahora (en el computador no hay dedo que lo haga al tocar) y cada una
+      // a su lado: si no, al correrse la abierta quedaba a la vista la del otro lado, con su texto encima
+      prepararVecinas();
+      correrPreparadas();
       ponerVecina(a > de ? 1 : -1, id);
       vecina.style.transition = 'none';
       vecina.style.transform = 'translateX(' + lado * ancho() + 'px)';
@@ -578,6 +607,13 @@
   }
 
   window.Capsulas = {
+    // La carta se volvió a armar (llegó lo de hoy de Firebase): las cápsulas y la fila, otra vez
+    repintar() {
+      if (!listo || !document.body.classList.contains('con-capsulas')) return;
+      if (abierta) cerrar();
+      if (deslizador) deslizador.cancelar();
+      pintar();
+    },
     prender(opciones) {
       if (listo || !document.querySelector('#carta .cat')) return;
       listo = true;

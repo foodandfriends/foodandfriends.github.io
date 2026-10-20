@@ -32,6 +32,15 @@
 <link rel="preload" href="fuentes/oswald-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fuentes/kaushan-script-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<!-- La copia de la carta (sale con ella mientras llega lo de hoy de Firebase), pedida desde ya -->
+<link rel="preload" href="datos/food-friends.json" as="fetch" crossorigin>
+<!-- El código, pedido de una vez y todo a la vez (antes, al final de la página, se pedía un archivo después del otro);
+     corre en orden cuando la página ya está leída -->
+<script src="js/config.js?v=202610202110" defer></script>
+<script src="js/firebase.js?v=202610202110" defer></script>
+<script src="js/carta.js?v=202610202110" defer></script>
+<script src="js/capsulas.js?v=202610202110" defer></script>
+<script src="js/carta-publica.js?v=202610202110" defer></script>
 <style>
   /* Oswald: la letra gruesa y angosta del menú impreso (una sola letra para todos los gruesos). Kaushan Script: la de
      "La carta" y la historia. Son de Google Fonts (licencia libre, ver fuentes/LEAME.txt), solo con las letras del español */
@@ -64,7 +73,7 @@
   html.viendo-seccion { background: rgb(var(--pagina)); }
 
   /* Pantalla de entrada: solo el logo sobre blanco mientras carga; luego se desvanece sobre la carta */
-  .portada { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--fondo); transition: opacity .6s ease, visibility .6s;
+  .portada { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--fondo); transition: opacity .35s ease, visibility .35s;
     animation: salida .6s ease 8s forwards; } /* seguro: si algo falla, a los 8 s se quita sola */
   @keyframes salida { to { opacity: 0; visibility: hidden; } }
   .portada img { width: min(46vw, 200px); height: auto; filter: drop-shadow(0 12px 28px rgba(0, 0, 0, .18)); animation: aparecer .5s ease both; }
@@ -170,6 +179,7 @@
   /* El espacio entre tarjetas y entre botones va con márgenes y no con gap: en los iPhone con iOS 14.0 o menos, gap en una
      fila (flex) no sirve y quedaban pegados */
   .fav + .fav { margin-left: 12px; }
+  .fav[hidden] { display: none; } /* se agotó mientras la carta estaba abierta */
   /* Al dejar el dedo quieto sobre una foto o una cápsula, el iPhone no saca el menú de "Guardar imagen" ni selecciona el
      texto, y al deslizar empezando sobre una foto no la arrastra: el toque es de la cápsula, la tarjeta o el plato */
   .capsula, .fav, .seccion-fila button, .seccion-volver { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
@@ -284,11 +294,6 @@
 <main class="col" id="carta"><p class="cargando" id="cargando" role="status">Cargando la carta…</p></main>
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p><style>.portada { display: none; }</style></noscript>
-<script src="js/config.js?v=202610201913"></script>
-<script src="js/firebase.js?v=202610201913"></script>
-<script src="js/carta.js?v=202610201913"></script>
-<script src="js/capsulas.js?v=202610201913"></script>
-<script src="js/carta-publica.js?v=202610201913"></script>
 <!-- Contador de visitas de Cloudflare Web Analytics: sin cookies y sin guardar nada en el celular de quien la abre.
      Va solo en la carta (no en el panel), para que las ediciones de Willy no cuenten como visitas -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d0b572e4f29e4353a2231dce34d57f63"}'></script>
