@@ -14,7 +14,7 @@
 (function () {
   const ATRAS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const SEGUIR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  // Las secciones de trago: ahí sí va el aviso del alcohol del pie, que la ley pide donde se ofrece
+  // Las secciones de trago: al final llevan el aviso legal del pie (el del alcohol), que la ley pide donde se ofrece
   const LICORES = /cervez|c[oó]ctel|licor|trago|\bvinos?\b|beer/i;
   let listo = false, capsulas = null, barra = null, fila = null, abierta = null, dondeIba = 0, deslizador = null;
   let primera = null;     // la sección que se abrió desde las cápsulas (o desde "Los más pedidos")
@@ -71,8 +71,10 @@
       const li = el('li');
       li.append(b);
       ul.append(li);
-      if (LICORES.test(s.nombre)) s.nodo.dataset.alcohol = 'si';
     }
+    // El aviso va dentro de la sección (no es el pie de la página): al deslizar se corre con los platos y llega con ellos
+    const legal = document.querySelector('#pie .pie-legal');
+    for (const s of secs) if (legal && LICORES.test(s.nombre) && !s.nodo.querySelector('.aviso-seccion')) s.nodo.append(el('p', 'aviso-seccion', legal.textContent));
     // El título no se ve (no aporta y obliga a bajar más para llegar a los platos): queda para los lectores de pantalla
     const titulo = el('p', 'capsulas-titulo', 'Secciones de la carta');
     titulo.setAttribute('role', 'heading');
@@ -146,8 +148,6 @@
     document.body.classList.add('viendo-seccion');
     document.documentElement.classList.add('viendo-seccion');
     document.body.dataset.seccion = id;
-    const sec = document.getElementById(id);
-    document.body.classList.toggle('seccion-alcohol', !!(sec && sec.dataset.alcohol));
     marcar(id);
     abierta = id;
     // Las fotos de esta sección y de las de al lado se piden de una vez (si no habían llegado): al deslizar ya están
@@ -175,7 +175,7 @@
     limpiarRestos();
     if (deslizador) deslizador.activo(false);
     abierta = null;
-    document.body.classList.remove('viendo-seccion', 'seccion-alcohol');
+    document.body.classList.remove('viendo-seccion');
     document.documentElement.classList.remove('viendo-seccion');
     delete document.body.dataset.seccion;
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
@@ -246,20 +246,30 @@
   function deslizar(volver) {
     const carta = document.getElementById('carta');
     const ESPACIO = 24; // entre una sección y la otra mientras se corren
-    const DURA = 260;   // lo que tardan en terminar de correrse al soltar (las secciones y la fila, juntas)
+    // Lo que tardan en terminar de correrse (las secciones y la fila, juntas): al tocar otra sección en la fila, todo el
+    // camino, arrancando y frenando suave; al soltar el dedo, lo que falta, más corto si ya iba cerca
+    const DURA_TOQUE = 440, DURA_SOLTAR = 380;
+    const CURVA_TOQUE = [.45, 0, .2, 1], CURVA_SOLTAR = [.22, .75, .3, 1];
+    // La misma curva en el código, para que la fila se corra al mismo paso que las secciones
+    const enCurva = ([x1, y1, x2, y2], t) => {
+      let a = 0, b = 1, u = t;
+      for (let i = 0; i < 24; i++) { u = (a + b) / 2; const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u; if (x < t) a = u; else b = u; }
+      return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
+    };
     let x0 = 0, y0 = 0, t0 = 0, dx = 0, modo = 'nada', sec = null, vecina = null, lado = 0, ocupado = false;
     // La fila de arriba acompaña al dedo: va de donde estaba (fila0) a donde queda con la otra sección (fila1) en la
     // misma medida en que se corre la sección, y al soltar termina de correrse al mismo tiempo. Mientras tanto no se
     // ajusta sola a una sección (scroll-snap), para que no dé saltos
     let fila0 = 0, fila1 = 0, cuadroFila = 0;
-    function correrFila(hasta) {
+    let siguiente = null; // la sección que se tocó en la fila mientras otra todavía se corría: se abre al terminar
+    function correrFila(hasta, dura, curva) {
       cancelAnimationFrame(cuadroFila);
       const desde = fila.scrollLeft;
       let inicio = null; // el primer cuadro (la hora de un cuadro puede ser un poco anterior a este momento)
       const paso = ahora => {
         if (inicio === null) inicio = ahora;
-        const t = Math.min(1, (ahora - inicio) / DURA), suave = 1 - Math.pow(1 - t, 4); // como la curva de las secciones
-        fila.scrollLeft = desde + (hasta - desde) * suave;
+        const t = Math.min(1, (ahora - inicio) / dura);
+        fila.scrollLeft = desde + (hasta - desde) * enCurva(curva, t);
         if (t < 1) cuadroFila = requestAnimationFrame(paso); else fila.style.scrollSnapType = '';
       };
       cuadroFila = requestAnimationFrame(paso);
@@ -280,12 +290,14 @@
       if (!id) return;
       vecina = document.getElementById(id);
       vecina.classList.add('abierta', 'asomada');
+      // Las dos en su propia capa mientras se corren: el iPhone no las vuelve a pintar en cada cuadro
+      vecina.style.willChange = sec.style.willChange = 'transform';
       vecina.style.top = (sec.offsetTop + scrollY) + 'px';
       vecina.style.left = sec.offsetLeft + 'px';
       vecina.style.width = sec.offsetWidth + 'px';
       fila1 = sitioEnFila(id);
     }
-    const soltarVecina = v => { v.classList.remove('asomada'); for (const k of ['top', 'left', 'width', 'transform', 'transition']) v.style[k] = ''; };
+    const soltarVecina = v => { v.classList.remove('asomada'); for (const k of ['top', 'left', 'width', 'transform', 'transition', 'willChange']) v.style[k] = ''; };
     function quitarVecina() {
       if (!vecina) return;
       vecina.classList.remove('abierta');
@@ -298,18 +310,24 @@
       if (vecina) vecina.style.transform = 'translateX(' + (lado * ancho() + dx) + 'px)';
       fila.scrollLeft = vecina ? fila0 + (fila1 - fila0) * Math.min(1, Math.abs(dx) / ancho()) : fila0;
     }
-    // Las dos terminan de correrse (hasta xSec la abierta), y la fila hasta filaHasta, y después, fin()
-    function terminar(xSec, filaHasta, fin) {
+    // Las dos terminan de correrse (hasta xSec la abierta), y la fila hasta filaHasta, y después, fin(). Con toque, todo
+    // el camino; si no, lo que falta desde donde soltó el dedo
+    function terminar(xSec, filaHasta, fin, toque) {
       ocupado = true;
-      const curva = 'transform ' + DURA + 'ms cubic-bezier(.2, .8, .2, 1)';
-      sec.style.transition = curva;
+      const falta = Math.min(1, Math.abs(xSec - (parseFloat((sec.style.transform.match(/-?[\d.]+/) || [0])[0]) || 0)) / ancho());
+      const dura = toque ? DURA_TOQUE : Math.round(200 + (DURA_SOLTAR - 200) * falta), curva = toque ? CURVA_TOQUE : CURVA_SOLTAR;
+      const transicion = 'transform ' + dura + 'ms cubic-bezier(' + curva.join(', ') + ')';
+      sec.style.transition = transicion;
       sec.style.transform = 'translateX(' + xSec + 'px)';
-      if (vecina) { vecina.style.transition = curva; vecina.style.transform = 'translateX(' + (xSec + lado * ancho()) + 'px)'; }
-      correrFila(filaHasta);
+      if (vecina) { vecina.style.transition = transicion; vecina.style.transform = 'translateX(' + (xSec + lado * ancho()) + 'px)'; }
+      correrFila(filaHasta, dura, curva);
       // Pase lo que pase en fin(), se puede volver a deslizar (si no, quedaba trabado para siempre)
-      setTimeout(() => { try { fin(); } finally { ocupado = false; } }, DURA + 10);
+      setTimeout(() => {
+        try { fin(); } finally { ocupado = false; }
+        if (siguiente) { const id = siguiente; siguiente = null; if (id !== abierta) pasarA(id); }
+      }, dura + 10);
     }
-    function aSuSitio() { sec.style.transform = sec.style.transition = ''; quitarVecina(); }
+    function aSuSitio() { sec.style.transform = sec.style.transition = sec.style.willChange = ''; quitarVecina(); }
 
     document.addEventListener('touchstart', ev => {
       // Un segundo dedo a mitad del deslizamiento (para ampliar): todo vuelve a su sitio
@@ -334,6 +352,7 @@
         if (!sec) { modo = 'nada'; return; }
         modo = 'lado';
         sec.style.transition = 'none';
+        sec.style.willChange = 'transform';
         cancelAnimationFrame(cuadroFila);
         fila.style.scrollSnapType = 'none';
         fila0 = fila1 = fila.scrollLeft;
@@ -365,7 +384,7 @@
     document.addEventListener('touchcancel', soltar);
 
     // La de al lado termina de entrar (y la fila de correrse) y queda abierta
-    function pasarALaVecina() {
+    function pasarALaVecina(toque) {
       const destino = vecina.id, antes = sec, nueva = vecina;
       resaltar(destino); // la fila marca la nueva de una vez, mientras termina de correrse
       terminar(-lado * ancho(), fila1, () => {
@@ -375,14 +394,14 @@
         // Todo en el mismo momento (sin dibujar en medio): la otra pasa a ser la abierta, arriba, donde ya estaba
         abrir(destino, false);
         soltarVecina(nueva);
-        antes.style.transform = antes.style.transition = '';
-      });
+        antes.style.transform = antes.style.transition = antes.style.willChange = '';
+      }, toque);
       lado = 0;
     }
     // Tocar otra sección en la fila de arriba: el mismo movimiento que al deslizar (entra por el lado en que está en la
     // fila), sin que los platos cambien de golpe
     const pasarA = id => {
-      if (ocupado || modo !== 'nada') return;
+      if (ocupado || modo !== 'nada') { siguiente = id; return; }
       const ids = orden(), de = ids.indexOf(abierta), a = ids.indexOf(id);
       if (de < 0 || a < 0 || de === a || !document.getElementById(abierta)) return abrir(id, false);
       sec = document.getElementById(abierta);
@@ -393,8 +412,10 @@
       ponerVecina(a > de ? 1 : -1, id);
       vecina.style.transition = 'none';
       vecina.style.transform = 'translateX(' + lado * ancho() + 'px)';
-      void vecina.offsetWidth; // que arranque desde ahí
-      pasarALaVecina();
+      // Arranca dos cuadros después: la otra sección ya quedó pintada en su capa, al lado, y el movimiento no da un
+      // tirón al empezar
+      ocupado = true;
+      requestAnimationFrame(() => requestAnimationFrame(() => { ocupado = false; pasarALaVecina(true); }));
     };
     return {
       pasarA,
