@@ -103,6 +103,7 @@
   function limpiarRestos() {
     document.querySelectorAll('#carta .cat.asomada').forEach(c => { c.classList.remove('asomada'); for (const k of ['top', 'left', 'width']) c.style[k] = ''; });
     document.querySelectorAll('#carta .cat').forEach(c => { if (c.style.transform || c.style.transition || c.style.willChange) c.style.transform = c.style.transition = c.style.willChange = ''; });
+    document.querySelectorAll('#carta .cat[aria-hidden], #carta .cat[data-lado]').forEach(c => { c.removeAttribute('aria-hidden'); delete c.dataset.lado; c.style.maxHeight = c.style.overflow = ''; });
     document.getElementById('carta').style.minHeight = '';
   }
 
@@ -146,7 +147,7 @@
     if (!document.body.classList.contains('con-capsulas') || !document.getElementById(id)) return; // apagadas (ver prender) o ya no existe
     if (!abierta) { dondeIba = scrollY; primera = id; }
     limpiarRestos();
-    if (deslizador) deslizador.activo(true);
+    if (deslizador) { deslizador.olvidar(); deslizador.activo(true); deslizador.prepararLuego(); }
     // También en <html> y con el id de la sección en <body>: el CSS cambia lo que haga falta sin :has() (algunos
     // iPhone no lo entienden)
     document.body.classList.add('viendo-seccion');
@@ -253,17 +254,69 @@
   function deslizar(volver) {
     const carta = document.getElementById('carta');
     const ESPACIO = 24; // entre una sección y la otra mientras se corren
-    // Lo que tardan en terminar de correrse (las secciones y la fila, juntas): al tocar otra sección en la fila, todo el
-    // camino, arrancando y frenando suave; al soltar el dedo, lo que falta, más corto si ya iba cerca
-    const DURA_TOQUE = 440, DURA_SOLTAR = 380;
-    const CURVA_TOQUE = [.45, 0, .2, 1], CURVA_SOLTAR = [.22, .75, .3, 1];
+    // Lo que tardan en terminar de correrse (las secciones y la fila, juntas). Al tocar otra sección en la fila: todo el
+    // camino, arrancando y frenando suave. Al soltar el dedo con impulso: sigue a la misma velocidad que traía el dedo y va
+    // frenando (la curva arranca PENDIENTE veces más rápido que su promedio: con eso se calcula cuánto dura; si no alcanza
+    // el tiempo, se ajusta la curva para que arranque a la velocidad del dedo). Al soltar con el dedo quieto: arranca y
+    // frena suave, sin salir disparada
+    const DURA_TOQUE = 440, CURVA_TOQUE = [.45, 0, .2, 1];
+    const PENDIENTE = 2.8;
+    const CURVA_QUIETO = [.35, 0, .25, 1];
     // La misma curva en el código, para que la fila se corra al mismo paso que las secciones
     const enCurva = ([x1, y1, x2, y2], t) => {
       let a = 0, b = 1, u = t;
       for (let i = 0; i < 24; i++) { u = (a + b) / 2; const x = 3 * (1 - u) * (1 - u) * u * x1 + 3 * (1 - u) * u * u * x2 + u * u * u; if (x < t) a = u; else b = u; }
       return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
     };
-    let x0 = 0, y0 = 0, t0 = 0, dx = 0, modo = 'nada', sec = null, vecina = null, lado = 0, ocupado = false;
+    let x0 = 0, y0 = 0, dx = 0, modo = 'nada', sec = null, vecina = null, lado = 0, ocupado = false;
+    // Medidas tomadas una vez al empezar: medir en cada movimiento del dedo obliga al iPhone a recalcular la página y el
+    // movimiento salía a saltos. xSec es dónde está la abierta ahora (para saber cuánto le falta al soltar)
+    let anchoFijo = 0, xSec = 0, desfase = 0;
+    let muestras = []; // dónde iba el dedo en los últimos 100 ms: su velocidad al soltar
+    // Las dos de al lado, listas desde que el dedo toca la pantalla: quedan armadas y pintadas justo debajo de la abierta
+    // (que es lisa y las tapa), y al empezar a deslizar se corren a su lado ya pintadas. Antes se armaban en ese momento, o
+    // quedaban por fuera de la pantalla sin pintar, y el movimiento daba un tirón al arrancar. Solo llegan hasta donde
+    // termina la abierta: no se ven por debajo de ella ni alargan la página
+    let preparadas = [], preparadasDe = null, relojPreparar = 0;
+    function prepararVecinas() {
+      const abiertaAhora = document.getElementById(abierta);
+      if (!abiertaAhora || vecina || ocupado || modo === 'lado') return;
+      if (preparadasDe !== abierta) {
+        soltarPreparadas();
+        preparadasDe = abierta;
+        for (const paso of [1, -1]) {
+          const id = idVecina(paso);
+          const v = id && document.getElementById(id);
+          if (!v) continue;
+          v.classList.add('abierta', 'asomada');
+          v.dataset.lado = paso;
+          v.setAttribute('aria-hidden', 'true'); // tapada: los lectores de pantalla tampoco la leen
+          Object.assign(v.style, { left: abiertaAhora.offsetLeft + 'px', width: abiertaAhora.offsetWidth + 'px', overflow: 'hidden', transform: 'none' });
+          preparadas.push(v);
+        }
+      }
+      // A la altura donde va la persona (solo se mueve la caja: lo de adentro ya está pintado)
+      const top = abiertaAhora.offsetTop + scrollY, alto = Math.max(0, Math.min(innerHeight, abiertaAhora.offsetHeight - scrollY));
+      for (const v of preparadas) { v.style.top = top + 'px'; v.style.maxHeight = alto + 'px'; v.style.transform = 'none'; }
+    }
+    // Un momento después de abrir una sección (con la página quieta) se preparan las de al lado
+    function prepararLuego() {
+      clearTimeout(relojPreparar);
+      const mio = turno;
+      relojPreparar = setTimeout(() => { if (mio === turno && abierta) prepararVecinas(); }, 350);
+    }
+    // Al empezar a deslizar, cada una a su lado (por fuera de la pantalla) y ya completa hasta abajo de la pantalla
+    function correrPreparadas() {
+      for (const v of preparadas) {
+        v.style.maxHeight = innerHeight + 'px';
+        v.style.transform = 'translateX(' + Number(v.dataset.lado) * ancho() + 'px)';
+      }
+    }
+    function soltarPreparadas(menos) {
+      for (const v of preparadas) if (v !== menos) { v.classList.remove('abierta'); soltarVecina(v); }
+      preparadas = [];
+      preparadasDe = null;
+    }
     // La fila de arriba acompaña al dedo: va de donde estaba (fila0) a donde queda con la otra sección (fila1) en la
     // misma medida en que se corre la sección, y al soltar termina de correrse al mismo tiempo. Mientras tanto no se
     // ajusta sola a una sección (scroll-snap), para que no dé saltos
@@ -284,7 +337,7 @@
     }
     const orden = () => [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec);
     const idVecina = paso => orden()[orden().indexOf(abierta) + paso];
-    const ancho = () => sec.offsetWidth + ESPACIO;
+    const ancho = () => anchoFijo || (anchoFijo = sec.offsetWidth + ESPACIO);
     const deLado = nodo => {
       for (; nodo && nodo !== carta; nodo = nodo.parentElement) if (nodo.scrollWidth > nodo.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(nodo).overflowX)) return true;
       return false;
@@ -293,25 +346,33 @@
     // La vecina se ve igual que cuando esté abierta (con la marca "abierta") y queda arriba, donde va a quedar
     function ponerVecina(paso, id) {
       if (id === undefined) id = idVecina(paso);
-      quitarVecina();
+      // La de antes (si el dedo cambió de dirección): si estaba preparada, vuelve a su lado; si no, se quita
+      if (vecina && preparadas.indexOf(vecina) >= 0) { vecina.style.transform = 'translateX(' + lado * ancho() + 'px)'; vecina = null; }
+      else quitarVecina();
       lado = paso;
       if (!id) return;
       vecina = document.getElementById(id);
-      vecina.classList.add('abierta', 'asomada');
-      // Las dos en su propia capa mientras se corren: el iPhone no las vuelve a pintar en cada cuadro
-      vecina.style.willChange = sec.style.willChange = 'transform';
-      vecina.style.top = (sec.offsetTop + scrollY) + 'px';
-      vecina.style.left = sec.offsetLeft + 'px';
-      vecina.style.width = sec.offsetWidth + 'px';
+      vecina.removeAttribute('aria-hidden');
+      if (preparadas.indexOf(vecina) < 0) {
+        vecina.classList.add('abierta', 'asomada');
+        vecina.style.top = (sec.offsetTop + scrollY) + 'px';
+        vecina.style.left = sec.offsetLeft + 'px';
+        vecina.style.width = sec.offsetWidth + 'px';
+        vecina.style.maxHeight = innerHeight + 'px';
+        vecina.style.overflow = 'hidden';
+      }
       fila1 = sitioEnFila(id);
       // Mientras tanto la carta crece si hace falta: en los iPhone con iOS 15 o menos (sin overflow-x: clip) recortaba lo
-      // que la de al lado pasaba de su alto, y desde abajo de una sección larga se veía cortada
-      const hasta = vecina.offsetTop + vecina.offsetHeight;
+      // que la de al lado pasaba de su alto, y desde abajo de una sección larga se veía cortada. La de al lado solo se ve
+      // hasta abajo de la pantalla mientras se corre (se completa al quedar abierta)
+      const hasta = (sec.offsetTop + scrollY) + innerHeight;
       if (hasta > carta.offsetHeight) carta.style.minHeight = hasta + 'px';
     }
     const soltarVecina = v => {
       v.classList.remove('asomada');
-      for (const k of ['top', 'left', 'width', 'transform', 'transition', 'willChange']) v.style[k] = '';
+      for (const k of ['top', 'left', 'width', 'transform', 'transition', 'willChange', 'maxHeight', 'overflow']) v.style[k] = '';
+      delete v.dataset.lado;
+      v.removeAttribute('aria-hidden');
       carta.style.minHeight = '';
     };
     function quitarVecina() {
@@ -322,20 +383,37 @@
     }
     function mover() {
       // Hacia donde no hay otra sección se corre poco, como un resorte
-      sec.style.transform = 'translateX(' + (vecina ? dx : dx * .3) + 'px)';
+      xSec = vecina ? dx : dx * .3;
+      sec.style.transform = 'translateX(' + xSec + 'px)';
       if (vecina) vecina.style.transform = 'translateX(' + (lado * ancho() + dx) + 'px)';
       fila.scrollLeft = vecina ? fila0 + (fila1 - fila0) * Math.min(1, Math.abs(dx) / ancho()) : fila0;
     }
+    // Velocidad del dedo al final (px por ms; negativa hacia la izquierda), no el promedio desde que tocó la pantalla
+    function velocidad() {
+      if (muestras.length < 2) return 0;
+      const a = muestras[0], b = muestras[muestras.length - 1];
+      return (b[1] - a[1]) / Math.max(b[0] - a[0], 1);
+    }
     // Las dos terminan de correrse (hasta xSec la abierta), y la fila hasta filaHasta, y después, fin(). Con toque, todo
     // el camino; si no, lo que falta desde donde soltó el dedo
-    function terminar(xSec, filaHasta, fin, toque) {
+    function terminar(hasta, filaHasta, fin, toque, v = 0) {
       ocupado = true;
-      const falta = Math.min(1, Math.abs(xSec - (parseFloat((sec.style.transform.match(/-?[\d.]+/) || [0])[0]) || 0)) / ancho());
-      const dura = toque ? DURA_TOQUE : Math.round(200 + (DURA_SOLTAR - 200) * falta), curva = toque ? CURVA_TOQUE : CURVA_SOLTAR;
+      const falta = Math.abs(hasta - xSec);
+      let dura, curva;
+      if (toque) { dura = DURA_TOQUE; curva = CURVA_TOQUE; }
+      else if (Math.abs(v) > .25 && Math.sign(v) === Math.sign(hasta - xSec)) {
+        // Con impulso: arranca a la velocidad del dedo
+        dura = Math.round(Math.min(420, Math.max(180, PENDIENTE * falta / Math.abs(v))));
+        curva = [.25, Math.min(1, .25 * Math.abs(v) * dura / Math.max(falta, 1)), .35, 1];
+      } else {
+        curva = CURVA_QUIETO;
+        dura = Math.round(Math.min(400, 220 + 180 * falta / ancho()));
+      }
       const transicion = 'transform ' + dura + 'ms cubic-bezier(' + curva.join(', ') + ')';
       sec.style.transition = transicion;
-      sec.style.transform = 'translateX(' + xSec + 'px)';
-      if (vecina) { vecina.style.transition = transicion; vecina.style.transform = 'translateX(' + (xSec + lado * ancho()) + 'px)'; }
+      sec.style.transform = 'translateX(' + hasta + 'px)';
+      if (vecina) { vecina.style.transition = transicion; vecina.style.transform = 'translateX(' + (hasta + lado * ancho()) + 'px)'; }
+      xSec = hasta;
       correrFila(filaHasta, dura, curva);
       // Pase lo que pase en fin(), se puede volver a deslizar (si no, quedaba trabado para siempre)
       const mio = turno;
@@ -345,7 +423,14 @@
         if (siguiente) { const id = siguiente; siguiente = null; if (id !== abierta) pasarA(id); }
       }, dura + 10);
     }
-    function aSuSitio() { sec.style.transform = sec.style.transition = sec.style.willChange = ''; quitarVecina(); }
+    function aSuSitio() {
+      sec.style.transform = sec.style.transition = sec.style.willChange = '';
+      xSec = 0;
+      if (vecina && preparadas.indexOf(vecina) >= 0) vecina = null; // la suelta soltarPreparadas
+      else quitarVecina();
+      soltarPreparadas();
+      prepararLuego();
+    }
 
     document.addEventListener('touchstart', ev => {
       // Un segundo dedo a mitad del deslizamiento (para ampliar): todo vuelve a su sitio
@@ -355,7 +440,8 @@
       if (window.visualViewport && visualViewport.scale > 1.01) return; // con la página ampliada, el dedo la mueve
       const t = ev.touches[0];
       if (t.clientX < 24 || !sirve(ev.target)) return;
-      x0 = t.clientX; y0 = t.clientY; t0 = ev.timeStamp; dx = 0; lado = 0; modo = 'quizas';
+      x0 = t.clientX; y0 = t.clientY; dx = 0; lado = 0; modo = 'quizas';
+      prepararVecinas();
     }, { passive: true });
     // No pasivo (mientras se desliza de lado la página no baja ni sube), y solo con una sección abierta: en las cápsulas
     // cada movimiento del dedo no tiene que esperar a este código
@@ -374,27 +460,40 @@
         cancelAnimationFrame(cuadroFila);
         fila.style.scrollSnapType = 'none';
         fila0 = fila1 = fila.scrollLeft;
+        anchoFijo = sec.offsetWidth + ESPACIO;
+        xSec = 0;
+        correrPreparadas();
+        // Los 10 px que el dedo avanzó antes de saber que iba de lado: la sección los alcanza en pocos cuadros, sin saltar
+        desfase = mx;
+        muestras = [];
       }
       if (ev.cancelable) ev.preventDefault();
-      dx = mx;
-      const paso = dx < 0 ? 1 : -1;
-      if (paso !== lado || (!vecina && idVecina(paso))) ponerVecina(paso);
+      desfase *= .6;
+      dx = mx - desfase;
+      muestras.push([ev.timeStamp, t.clientX]);
+      while (muestras.length > 2 && ev.timeStamp - muestras[0][0] > 100) muestras.shift();
+      const paso = dx < 0 ? 1 : dx > 0 ? -1 : lado;
+      if (paso && (paso !== lado || (!vecina && idVecina(paso)))) ponerVecina(paso);
       mover();
     };
     const soltar = ev => {
       if (modo !== 'lado') { modo = 'nada'; return; }
       modo = 'nada';
-      const rapido = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(ev.timeStamp - t0, 1) > .5;
-      const paso = ev.type === 'touchend' && (Math.abs(dx) > Math.min(90, innerWidth * .25) || rapido) ? (dx < 0 ? 1 : -1) : 0;
+      // Pasa a la otra si el dedo llegó lejos o si la lanzó con impulso; no, si al final se devolvía
+      const v = velocidad();
+      const lejos = Math.abs(dx) > Math.min(90, innerWidth * .25);
+      const impulso = Math.abs(v) > .35 && Math.abs(dx) > 16 && Math.sign(v) === Math.sign(dx);
+      const devuelta = Math.abs(v) > .3 && Math.sign(v) === -Math.sign(dx);
+      const paso = ev.type === 'touchend' && dx && (lejos || impulso) && !devuelta ? (dx < 0 ? 1 : -1) : 0;
       if (paso && vecina && paso === lado) {
-        pasarALaVecina();
+        pasarALaVecina(false, v);
       } else if (paso === -1 && !idVecina(-1)) {
         aSuSitio();
         fila.scrollLeft = fila0;
         fila.style.scrollSnapType = '';
         volver.click();
       } else {
-        terminar(0, fila0, aSuSitio);
+        terminar(0, fila0, aSuSitio, false, v);
       }
       lado = 0;
     };
@@ -402,18 +501,25 @@
     document.addEventListener('touchcancel', soltar);
 
     // La de al lado termina de entrar (y la fila de correrse) y queda abierta
-    function pasarALaVecina(toque) {
+    function pasarALaVecina(toque, v) {
       const destino = vecina.id, antes = sec, nueva = vecina;
       resaltar(destino); // la fila marca la nueva de una vez, mientras termina de correrse
       terminar(-lado * ancho(), fila1, () => {
         vecina = null;
+        anchoFijo = 0;
+        xSec = 0;
         // Si mientras tanto volvieron a las cápsulas (la flecha o el "atrás"), no se abre nada
-        if (abierta !== antes.id) { soltarVecina(nueva); nueva.classList.remove('abierta'); antes.style.transform = antes.style.transition = ''; return; }
+        if (abierta !== antes.id) { soltarPreparadas(); soltarVecina(nueva); nueva.classList.remove('abierta'); antes.style.transform = antes.style.transition = ''; return; }
         // Todo en el mismo momento (sin dibujar en medio): la otra pasa a ser la abierta, arriba, donde ya estaba
+        const arriba = nueva.getBoundingClientRect().top;
+        soltarPreparadas(nueva);
         abrir(destino, false);
         soltarVecina(nueva);
         antes.style.transform = antes.style.transition = antes.style.willChange = '';
-      }, toque);
+        // Si la página se había movido un poco mientras tanto, la nueva queda exactamente donde se veía: sin brinco
+        const corrida = nueva.getBoundingClientRect().top - arriba;
+        if (Math.abs(corrida) > 1) irA(scrollY + corrida);
+      }, toque, v);
       lado = 0;
     }
     // Tocar otra sección en la fila de arriba: el mismo movimiento que al deslizar (entra por el lado en que está en la
@@ -427,6 +533,8 @@
       cancelAnimationFrame(cuadroFila);
       fila.style.scrollSnapType = 'none';
       fila0 = fila.scrollLeft;
+      anchoFijo = sec.offsetWidth + ESPACIO;
+      xSec = 0;
       ponerVecina(a > de ? 1 : -1, id);
       vecina.style.transition = 'none';
       vecina.style.transform = 'translateX(' + lado * ancho() + 'px)';
@@ -436,16 +544,30 @@
       const mio = turno;
       requestAnimationFrame(() => requestAnimationFrame(() => { if (mio !== turno) return; ocupado = false; pasarALaVecina(true); }));
     };
+    // Si cambia el ancho (el celular de lado), se vuelven a preparar a la medida nueva
+    let anchoVentana = innerWidth;
+    addEventListener('resize', () => {
+      if (innerWidth === anchoVentana) return; // en el iPhone cambia el alto al esconderse la barra: eso no importa
+      anchoVentana = innerWidth;
+      if (abierta && modo === 'nada' && !ocupado && !vecina) { soltarPreparadas(); prepararLuego(); }
+    });
     return {
       pasarA,
+      prepararLuego,
+      // abrir() ya limpió las marcas de todas las secciones: aquí solo se olvidan
+      olvidar() { preparadas = []; preparadasDe = null; },
       cancelar() {
         turno++;
+        clearTimeout(relojPreparar);
         siguiente = null;
         ocupado = false;
         modo = 'nada';
         lado = 0;
         cancelAnimationFrame(cuadroFila);
+        anchoFijo = 0;
+        xSec = 0;
         fila.style.scrollSnapType = '';
+        soltarPreparadas();
         if (vecina) { vecina.classList.remove('abierta'); soltarVecina(vecina); vecina = null; }
       },
       activo(si) {
