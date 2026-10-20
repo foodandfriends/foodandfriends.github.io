@@ -48,6 +48,13 @@
   /* Al tocar algo, el iPhone dibuja un recuadro gris de lo que tiene el toque (a veces una fila entera), encima de todo */
   html { -webkit-tap-highlight-color: transparent; }
   body { margin: 0; overflow-wrap: anywhere; background: var(--fondo); color: var(--texto); font: 16px/1.45 "Oswald", "Arial Narrow", ui-sans-serif, system-ui, sans-serif; }
+  /* Fondo de la carta: blanco hueso con dibujitos de hamburguesas, cerveza, papas, pollo, parrilla y rock en línea naranja
+     suave (dibujos.svg). En toda la página (html), para que debajo no quede una franja de otro color. La portada (logo y
+     textos) va lisa y las secciones abiertas también: los dibujos solo se ven detrás de "Los más pedidos" y las cápsulas */
+  :root { --pagina: 255, 250, 242; }
+  html { background: rgb(var(--pagina)) url(dibujos.svg) 0 0 / 216px 224px repeat; }
+  body { background: none; }
+  html.viendo-seccion { background: rgb(var(--pagina)); }
 
   /* Pantalla de entrada: solo el logo sobre blanco mientras carga; luego se desvanece sobre la carta */
   .portada { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--fondo); transition: opacity .6s ease, visibility .6s;
@@ -72,7 +79,11 @@
      aunque la pantalla sea muy ancha, y al volver a empezar no se nota el salto */
   @keyframes correr { to { transform: translateX(-12.5%); } }
 
-  .hero { padding: 22px 0 4px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, rgba(245, 196, 0, .16), transparent 70%); }
+  .hero { position: relative; padding: 22px 0 4px; text-align: center;
+    background: radial-gradient(70% 60% at 50% 30%, rgba(245, 196, 0, .16), transparent 70%), rgb(var(--pagina)); }
+  /* Debajo de la portada, los dibujos aparecen de a poco (no de golpe en una línea recta) */
+  .hero::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 26px; pointer-events: none;
+    background: linear-gradient(rgb(var(--pagina)), rgba(var(--pagina), 0)); }
   h1 { margin: 0; line-height: 0; }
   .logo { width: 180px; height: 180px; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .18)); }
   .lugar { order: 2; margin: 12px 0 0; color: var(--suave); font-size: .85rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
@@ -140,8 +151,9 @@
   /* "Los más pedidos": arriba de las secciones, tarjetas que se deslizan de lado. La foto ocupa toda la tarjeta y el
      nombre y el precio van en blanco sobre un oscurecido abajo. Cuadradas: no queda espacio vacío aunque un nombre
      ocupe dos renglones */
-  .mas-pedidos { margin: 18px -20px 0; }
-  .mp-titulo { margin: 0 20px 12px; font-weight: 700; font-style: italic; font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--naranja); }
+  .mas-pedidos { position: relative; margin: 18px -20px 0; } /* encima del desvanecido de la portada */
+  /* El título sobre los dibujos va en una etiqueta lisa, para que se lea bien */
+  .mp-titulo { display: table; margin: 0 8px 10px; padding: 5px 12px 7px; border-radius: 12px; background: rgb(var(--pagina)); font-weight: 700; font-style: italic; font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--naranja); }
   .mp-titulo::after { content: ""; display: block; width: 50px; height: 5px; margin-top: 7px; border-radius: 3px; background: var(--amarillo); }
   /* Recorta lo que se sale de lado: espacio arriba y abajo para que la sombra no quede cortada en línea recta */
   .mp-fila { display: flex; gap: 12px; overflow-x: auto; margin: -8px 0 -14px; padding: 8px 20px 18px; scroll-snap-type: x proximity; scroll-padding: 0 20px; scrollbar-width: none; }
@@ -181,15 +193,15 @@
   /* La sección abierta: arriba, fija al bajar, la flecha y la fila de secciones (la abierta en amarillo) */
   .seccion-barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px;
     padding: calc(10px + env(safe-area-inset-top)) max(12px, calc((100% - 576px) / 2)) 10px;
-    background: rgba(255, 255, 255, .96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06); }
+    background: rgba(var(--pagina), .96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06); }
   .seccion-volver { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
     background: var(--texto); color: var(--amarillo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .seccion-volver svg { width: 22px; height: 22px; }
   .seccion-fila-marco { position: relative; display: flex; flex: 1; min-width: 0; }
   /* El desvanecido solo del lado donde hay más secciones escondidas (js/capsulas.js pone .mas-izq y .mas-der) */
   .seccion-fila-marco::before, .seccion-fila-marco::after { content: ""; position: absolute; top: 0; bottom: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .2s; }
-  .seccion-fila-marco::before { left: 0; width: 28px; background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0)); }
-  .seccion-fila-marco::after { right: 0; width: 44px; background: linear-gradient(270deg, #fff, rgba(255, 255, 255, 0)); }
+  .seccion-fila-marco::before { left: 0; width: 28px; background: linear-gradient(90deg, rgb(var(--pagina)), rgba(var(--pagina), 0)); }
+  .seccion-fila-marco::after { right: 0; width: 44px; background: linear-gradient(270deg, rgb(var(--pagina)), rgba(var(--pagina), 0)); }
   .seccion-fila-marco.mas-izq::before, .seccion-fila-marco.mas-der::after { opacity: 1; }
   .seccion-fila { display: flex; flex: 1; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-left: 36px; }
   .seccion-fila::-webkit-scrollbar { display: none; }

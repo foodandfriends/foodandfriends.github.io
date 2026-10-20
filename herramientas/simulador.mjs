@@ -18,7 +18,7 @@ const ORIGEN = 'http://localhost:' + PUERTO;
 const USUARIO = { id: randomUUID().replace(/-/g, ''), email: 'dueno@prueba.co', clave: 'clave-de-prueba-123' };
 const docs = new Map(); // ruta → { fields, updateTime }
 docs.set('duenos/' + USUARIO.id, { fields: { restaurantes: { arrayValue: { values: [{ stringValue: 'food-friends' }] } } }, updateTime: new Date().toISOString() });
-const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg' };
+const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml' };
 
 const enviar = (res, estado, datos, tipo = 'application/json') => {
   res.writeHead(estado, { 'Content-Type': tipo, 'Access-Control-Allow-Origin': '*' });
