@@ -3,6 +3,7 @@
   Si Firebase no responde (o todavía no está configurado), usa la copia de datos/<restaurante>.json,
   que la tarea diaria de GitHub mantiene al día (.github/workflows/respaldo.yml).
   Las fotos se cargan a medida que la persona baja por la carta.
+  Después de pintarla prende las secciones en cápsulas (js/capsulas.js).
 */
 (async function () {
   const C = window.CONFIG;
@@ -31,10 +32,11 @@
       categorias: (r.categorias || []).map(c => ({
         id: c.id, nombre: c.nombre, nota: c.nota,
         platos: (c.platos || []).map(p => ({
-          nombre: p.nombre, descripcion: p.descripcion, precio: p.precio, etiqueta: p.etiqueta,
+          id: p.id, nombre: p.nombre, descripcion: p.descripcion, precio: p.precio, etiqueta: p.etiqueta,
           agotado: p.agotado, foto: p.foto ? TRANSPARENTE : '', fotoId: p.foto
         }))
-      }))
+      })),
+      masPedidos: C.masPedidos
     };
   }
 
@@ -77,15 +79,22 @@
     });
   }
 
-  // Cada foto se pide cuando está por aparecer en pantalla
+  // Cada foto se pide cuando está por aparecer en pantalla (o antes, si las cápsulas la piden: las de la sección de al
+  // lado, para que al deslizar ya esté). Si no se encuentra, se quita y el plato queda sin el espacio de la foto
+  function cargar(img) {
+    if (img.dataset.pedida) return;
+    img.dataset.pedida = 'si';
+    vista.unobserve(img);
+    BD.foto(slug, img.dataset.foto)
+      .then(url => { img.src = url; })
+      .catch(() => { const plato = img.closest('.plato'); if (plato) plato.classList.remove('con-foto'); img.remove(); });
+  }
   const vista = new IntersectionObserver(entradas => {
-    for (const e of entradas) {
-      if (!e.isIntersecting) continue;
-      vista.unobserve(e.target);
-      BD.foto(slug, e.target.dataset.foto)
-        .then(url => { e.target.src = url; })
-        .catch(() => e.target.remove());
-    }
+    for (const e of entradas) if (e.isIntersecting) cargar(e.target);
   }, { rootMargin: '400px 0px' });
   document.querySelectorAll('img[data-foto]').forEach(img => vista.observe(img));
+  window.cargarFotos = nodo => nodo.querySelectorAll('img[data-foto]').forEach(cargar);
+
+  // Las secciones en cápsulas (js/capsulas.js); sin ese archivo, la carta sale entera como antes
+  if (window.Capsulas) window.Capsulas.prender();
 })();

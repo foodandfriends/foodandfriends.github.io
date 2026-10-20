@@ -45,6 +45,8 @@
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  /* Al tocar algo, el iPhone dibuja un recuadro gris de lo que tiene el toque (a veces una fila entera), encima de todo */
+  html { -webkit-tap-highlight-color: transparent; }
   body { margin: 0; overflow-wrap: anywhere; background: var(--fondo); color: var(--texto); font: 16px/1.45 "Oswald", "Arial Narrow", ui-sans-serif, system-ui, sans-serif; }
 
   /* Pantalla de entrada: solo el logo sobre blanco mientras carga; luego se desvanece sobre la carta */
@@ -110,7 +112,7 @@
   .platos { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
   /* Cada plato en una línea, como en el menú impreso: NOMBRE a la izquierda y $PRECIO a la derecha (y la foto si tiene) */
   .plato { display: grid; grid-template-columns: minmax(0, 1fr) 104px; column-gap: 14px; grid-template-areas: "fila foto" "desc foto"; grid-template-rows: auto 1fr; }
-  .plato:not(:has(.foto)) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "fila" "desc"; }
+  .plato:not(.con-foto) { grid-template-columns: minmax(0, 1fr); grid-template-areas: "fila" "desc"; }
   /* El precio va al lado del nombre si cabe; en un celular angosto baja a la línea de abajo, pero las palabras
      del nombre nunca se parten por la mitad */
   .fila { grid-area: fila; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; min-width: 0; }
@@ -126,6 +128,88 @@
   .plato.agotado > * { opacity: .45; }
   .plato.agotado .precio { text-decoration: line-through; }
   .plato.agotado .marca { background: var(--suave); }
+  /* El plato al que se llega desde "Los más pedidos" se ilumina un momento */
+  .plato.resaltado { border-radius: 10px; animation: resaltar 1.6s ease; }
+  @keyframes resaltar {
+    0%, 40% { background: rgba(245, 196, 0, .28); box-shadow: 0 0 0 8px rgba(245, 196, 0, .28); }
+    100% { background: rgba(245, 196, 0, 0); box-shadow: 0 0 0 8px rgba(245, 196, 0, 0); }
+  }
+
+  /* "Los más pedidos": arriba de las secciones, tarjetas que se deslizan de lado. La foto ocupa toda la tarjeta y el
+     nombre y el precio van en blanco sobre un oscurecido abajo. Cuadradas: no queda espacio vacío aunque un nombre
+     ocupe dos renglones */
+  .mas-pedidos { margin: 30px -20px 0; }
+  .mp-titulo { margin: 0 20px 12px; font-weight: 700; font-style: italic; font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--naranja); }
+  .mp-titulo::after { content: ""; display: block; width: 50px; height: 5px; margin-top: 7px; border-radius: 3px; background: var(--amarillo); }
+  /* Recorta lo que se sale de lado: espacio arriba y abajo para que la sombra no quede cortada en línea recta */
+  .mp-fila { display: flex; gap: 12px; overflow-x: auto; margin: -8px 0 -14px; padding: 8px 20px 18px; scroll-snap-type: x proximity; scroll-padding: 0 20px; scrollbar-width: none; }
+  .mp-fila::-webkit-scrollbar { display: none; }
+  .fav { position: relative; isolation: isolate; flex: none; width: 150px; height: 150px; border-radius: 16px; overflow: hidden; background: var(--texto);
+    box-shadow: 0 6px 16px rgba(28, 21, 18, .18); scroll-snap-align: start; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .fav-imagen, .fav::after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .fav::after { content: ""; background: linear-gradient(rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, .85)); pointer-events: none; }
+  .fav-foto { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .fav-nombre, .fav .precio { position: absolute; left: 12px; right: 10px; z-index: 1; color: #fff; }
+  .fav-nombre { bottom: 34px; font-weight: 600; font-size: .95rem; line-height: 1.15; letter-spacing: .02em; text-transform: uppercase; }
+  .fav .precio { bottom: 10px; margin: 0; font-size: 1.08rem; }
+
+  /* Las secciones en cápsulas (js/capsulas.js), una debajo de otra con su foto. Al tocar una se abre esa sección sola,
+     con la fila de las demás arriba; la flecha vuelve a las cápsulas */
+  body.con-capsulas #nav, body.con-capsulas:not(.viendo-seccion) #carta .cat, body.con-capsulas:not(.viendo-seccion) .seccion-barra,
+  body.viendo-seccion .cinta, body.viendo-seccion .hero, body.viendo-seccion .capsulas, body.viendo-seccion #carta .mas-pedidos,
+  body.viendo-seccion #carta .cat:not(.abierta) { display: none; }
+  .capsulas { padding-top: 22px; }
+  .capsulas-titulo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .capsulas-lista { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .capsula { position: relative; isolation: isolate; display: block; width: 100%; padding: 18px 64px 18px 20px; border: 0; border-radius: 16px; overflow: hidden;
+    background: var(--texto); color: #fff; font: inherit; text-align: left; cursor: pointer; box-shadow: 0 6px 16px rgba(28, 21, 18, .16);
+    -webkit-tap-highlight-color: transparent; }
+  .capsula img, .capsula::after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .capsula img { z-index: -2; object-fit: cover; }
+  .capsula::after { content: ""; z-index: -1; background: linear-gradient(90deg, rgba(28, 21, 18, .86), rgba(28, 21, 18, .42) 55%, rgba(28, 21, 18, .12)); }
+  .capsula-nombre { display: block; font-weight: 700; font-style: italic; font-size: 1.3rem; line-height: 1.2; letter-spacing: .02em; text-transform: uppercase; }
+  .capsula-cuantos { display: block; margin-top: 3px; color: var(--amarillo); font-size: .74rem; font-weight: 500; line-height: 1.2; letter-spacing: .12em; text-transform: uppercase; }
+  .capsula-ir { position: absolute; top: 50%; right: 16px; display: grid; place-items: center; width: 34px; height: 34px; margin-top: -17px; border-radius: 50%;
+    background: var(--amarillo); color: var(--texto); }
+  .capsula-ir svg { width: 18px; height: 18px; }
+  /* Una sección sin fotos (las cervezas): su dibujo, grande y suave, al lado de la flecha */
+  .capsula-dibujo { position: absolute; top: 50%; right: 62px; z-index: -1; width: 62px; height: 62px; margin-top: -31px; fill: none; stroke: var(--amarillo);
+    stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; opacity: .55; }
+
+  /* La sección abierta: arriba, fija al bajar, la flecha y la fila de secciones (la abierta en amarillo) */
+  .seccion-barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px;
+    padding: calc(10px + env(safe-area-inset-top)) max(12px, calc((100% - 576px) / 2)) 10px;
+    background: rgba(255, 255, 255, .96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06); }
+  .seccion-volver { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+    background: var(--texto); color: var(--amarillo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .seccion-volver svg { width: 22px; height: 22px; }
+  .seccion-fila-marco { position: relative; display: flex; flex: 1; min-width: 0; }
+  /* El desvanecido solo del lado donde hay más secciones escondidas (js/capsulas.js pone .mas-izq y .mas-der) */
+  .seccion-fila-marco::before, .seccion-fila-marco::after { content: ""; position: absolute; top: 0; bottom: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity .2s; }
+  .seccion-fila-marco::before { left: 0; width: 28px; background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0)); }
+  .seccion-fila-marco::after { right: 0; width: 44px; background: linear-gradient(270deg, #fff, rgba(255, 255, 255, 0)); }
+  .seccion-fila-marco.mas-izq::before, .seccion-fila-marco.mas-der::after { opacity: 1; }
+  .seccion-fila { display: flex; flex: 1; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-left: 36px; }
+  .seccion-fila::-webkit-scrollbar { display: none; }
+  .seccion-fila button { flex: none; min-height: 40px; padding: 0 15px; border: 1px solid var(--linea); border-radius: 999px; background: var(--fondo-2); color: var(--texto);
+    font: 500 .92rem/1 "Oswald", "Arial Narrow", sans-serif; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; cursor: pointer;
+    scroll-snap-align: start; -webkit-tap-highlight-color: transparent; }
+  .seccion-fila button[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); }
+  /* Deslizar de lado sobre los platos cambia de sección: el navegador solo hace el movimiento de arriba abajo (y el
+     zoom), y lo que se corre de lado no ensancha la página */
+  body.viendo-seccion #carta { position: relative; touch-action: pan-y; touch-action: pan-y pinch-zoom; overflow-x: hidden; overflow-x: clip; }
+  html.con-zoom body.viendo-seccion #carta { touch-action: auto; } /* con la página ampliada, que se pueda mover de lado */
+  /* La sección de al lado mientras se desliza: encima, a la misma altura y del mismo ancho que la abierta */
+  body.viendo-seccion #carta .cat.asomada { position: absolute; }
+  body.viendo-seccion #carta .cat.abierta { padding-top: 6px; }
+  /* La fila de arriba ya dice en qué sección va: el título queda para los lectores de pantalla, sin ocupar espacio */
+  body.viendo-seccion #carta .cat.abierta h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  body.viendo-seccion #carta .cat.abierta .platos { margin-top: 14px; }
+  /* En las secciones, el pie solo con el aviso legal, y solo donde hay trago (la ley lo pide donde se ofrece) */
+  body.viendo-seccion footer { display: none; }
+  body.viendo-seccion.seccion-alcohol footer { display: block; margin-top: 32px; }
+  body.seccion-alcohol footer .bloque, body.seccion-alcohol footer .arriba { display: none; }
+  body.seccion-alcohol .pie-legal { margin-top: 0; padding-top: 0; border-top: 0; }
 
   footer { margin-top: 48px; background: var(--fondo-2); border-top: 1px solid var(--linea); }
   footer .col { padding-top: 32px; padding-bottom: calc(44px + env(safe-area-inset-bottom)); }
@@ -140,7 +224,7 @@
   .pie-legal { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--linea); color: var(--suave); font-size: .85rem; line-height: 1.55; }
   .arriba { display: inline-block; margin-top: 10px; color: var(--suave); }
 
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cinta div, .portada img { animation: none; } .portada { transition: none; animation-duration: .01s; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .cinta div, .portada img, .plato.resaltado { animation: none; } .portada { transition: none; animation-duration: .01s; } }
 </style>
 </head>
 <body data-fotos="si-hay" data-botones="no" class="entrando">
@@ -160,10 +244,11 @@
 <main class="col" id="carta"><p class="cargando" id="cargando" role="status">Cargando la carta…</p></main>
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p><style>.portada { display: none; }</style></noscript>
-<script src="js/config.js?v=202610022050"></script>
-<script src="js/firebase.js?v=202610022050"></script>
-<script src="js/carta.js?v=202610022050"></script>
-<script src="js/carta-publica.js?v=202610022050"></script>
+<script src="js/config.js?v=202610201753"></script>
+<script src="js/firebase.js?v=202610201753"></script>
+<script src="js/carta.js?v=202610201753"></script>
+<script src="js/capsulas.js?v=202610201753"></script>
+<script src="js/carta-publica.js?v=202610201753"></script>
 <!-- Contador de visitas de Cloudflare Web Analytics: sin cookies y sin guardar nada en el celular de quien la abre.
      Va solo en la carta (no en el panel), para que las ediciones de Willy no cuenten como visitas -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d0b572e4f29e4353a2231dce34d57f63"}'></script>

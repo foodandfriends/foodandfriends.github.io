@@ -6,8 +6,11 @@
   Ganchos para el CSS de cada diseño
   - h1 > img.logo si el negocio tiene logo; si no, h1 > .w por palabra y .y para el "and" / "&" / "y"
   - h2 > .num ("01") + .tit
-  - .plato > .fila (.nombre > .marca, .puntos, .precio) + .desc (+ .foto)
+  - .plato[data-id] > .fila (.nombre > .marca, .puntos, .precio) + .desc (+ .foto); .plato.con-foto si lleva foto
   - p.historia (debajo del subtítulo) si el negocio tiene historia
+  - section.mas-pedidos > .mp-titulo + .mp-fila > .fav[data-id] (.fav-imagen > img.fav-foto, .fav-nombre, .precio):
+    "Los más pedidos" arriba de las secciones, si los datos traen masPedidos (los id de esos platos, en orden)
+  - .plato.resaltado un momento, cuando se llega al plato desde "Los más pedidos"
   - body[data-subtitulo] cambia el "La carta" de la cabecera; body[data-botones="no"] quita los botones de arriba
   - body[data-fotos] pone la foto de cada plato; sin foto sale un espacio con un dibujo de la categoría.
     Con data-fotos="si-hay" solo salen las fotos que existen, sin espacio para las que faltan.
@@ -43,6 +46,8 @@
       [/postre|dulce/i, '<path d="M6.5 10a5.5 5.5 0 0 1 11 0Z"/><path d="M6.5 10 12 21l5.5-11"/><path d="M9 14.5l5-3M10.5 17.5l4.2-2.6"/>'],
       [/./, '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/>']
     ];
+    // Las cápsulas (js/capsulas.js) usan el mismo dibujo en las secciones que no tienen fotos
+    window.dibujoDe = texto => DIBUJOS.find(([re]) => re.test(texto))[1];
     function foto(p, c) {
       if (p.foto) {
         const img = el('img', 'foto');
@@ -110,9 +115,52 @@
       cab.append(acciones);
     }
 
-    // Categorías y platos
+    // "Los más pedidos": tarjetas con la foto que se deslizan de lado. Solo los que tienen foto y no están agotados;
+    // si el dueño borra uno, ya no sale
     const chips = $('chips');
     const carta = $('carta');
+    const todos = new Map();
+    categorias.forEach(c => c.platos.forEach(p => { if (p.id) todos.set(p.id, p); }));
+    const favoritos = (M.masPedidos || []).map(id => todos.get(id)).filter(p => p && p.foto && !p.agotado);
+    if (favoritos.length) {
+      const sec = el('section', 'mas-pedidos');
+      sec.setAttribute('aria-labelledby', 'mp-titulo');
+      // No es un h2: los h2 son los títulos de las secciones de la carta
+      const titulo = el('p', 'mp-titulo', 'Los más pedidos');
+      titulo.id = 'mp-titulo';
+      titulo.setAttribute('role', 'heading');
+      titulo.setAttribute('aria-level', '2');
+      const fila = el('div', 'mp-fila');
+      favoritos.forEach(p => {
+        const tarjeta = el('div', 'fav');
+        tarjeta.dataset.id = p.id;
+        // Se toca como un botón: también con el teclado (Enter o espacio)
+        tarjeta.setAttribute('role', 'button');
+        tarjeta.tabIndex = 0;
+        tarjeta.addEventListener('keydown', ev => {
+          if ((ev.key === 'Enter' || ev.key === ' ') && ev.target === tarjeta) { ev.preventDefault(); tarjeta.click(); }
+        });
+        const marco = el('div', 'fav-imagen');
+        const img = foto(p);
+        img.className = 'fav-foto';
+        img.alt = '';
+        marco.append(img);
+        tarjeta.append(marco, el('span', 'fav-nombre', p.nombre), el('span', 'precio', formatoPrecio(p.precio)));
+        fila.append(tarjeta);
+      });
+      // Al tocar una tarjeta se lleva a la persona a ese plato en la carta (con las cápsulas, js/capsulas.js abre su sección)
+      fila.addEventListener('click', ev => {
+        const t = ev.target.closest('.fav');
+        const destino = t && carta.querySelector('.cat .plato[data-id="' + t.dataset.id + '"]');
+        if (!destino) return;
+        destino.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.resaltarPlato(destino);
+      });
+      sec.append(titulo, fila);
+      carta.append(sec);
+    }
+
+    // Categorías y platos
     const enlaces = new Map();
     categorias.forEach((c, i) => {
       const id = 'cat-' + (c.id || i);
@@ -130,6 +178,7 @@
       const lista = el('ul', 'platos');
       c.platos.forEach(p => {
         const item = el('li', 'plato' + (p.agotado ? ' agotado' : ''));
+        if (p.id) item.dataset.id = p.id;
         const fila = el('div', 'fila');
         const nombre = el('span', 'nombre', p.nombre);
         const marca = p.agotado ? 'Agotado' : p.etiqueta;
@@ -139,7 +188,8 @@
         if (precio) fila.append(el('span', 'precio', precio));
         item.append(fila);
         if (p.descripcion) item.append(el('p', 'desc', p.descripcion));
-        if (fotos !== undefined && (p.foto || fotos !== 'si-hay')) item.append(foto(p, c));
+        // .con-foto en vez de :has(.foto) en el CSS: algunos iPhone no entienden :has()
+        if (fotos !== undefined && (p.foto || fotos !== 'si-hay')) { item.append(foto(p, c)); item.classList.add('con-foto'); }
         lista.append(item);
       });
       sec.append(lista);
@@ -254,6 +304,15 @@
     barra.append(ant, donde, sig, gusta);
     document.head.append(estilo);
     document.body.append(el('div', 'propuesta-espacio'), barra);
+  };
+
+  // El plato se ilumina un momento (cuando se llega a él desde "Los más pedidos"). La clase se quita al terminar: si no,
+  // al volver a mostrarse más tarde el plato se iluminaba otra vez
+  window.resaltarPlato = function (plato) {
+    plato.classList.remove('resaltado');
+    void plato.offsetWidth;
+    plato.classList.add('resaltado');
+    plato.addEventListener('animationend', () => plato.classList.remove('resaltado'), { once: true });
   };
 
   if (window.MENU) window.pintarCarta(window.MENU);
