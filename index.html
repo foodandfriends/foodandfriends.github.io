@@ -48,11 +48,11 @@
   /* Al tocar algo, el iPhone dibuja un recuadro gris de lo que tiene el toque (a veces una fila entera), encima de todo */
   html { -webkit-tap-highlight-color: transparent; }
   body { margin: 0; overflow-wrap: anywhere; background: var(--fondo); color: var(--texto); font: 16px/1.45 "Oswald", "Arial Narrow", ui-sans-serif, system-ui, sans-serif; }
-  /* Fondo de la carta: blanco hueso con dibujitos de hamburguesas, cerveza, papas, tomate, queso, tocineta y ají en línea
-     naranja suave (dibujos.svg; lo de adelante va relleno del mismo blanco hueso: si cambia --pagina, cambiar también el
-     relleno del dibujo). En toda la página (html), para que debajo no quede una franja de otro color. La portada (logo y
+  /* Fondo de la carta: blanco con dibujitos de hamburguesas, cerveza, papas, tomate, queso, tocineta y ají en línea
+     amarilla (dibujos.svg, de herramientas/dibujos-fondo.mjs; lo de adelante va relleno del mismo blanco: si cambia
+     --pagina, rearmar el dibujo con ese fondo). En toda la página (html), para que debajo no quede una franja de otro color. La portada (logo y
      textos) va lisa y las secciones abiertas también: los dibujos solo se ven detrás de "Los más pedidos" y las cápsulas */
-  :root { --pagina: 255, 250, 242; }
+  :root { --pagina: 255, 255, 255; }
   html { background: rgb(var(--pagina)) url(dibujos.svg) 0 0 / 260px 260px repeat; }
   body { background: none; }
   html.viendo-seccion { background: rgb(var(--pagina)); }
@@ -157,10 +157,17 @@
   .mp-titulo { display: table; margin: 0 8px 10px; padding: 5px 12px 7px; border-radius: 12px; background: rgb(var(--pagina)); font-weight: 700; font-style: italic; font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--naranja); }
   .mp-titulo::after { content: ""; display: block; width: 50px; height: 5px; margin-top: 7px; border-radius: 3px; background: var(--amarillo); }
   /* Recorta lo que se sale de lado: espacio arriba y abajo para que la sombra no quede cortada en línea recta */
-  .mp-fila { display: flex; gap: 12px; overflow-x: auto; margin: -8px 0 -14px; padding: 8px 20px 18px; scroll-snap-type: x proximity; scroll-padding: 0 20px; scrollbar-width: none; }
+  .mp-fila { display: flex; overflow-x: auto; margin: -8px 0 -14px; padding: 8px 20px 18px; scroll-snap-type: x proximity; scroll-padding: 0 20px; scrollbar-width: none; }
   .mp-fila::-webkit-scrollbar { display: none; }
   .fav { position: relative; isolation: isolate; flex: none; width: 150px; height: 150px; border-radius: 16px; overflow: hidden; background: var(--texto);
     box-shadow: 0 6px 16px rgba(28, 21, 18, .18); scroll-snap-align: start; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  /* El espacio entre tarjetas y entre botones va con márgenes y no con gap: en los iPhone con iOS 14.0 o menos, gap en una
+     fila (flex) no sirve y quedaban pegados */
+  .fav + .fav { margin-left: 12px; }
+  /* Al dejar el dedo quieto sobre una foto o una cápsula, el iPhone no saca el menú de "Guardar imagen" ni selecciona el
+     texto, y al deslizar empezando sobre una foto no la arrastra: el toque es de la cápsula, la tarjeta o el plato */
+  .capsula, .fav, .seccion-fila button, .seccion-volver { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+  .capsula img, .fav-foto, .foto { pointer-events: none; -webkit-touch-callout: none; -webkit-user-drag: none; }
   .fav-imagen, .fav::after { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
   .fav::after { content: ""; background: linear-gradient(rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, .85)); pointer-events: none; }
   .fav-foto { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -192,10 +199,10 @@
     stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; opacity: .55; }
 
   /* La sección abierta: arriba, fija al bajar, la flecha y la fila de secciones (la abierta en amarillo) */
-  .seccion-barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 10px;
+  .seccion-barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center;
     padding: calc(10px + env(safe-area-inset-top)) max(12px, calc((100% - 576px) / 2)) 10px;
     background: rgba(var(--pagina), .96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06); }
-  .seccion-volver { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+  .seccion-volver { flex: none; margin-right: 10px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
     background: var(--texto); color: var(--amarillo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .seccion-volver svg { width: 22px; height: 22px; }
   .seccion-fila-marco { position: relative; display: flex; flex: 1; min-width: 0; }
@@ -204,11 +211,12 @@
   .seccion-fila-marco::before { left: 0; width: 28px; background: linear-gradient(90deg, rgb(var(--pagina)), rgba(var(--pagina), 0)); }
   .seccion-fila-marco::after { right: 0; width: 44px; background: linear-gradient(270deg, rgb(var(--pagina)), rgba(var(--pagina), 0)); }
   .seccion-fila-marco.mas-izq::before, .seccion-fila-marco.mas-der::after { opacity: 1; }
-  .seccion-fila { display: flex; flex: 1; gap: 8px; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-left: 36px; }
+  .seccion-fila { display: flex; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; scroll-padding-left: 36px; }
   .seccion-fila::-webkit-scrollbar { display: none; }
   .seccion-fila button { flex: none; min-height: 40px; padding: 0 15px; border: 1px solid var(--linea); border-radius: 999px; background: var(--fondo-2); color: var(--texto);
     font: 500 .92rem/1 "Oswald", "Arial Narrow", sans-serif; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; cursor: pointer;
     scroll-snap-align: start; -webkit-tap-highlight-color: transparent; }
+  .seccion-fila button + button { margin-left: 8px; }
   .seccion-fila button[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); }
   /* Deslizar de lado sobre los platos cambia de sección: el navegador solo hace el movimiento de arriba abajo (y el
      zoom), y lo que se corre de lado no ensancha la página */
@@ -259,11 +267,11 @@
 <main class="col" id="carta"><p class="cargando" id="cargando" role="status">Cargando la carta…</p></main>
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p><style>.portada { display: none; }</style></noscript>
-<script src="js/config.js?v=202610201824"></script>
-<script src="js/firebase.js?v=202610201824"></script>
-<script src="js/carta.js?v=202610201824"></script>
-<script src="js/capsulas.js?v=202610201824"></script>
-<script src="js/carta-publica.js?v=202610201824"></script>
+<script src="js/config.js?v=202610201834"></script>
+<script src="js/firebase.js?v=202610201834"></script>
+<script src="js/carta.js?v=202610201834"></script>
+<script src="js/capsulas.js?v=202610201834"></script>
+<script src="js/carta-publica.js?v=202610201834"></script>
 <!-- Contador de visitas de Cloudflare Web Analytics: sin cookies y sin guardar nada en el celular de quien la abre.
      Va solo en la carta (no en el panel), para que las ediciones de Willy no cuenten como visitas -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d0b572e4f29e4353a2231dce34d57f63"}'></script>

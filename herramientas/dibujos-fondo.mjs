@@ -3,10 +3,10 @@
 // adelante va relleno de ese color y tapa las líneas de lo que queda detrás.
 //
 //   node herramientas/dibujos-fondo.mjs [color] [fondo] [opacidad] [hoja.svg]
-//   (sin nada: naranja #e8650a sobre blanco hueso #fffaf2, al 50 %)
+//   (sin nada: amarillo #f5c400 sobre blanco, al 90 %: el que escogió el usuario)
 import { writeFileSync } from 'node:fs';
 
-const [, , COLOR = '#e8650a', FONDO = '#fffaf2', OPACIDAD = '.5', hoja] = process.argv;
+const [, , COLOR = '#f5c400', FONDO = '#ffffff', OPACIDAD = '.9', hoja] = process.argv;
 const mosaico = new URL('../dibujos.svg', import.meta.url);
 const F = `fill="${FONDO}"`, LLENO = `fill="${COLOR}"`;
 

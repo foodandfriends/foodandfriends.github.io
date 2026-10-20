@@ -79,7 +79,9 @@
     const titulo = el('p', 'capsulas-titulo', 'Secciones de la carta');
     titulo.setAttribute('role', 'heading');
     titulo.setAttribute('aria-level', '2');
-    capsulas.replaceChildren(titulo, ul);
+    // Sin replaceChildren: los iPhone con iOS 13 no lo tienen y la carta quedaba sin cápsulas
+    capsulas.textContent = '';
+    capsulas.append(titulo, ul);
     const carta = document.getElementById('carta'), mas = carta.querySelector(':scope > .mas-pedidos');
     if (mas) mas.after(capsulas); else carta.prepend(capsulas);
     if (window.cargarFotos) window.cargarFotos(capsulas);
@@ -100,7 +102,8 @@
   // Restos de un deslizamiento cortado (un segundo dedo, un cambio a la mitad): ninguna sección queda corrida ni encima
   function limpiarRestos() {
     document.querySelectorAll('#carta .cat.asomada').forEach(c => { c.classList.remove('asomada'); for (const k of ['top', 'left', 'width']) c.style[k] = ''; });
-    document.querySelectorAll('#carta .cat').forEach(c => { if (c.style.transform || c.style.transition) c.style.transform = c.style.transition = ''; });
+    document.querySelectorAll('#carta .cat').forEach(c => { if (c.style.transform || c.style.transition || c.style.willChange) c.style.transform = c.style.transition = c.style.willChange = ''; });
+    document.getElementById('carta').style.minHeight = '';
   }
 
   // La abierta queda a la izquierda de la fila, pero con un pedazo de la anterior a la vista (ASOMA), y sin pasarse del
@@ -140,6 +143,7 @@
     estilo.scrollBehavior = antes;
   }
   function abrir(id, empujar) {
+    if (!document.body.classList.contains('con-capsulas')) return; // las cápsulas se apagaron (ver prender)
     if (!abierta) { dondeIba = scrollY; primera = id; }
     limpiarRestos();
     if (deslizador) deslizador.activo(true);
@@ -296,8 +300,16 @@
       vecina.style.left = sec.offsetLeft + 'px';
       vecina.style.width = sec.offsetWidth + 'px';
       fila1 = sitioEnFila(id);
+      // Mientras tanto la carta crece si hace falta: en los iPhone con iOS 15 o menos (sin overflow-x: clip) recortaba lo
+      // que la de al lado pasaba de su alto, y desde abajo de una sección larga se veía cortada
+      const hasta = vecina.offsetTop + vecina.offsetHeight;
+      if (hasta > carta.offsetHeight) carta.style.minHeight = hasta + 'px';
     }
-    const soltarVecina = v => { v.classList.remove('asomada'); for (const k of ['top', 'left', 'width', 'transform', 'transition', 'willChange']) v.style[k] = ''; };
+    const soltarVecina = v => {
+      v.classList.remove('asomada');
+      for (const k of ['top', 'left', 'width', 'transform', 'transition', 'willChange']) v.style[k] = '';
+      carta.style.minHeight = '';
+    };
     function quitarVecina() {
       if (!vecina) return;
       vecina.classList.remove('abierta');
@@ -431,8 +443,17 @@
       if (listo || !document.querySelector('#carta .cat')) return;
       listo = true;
       fotosSecciones = (opciones && opciones.fotosSecciones) || {};
-      preparar();
-      pintar();
+      try {
+        preparar();
+        pintar();
+      } catch (e) {
+        // Si algo falla en este celular, la carta sale entera como antes (con la fila de categorías), nunca en blanco
+        console.warn('Sin cápsulas:', e);
+        document.body.classList.remove('con-capsulas');
+        if (barra) barra.remove();
+        if (capsulas) capsulas.remove();
+        return;
+      }
       // Si la persona recargó con una sección abierta, sigue en ella
       if (history.state && history.state.seccion && document.getElementById(history.state.seccion)) abrir(history.state.seccion, false);
     }
