@@ -22,6 +22,11 @@ window.CONFIG = {
     "a2c0d386-9165-49cd-9d14-364671f1601d", // Burrito mixto especial
     "664a507f-5eb6-463b-a37c-ddc8f4481b59"  // Lomo al carbón 250 g
   ],
+  // Foto de la cápsula de una sección que no tiene fotos en sus platos (el id de la sección; desde la raíz del sitio).
+  // Las demás secciones usan la foto de su primer plato con foto
+  fotosSecciones: {
+    "69593f3a-e159-4baa-a29e-9e5c9334d90b": "fotos-secciones/cervezas.jpg" // Cervezas. Unsplash, licencia libre (photo-1608270586620-248524c67de9)
+  },
   // Avisos que pide la ley (SIC): va fijo al final de la carta. Confirmado con el dueño el 30-sep-2026
   textoLegal: "Precios en pesos colombianos, con impuestos incluidos. La propina es voluntaria. " +
     "Prohibido el expendio de bebidas alcohólicas a menores de edad. El exceso de alcohol es perjudicial para la salud."

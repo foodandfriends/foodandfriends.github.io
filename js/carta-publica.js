@@ -79,14 +79,22 @@
     });
   }
 
-  // Cada foto se pide cuando está por aparecer en pantalla (o antes, si las cápsulas la piden: las de la sección de al
-  // lado, para que al deslizar ya esté). Si no se encuentra, se quita y el plato queda sin el espacio de la foto
+  // Cada foto se pide cuando está por aparecer en pantalla (o antes, si las cápsulas la piden: la de la sección que se
+  // va a abrir y las de al lado, para que al deslizar ya estén). Si no se encuentra, se quita y el plato queda sin el
+  // espacio de la foto
   function cargar(img) {
-    if (img.dataset.pedida) return;
+    if (img.dataset.pedida) return Promise.resolve();
     img.dataset.pedida = 'si';
     vista.unobserve(img);
-    BD.foto(slug, img.dataset.foto)
-      .then(url => { img.src = url; })
+    // Ya se pidió: que el navegador la termine de traer aunque esté escondida (con loading="lazy" esperaba a que se
+    // viera, y al abrir o deslizar a una sección las fotos aparecían de a una)
+    img.loading = 'eager';
+    return BD.foto(slug, img.dataset.foto)
+      .then(url => {
+        img.src = url;
+        // Se deja lista para pintar: al mostrarla no sale primero el recuadro vacío (sin esperar más de 3 s)
+        if (img.decode) return Promise.race([img.decode().catch(() => {}), new Promise(ok => setTimeout(ok, 3000))]);
+      })
       .catch(() => { const plato = img.closest('.plato'); if (plato) plato.classList.remove('con-foto'); img.remove(); });
   }
   const vista = new IntersectionObserver(entradas => {
@@ -95,6 +103,25 @@
   document.querySelectorAll('img[data-foto]').forEach(img => vista.observe(img));
   window.cargarFotos = nodo => nodo.querySelectorAll('img[data-foto]').forEach(cargar);
 
+  // Después, con calma y de a pocas, las fotos de las secciones que todavía no se ven: primero las de arriba de cada
+  // sección. Así, al abrir una o deslizar a otra, las fotos ya están y no van apareciendo de a una (pesan unos 20 KB cada
+  // una). Si el celular pide ahorrar datos, solo se traen al verlas
+  if (!(navigator.connection && navigator.connection.saveData)) setTimeout(() => {
+    const porSeccion = [...document.querySelectorAll('#carta .cat')].map(s => [...s.querySelectorAll('img[data-foto]')]);
+    const cola = [];
+    for (let k = 0; porSeccion.some(f => f[k]); k++) porSeccion.forEach(f => { if (f[k]) cola.push(f[k]); });
+    let andando = 0;
+    const seguir = () => {
+      while (andando < 4 && cola.length) {
+        andando++;
+        cargar(cola.shift()).then(() => { andando--; seguir(); });
+      }
+    };
+    seguir();
+  }, 1500);
+
   // Las secciones en cápsulas (js/capsulas.js); sin ese archivo, la carta sale entera como antes
-  if (window.Capsulas) window.Capsulas.prender();
+  const fotosSecciones = {};
+  for (const [id, archivo] of Object.entries(C.fotosSecciones || {})) fotosSecciones[id] = C.raiz + archivo;
+  if (window.Capsulas) window.Capsulas.prender({ fotosSecciones });
 })();

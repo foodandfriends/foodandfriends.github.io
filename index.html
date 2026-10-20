@@ -72,16 +72,17 @@
      aunque la pantalla sea muy ancha, y al volver a empezar no se nota el salto */
   @keyframes correr { to { transform: translateX(-12.5%); } }
 
-  .hero { padding: 32px 0 30px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, rgba(245, 196, 0, .16), transparent 70%); }
+  .hero { padding: 22px 0 4px; text-align: center; background: radial-gradient(70% 60% at 50% 30%, rgba(245, 196, 0, .16), transparent 70%); }
   h1 { margin: 0; line-height: 0; }
   .logo { width: 180px; height: 180px; filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .18)); }
-  .lugar { order: 2; margin: 16px 0 0; color: var(--suave); font-size: .85rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
+  .lugar { order: 2; margin: 12px 0 0; color: var(--suave); font-size: .85rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; }
   #cabecera { display: flex; flex-direction: column; align-items: center; }
   #cabecera h1 { order: 1; }
   .subtitulo { order: 3; margin: 2px 0 0; font-family: "Kaushan Script", cursive; font-size: 2.1rem; line-height: 1.2; color: var(--texto); }
-  /* La historia del restaurante (la "nota" del panel), justo debajo de "La carta" */
-  .historia { order: 4; max-width: 30em; margin: 16px auto 0; padding-top: 16px; border-top: 2px solid var(--amarillo);
-    font-family: "Kaushan Script", cursive; font-size: 1.22rem; line-height: 1.55; }
+  /* La historia del restaurante (la "nota" del panel), justo debajo de "La carta". Pequeña, para que los platos
+     queden más arriba */
+  .historia { order: 4; max-width: 30em; margin: 10px auto 0; padding-top: 10px; border-top: 2px solid var(--amarillo);
+    font-family: "Kaushan Script", cursive; font-size: 1rem; line-height: 1.5; }
   .acciones { order: 5; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 999px;
@@ -108,7 +109,7 @@
   h2 { margin: 0; font-weight: 700; font-style: italic; font-size: clamp(1.9rem, 10vw, 2.5rem); line-height: 1.05; text-transform: uppercase; color: var(--naranja); letter-spacing: .01em; overflow-wrap: anywhere; }
   h2::after { content: ""; display: block; width: 70px; height: 6px; margin-top: 8px; border-radius: 3px; background: var(--amarillo); }
   h2 .num { display: none; }
-  .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .98rem; }
+  .nota-cat { margin: 8px 0 0; color: var(--suave); font-size: .86rem; line-height: 1.35; }
   .platos { display: grid; gap: 14px; margin: 18px 0 0; padding: 0; list-style: none; }
   /* Cada plato en una línea, como en el menú impreso: NOMBRE a la izquierda y $PRECIO a la derecha (y la foto si tiene) */
   .plato { display: grid; grid-template-columns: minmax(0, 1fr) 104px; column-gap: 14px; grid-template-areas: "fila foto" "desc foto"; grid-template-rows: auto 1fr; }
@@ -119,7 +120,8 @@
   .nombre { flex: 1 1 0; min-width: min-content; overflow-wrap: break-word; font-weight: 500; font-size: 1.1rem; line-height: 1.25; letter-spacing: .02em; text-transform: uppercase; }
   .puntos { display: none; } /* sin puntos entre el nombre y el precio: así lo pidió Willy */
   .precio { flex: none; margin-left: auto; font-weight: 600; font-size: 1.12rem; color: var(--precio); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .desc { grid-area: desc; margin: 1px 0 0; color: var(--suave); font-size: .98rem; }
+  /* La descripción, pequeña: así cada plato ocupa menos */
+  .desc { grid-area: desc; margin: 2px 0 0; color: var(--suave); font-size: .84rem; line-height: 1.35; }
   .foto { grid-area: foto; width: 104px; height: 82px; border-radius: 10px; object-fit: cover; background: var(--fondo-2); }
   .marca {
     display: inline-block; margin-left: 4px; padding: 1px 8px; vertical-align: 2px; border-radius: 999px;
@@ -138,7 +140,7 @@
   /* "Los más pedidos": arriba de las secciones, tarjetas que se deslizan de lado. La foto ocupa toda la tarjeta y el
      nombre y el precio van en blanco sobre un oscurecido abajo. Cuadradas: no queda espacio vacío aunque un nombre
      ocupe dos renglones */
-  .mas-pedidos { margin: 30px -20px 0; }
+  .mas-pedidos { margin: 18px -20px 0; }
   .mp-titulo { margin: 0 20px 12px; font-weight: 700; font-style: italic; font-size: 1.6rem; line-height: 1.05; text-transform: uppercase; color: var(--naranja); }
   .mp-titulo::after { content: ""; display: block; width: 50px; height: 5px; margin-top: 7px; border-radius: 3px; background: var(--amarillo); }
   /* Recorta lo que se sale de lado: espacio arriba y abajo para que la sombra no quede cortada en línea recta */
@@ -158,7 +160,7 @@
   body.con-capsulas #nav, body.con-capsulas:not(.viendo-seccion) #carta .cat, body.con-capsulas:not(.viendo-seccion) .seccion-barra,
   body.viendo-seccion .cinta, body.viendo-seccion .hero, body.viendo-seccion .capsulas, body.viendo-seccion #carta .mas-pedidos,
   body.viendo-seccion #carta .cat:not(.abierta) { display: none; }
-  .capsulas { padding-top: 22px; }
+  .capsulas { padding-top: 18px; }
   .capsulas-titulo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .capsulas-lista { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
   .capsula { position: relative; isolation: isolate; display: block; width: 100%; padding: 18px 64px 18px 20px; border: 0; border-radius: 16px; overflow: hidden;
@@ -244,11 +246,11 @@
 <main class="col" id="carta"><p class="cargando" id="cargando" role="status">Cargando la carta…</p></main>
 <footer><div class="col" id="pie"></div></footer>
 <noscript><p class="col cargando">Para ver la carta active JavaScript en el navegador.</p><style>.portada { display: none; }</style></noscript>
-<script src="js/config.js?v=202610201753"></script>
-<script src="js/firebase.js?v=202610201753"></script>
-<script src="js/carta.js?v=202610201753"></script>
-<script src="js/capsulas.js?v=202610201753"></script>
-<script src="js/carta-publica.js?v=202610201753"></script>
+<script src="js/config.js?v=202610201804"></script>
+<script src="js/firebase.js?v=202610201804"></script>
+<script src="js/carta.js?v=202610201804"></script>
+<script src="js/capsulas.js?v=202610201804"></script>
+<script src="js/carta-publica.js?v=202610201804"></script>
 <!-- Contador de visitas de Cloudflare Web Analytics: sin cookies y sin guardar nada en el celular de quien la abre.
      Va solo en la carta (no en el panel), para que las ediciones de Willy no cuenten como visitas -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "d0b572e4f29e4353a2231dce34d57f63"}'></script>

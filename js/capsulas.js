@@ -8,7 +8,8 @@
   anterior (en la primera, vuelve a las cápsulas), como pasando páginas.
   No arma otra lista: usa la que pinta carta.js y solo esconde lo que no es de la sección abierta. Tocar un plato de
   "Los más pedidos" abre su sección y lo resalta. Los estilos van en index.html.
-  Lo prende carta-publica.js después de pintar la carta: window.Capsulas.prender().
+  Lo prende carta-publica.js después de pintar la carta: window.Capsulas.prender({ fotosSecciones }), con la foto propia
+  de la cápsula de las secciones que no tienen fotos en sus platos.
 */
 (function () {
   const ATRAS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -16,6 +17,8 @@
   // Las secciones de trago: ahí sí va el aviso del alcohol del pie, que la ley pide donde se ofrece
   const LICORES = /cervez|c[oó]ctel|licor|trago|\bvinos?\b|beer/i;
   let listo = false, capsulas = null, barra = null, fila = null, abierta = null, dondeIba = 0, deslizador = null;
+  let primera = null;     // la sección que se abrió desde las cápsulas (o desde "Los más pedidos")
+  let fotosSecciones = {}; // id de la sección → foto propia de su cápsula (js/config.js)
 
   const el = (tag, clase, texto) => {
     const e = document.createElement(tag);
@@ -29,7 +32,7 @@
     return [...document.querySelectorAll('#carta .cat')].map(s => {
       const n = s.querySelectorAll('.platos > .plato').length;
       const nombre = (s.querySelector('h2 .tit') || s.querySelector('h2')).textContent;
-      return { id: s.id, nombre, n, nodo: s, foto: s.querySelector('.plato img.foto[data-foto]') };
+      return { id: s.id, nombre, n, nodo: s, propia: fotosSecciones[s.id.replace(/^cat-/, '')], foto: s.querySelector('.plato img.foto[data-foto]') };
     }).filter(s => s.n);
   }
 
@@ -40,13 +43,18 @@
       const b = el('button', 'capsula');
       b.type = 'button';
       b.dataset.sec = s.id;
-      if (s.foto) {
+      if (s.propia) {
+        // La foto que la sección tiene para su cápsula (las cervezas no tienen fotos en sus platos)
+        const img = el('img');
+        img.src = s.propia;
+        img.alt = '';
+        b.append(img);
+      } else if (s.foto) {
         // La misma foto del plato: carta-publica.js la trae (del celular, si ya la había visto)
         const img = el('img');
         img.src = s.foto.getAttribute('src');
         img.dataset.foto = s.foto.dataset.foto;
         img.alt = '';
-        img.decoding = 'async';
         b.append(img);
       } else {
         // Sin fotos (las cervezas): el dibujo de la sección, grande y a la derecha
@@ -122,8 +130,15 @@
     marco.classList.toggle('mas-izq', fila.scrollLeft > 2);
     marco.classList.toggle('mas-der', fila.scrollLeft < max - 2);
   }
+  // Sube o baja la página de una vez (el html tiene scroll-behavior: smooth)
+  function irA(y) {
+    const estilo = document.documentElement.style, antes = estilo.scrollBehavior;
+    estilo.scrollBehavior = 'auto';
+    window.scrollTo(0, y);
+    estilo.scrollBehavior = antes;
+  }
   function abrir(id, empujar) {
-    if (!abierta) dondeIba = scrollY;
+    if (!abierta) { dondeIba = scrollY; primera = id; }
     limpiarRestos();
     if (deslizador) deslizador.activo(true);
     // También en <html> y con el id de la sección en <body>: el CSS cambia lo que haga falta sin :has() (algunos
@@ -135,18 +150,28 @@
     document.body.classList.toggle('seccion-alcohol', !!(sec && sec.dataset.alcohol));
     marcar(id);
     abierta = id;
-    // Las fotos de las secciones de al lado se piden de una vez: al deslizar hacia ellas ya están
+    // Las fotos de esta sección y de las de al lado se piden de una vez (si no habían llegado): al deslizar ya están
     const ids = [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec), i = ids.indexOf(id);
-    if (window.cargarFotos) for (const v of [ids[i - 1], ids[i + 1]]) if (v) window.cargarFotos(document.getElementById(v));
+    if (window.cargarFotos) for (const v of [id, ids[i - 1], ids[i + 1]]) if (v) window.cargarFotos(document.getElementById(v));
     // Primero la historia (así el navegador recuerda dónde iba en las cápsulas) y después arriba del todo.
     // "desdeCapsulas": esa entrada la puso la carta, así que la flecha puede volver con el "atrás" del navegador
     try {
       if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
       else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
     } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    irA(0);
+  }
+  // A dónde vuelve la página al salir: a donde iba la persona. Pero si en la sección pasó a otra (deslizando o con la
+  // fila) y desde ahí no se ve la cápsula de la última que vio (por ejemplo, Cervezas, al final), queda en esa cápsula
+  function dondeDe(ultima) {
+    const capsula = ultima && ultima !== primera && capsulas.querySelector('.capsula[data-sec="' + CSS.escape(ultima) + '"]');
+    if (!capsula) return dondeIba;
+    const r = capsula.getBoundingClientRect(), arriba = r.top + scrollY;
+    if (arriba >= dondeIba + 12 && arriba + r.height <= dondeIba + innerHeight - 12) return dondeIba;
+    return Math.max(0, arriba - (innerHeight - r.height) / 2);
   }
   function cerrar() {
+    const ultima = abierta;
     limpiarRestos();
     if (deslizador) deslizador.activo(false);
     abierta = null;
@@ -154,8 +179,9 @@
     document.documentElement.classList.remove('viendo-seccion');
     delete document.body.dataset.seccion;
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
-    window.scrollTo({ top: dondeIba, behavior: 'instant' });
-    requestAnimationFrame(() => window.scrollTo({ top: dondeIba, behavior: 'instant' }));
+    const y = dondeDe(ultima);
+    irA(y);
+    requestAnimationFrame(() => irA(y));
   }
 
   function preparar() {
@@ -176,11 +202,17 @@
       ev.stopPropagation();
       abrir(plato.closest('.cat').id, true);
       requestAnimationFrame(() => {
-        plato.scrollIntoView({ behavior: 'instant', block: 'center' });
+        const r = plato.getBoundingClientRect();
+        irA(scrollY + r.top - (innerHeight - r.height) / 2);
         if (window.resaltarPlato) window.resaltarPlato(plato);
       });
     }, true);
     capsulas.addEventListener('click', ev => { const b = ev.target.closest('.capsula'); if (b) abrir(b.dataset.sec, true); });
+    // Apenas el dedo toca una cápsula se piden las fotos de su sección: cuando se abre, ya van llegando
+    capsulas.addEventListener('touchstart', ev => {
+      const b = ev.target.closest('.capsula');
+      if (b && window.cargarFotos) window.cargarFotos(document.getElementById(b.dataset.sec));
+    }, { passive: true });
     fila.addEventListener('click', ev => {
       const b = ev.target.closest('[data-sec]');
       if (b && b.dataset.sec !== abierta) { if (deslizador) deslizador.pasarA(b.dataset.sec); else abrir(b.dataset.sec, false); }
@@ -374,9 +406,10 @@
   }
 
   window.Capsulas = {
-    prender() {
+    prender(opciones) {
       if (listo || !document.querySelector('#carta .cat')) return;
       listo = true;
+      fotosSecciones = (opciones && opciones.fotosSecciones) || {};
       preparar();
       pintar();
       // Si la persona recargó con una sección abierta, sigue en ella
