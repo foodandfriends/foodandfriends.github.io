@@ -48,11 +48,12 @@
   /* Al tocar algo, el iPhone dibuja un recuadro gris de lo que tiene el toque (a veces una fila entera), encima de todo */
   html { -webkit-tap-highlight-color: transparent; }
   body { margin: 0; overflow-wrap: anywhere; background: var(--fondo); color: var(--texto); font: 16px/1.45 "Oswald", "Arial Narrow", ui-sans-serif, system-ui, sans-serif; }
-  /* Fondo de la carta: blanco hueso con dibujitos de hamburguesas, cerveza, papas, pollo, parrilla y rock en línea naranja
-     suave (dibujos.svg). En toda la página (html), para que debajo no quede una franja de otro color. La portada (logo y
+  /* Fondo de la carta: blanco hueso con dibujitos de hamburguesas, cerveza, papas, tomate, queso, tocineta y ají en línea
+     naranja suave (dibujos.svg; lo de adelante va relleno del mismo blanco hueso: si cambia --pagina, cambiar también el
+     relleno del dibujo). En toda la página (html), para que debajo no quede una franja de otro color. La portada (logo y
      textos) va lisa y las secciones abiertas también: los dibujos solo se ven detrás de "Los más pedidos" y las cápsulas */
   :root { --pagina: 255, 250, 242; }
-  html { background: rgb(var(--pagina)) url(dibujos.svg) 0 0 / 216px 224px repeat; }
+  html { background: rgb(var(--pagina)) url(dibujos.svg) 0 0 / 260px 260px repeat; }
   body { background: none; }
   html.viendo-seccion { background: rgb(var(--pagina)); }
 

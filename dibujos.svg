@@ -1,65 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 270" width="260" height="270"><!-- Dibujitos de fondo de la carta (index.html): hamburguesas, cerveza, papas, alitas, parrilla y rock. Hechos para Food and Friends --><g fill="none" stroke="#e8650a" stroke-opacity=".45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-<!-- Hamburguesa -->
-<g transform="translate(40 42) rotate(-6) scale(.8)">
-<path d="M-22-3C-22-14-12-20 0-20C12-20 22-14 22-3Z"/>
-<path d="M-10-13l2.5-1M-1-15.5l2.5.4M8-12.5l2.3 1M-5-8l2.4-.6M4-7.5l2.4.5M13-7l2 .8"/>
-<path d="M-24 2q3-3.4 6 0t6 0t6 0t6 0t6 0t6 0t6 0t6 0"/>
-<rect x="-23" y="6" width="46" height="7.5" rx="3.75"/>
-<path d="M-8 13.5l4 4.5l4-4.5"/>
-<path d="M-21 17H21C21 21.5 17.5 24 12.5 24H-12.5C-17.5 24-21 21.5-21 17Z"/></g>
-<!-- Chapa de cerveza -->
-<g transform="translate(124 30) rotate(10) scale(.62)">
-<path d="M0-16L4-15.5L7.5-14.2L10.3-11.7L13.1-9.4L14.3-5.9L16-2.4L15.4 1.6L15.6 5.6L13.2 8.8L11.3 12.3L7.7 14L4.6 16.1H0.4L-3.4 16.6L-6.7 14.3L-10.5 13L-12.6 9.6L-15.3 6.6L-15.6 2.6L-16.6-1.2L-14.9-4.9L-14.1-8.8L-11-11.4L-8.5-14.6L-4.6-15.6Z"/>
-<circle r="9.5"/><path d="M-4.5-2.5H4.5M-3 2.5H3"/></g>
-<!-- Jarra de cerveza -->
-<g transform="translate(203 50) rotate(7) scale(.8)">
-<path d="M-14-9V18C-14 21-12 23-9 23H7C10 23 12 21 12 18V-9"/>
-<path d="M12-4H17C20-4 22-2 22 1V9C22 12 20 14 17 14H12"/>
-<path d="M-15-9C-19-10-19-15-15-16C-15-21-9-22-7-18C-5-22 1-22 2-18C5-21 10-20 10-16C14-17 16-13 13-9Z"/>
-<path d="M-7-3V17M-1-3V17M5-3V17"/></g>
-<!-- Rayo -->
-<g transform="translate(80 110) rotate(12) scale(.66)">
-<path d="M5-23L-11 3H0L-5 23L11-4H0Z"/></g>
-<!-- Papas fritas -->
-<g transform="translate(150 118) rotate(-5) scale(.8)">
-<path d="M-11-1V-17H-7V1M-5 1V-22H-1V1M1 1V-19H5V1M7 0V-21H11V-1"/>
-<path d="M-15-2L-12 24H12L15-2Q7 5 0-2Q-7 5-15-2Z"/>
-<path d="M-5 9a5 5 0 0 0 10 0"/></g>
-<!-- Vaso de cerveza -->
-<g transform="translate(230 128) rotate(-10) scale(.72)">
-<path d="M-12-12L-9 22C-8.8 23.4-7.8 24-6.5 24H6.5C7.8 24 8.8 23.4 9 22L12-12"/>
-<path d="M-13-12C-16-13-16-18-12-19C-11-23-6-24-4-21C-2-25 4-25 5-21C8-23 13-21 12-17C15-16 15-12 12-12Z"/>
-<path d="M-11-4H11"/><circle cx="-3" cy="6" r="1.2"/><circle cx="3" cy="12" r="1.2"/><circle cx="-1" cy="17" r="1.2"/></g>
-<!-- Botella de cerveza -->
-<g transform="translate(32 172) rotate(-12) scale(.8)">
-<path d="M-4-24H4V-13C4-9 10-7 10 0V20C10 22.5 8.5 24 6 24H-6C-8.5 24-10 22.5-10 20V0C-10-7-4-9-4-13Z"/>
-<path d="M-5-20H5"/>
-<rect x="-7.5" y="4" width="15" height="11" rx="2"/></g>
-<!-- Llama de la parrilla -->
-<g transform="translate(106 198) scale(.72)">
-<path d="M0 24C-10 24-16 17-16 9C-16 0-8-4-7-14C-2-10 0-6-1-1C2-4 4-9 3-16C11-10 16-1 16 9C16 17 10 24 0 24Z"/>
-<path d="M0 24C-5 24-7 20-7 16C-7 11-3 9-2 4C2 7 4 10 3 14C5 13 6 11 6 9C8 12 8 15 7 18C6 22 3 24 0 24Z"/></g>
-<!-- Hamburguesa pequeña -->
-<g transform="translate(190 210) rotate(9) scale(.7)">
-<path d="M-22-3C-22-14-12-20 0-20C12-20 22-14 22-3Z"/>
-<path d="M-9-13l2.5-1M1-15.5l2.5.4M9-11.5l2.3 1M-3-8l2.4-.6"/>
-<path d="M-24 2q3-3.4 6 0t6 0t6 0t6 0t6 0t6 0t6 0t6 0"/>
-<rect x="-23" y="6" width="46" height="7.5" rx="3.75"/>
-<path d="M-21 17H21C21 21.5 17.5 24 12.5 24H-12.5C-17.5 24-21 21.5-21 17Z"/></g>
-<!-- Presa de pollo -->
-<g transform="translate(54 244) rotate(-8) scale(.8)">
-<path d="M-5-1C-10-11-3-22 8-22C18-22 24-13 20-4C17 2 10 5 3 4C0 4-3 2-5-1Z"/>
-<path d="M-4 1L-11 8M1 4L-6 11"/>
-<path d="M-11 8C-14 6-18 8-17 12C-20 13-20 17-17 18C-16 21-12 21-11 18C-8 18-6 15-6 11"/>
-<path d="M6-15C10-16 14-14 15-10"/></g>
-<!-- Guitarra -->
-<g transform="translate(236 236) rotate(-28) scale(.78)">
-<path d="M-2 0C-7-1-12 3-11 9C-10 13-7 14-6 16C-6 21-1 25 4 24C9 23 11 18 9 14C8 12 9 9 9 7C9 2 3-1-2 0Z"/>
-<circle cx="0" cy="11" r="3"/>
-<path d="M-1.5 2V-20M1.5 2V-20"/>
-<path d="M-3-20H3L4-28H-4Z"/>
-<path d="M-4 18H4"/></g>
-<!-- Puntos de relleno -->
-<circle cx="160" cy="62" r="1.6"/><circle cx="20" cy="104" r="1.6"/><circle cx="246" cy="184" r="1.6"/><circle cx="150" cy="252" r="1.6"/>
-<path d="M112 152v6M109 155h6M14 220v6M11 223h6M248 84v6M245 87h6"/>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320"><!-- Dibujitos de fondo de la carta (index.html): hamburguesas, cerveza, papas, tomate, queso, tocineta y ají. Hechos para Food and Friends --><g opacity=".5" fill="none" stroke="#e8650a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(62 60) rotate(-8) scale(0.95)">
+    <path fill="#fffaf2" d="M-27 22H27C27 28.5 22.5 33 16 33H-16C-22.5 33-27 28.5-27 22Z"/>
+    <rect fill="#fffaf2" x="-29" y="12" width="58" height="11" rx="5.5"/>
+    <path d="M-19 17.5h5M-5 16.8h5M9 17.5h5"/>
+    <path fill="#fffaf2" d="M-27 7H27L23.5 12.5H11.5L8 19.5L4.5 12.5H-10L-13.5 17.5L-17 12.5H-24Z"/>
+    <path fill="#fffaf2" d="M-30 6q3.75-5 7.5 0t7.5 0t7.5 0t7.5 0t7.5 0t7.5 0t7.5 0t7.5 0L28 1H-28Z"/>
+    <path fill="#fffaf2" d="M-28-4C-28-19-16-27 0-27C16-27 28-19 28-4C28-1 26 1 23 1H-23C-26 1-28-1-28-4Z"/>
+    <path d="M-18-17C-14-21-9-23-4-23.6"/>
+    <path d="M-7-17.5l3.2-1.6M3-21l3.4.6M12-15.5l3 1.6M0-11.5l3.4-.5M-15-9.5l2.8-1.7M16-7.5l3 .6M-6-5.5l3 .3"/></g><g transform="translate(182 52) rotate(9) scale(0.9)">
+    <path d="M14-5H21C25-5 27-2 27 2V13C27 17 25 20 21 20H14"/>
+    <path d="M14 0H19.5C21 0 22 1 22 2.5V12.5C22 14 21 15 19.5 15H14"/>
+    <path fill="#fffaf2" d="M-17-9V27C-17 31-14 33-10 33H8C12 33 14.5 31 14.5 27V-9Z"/>
+    <path d="M-8 1V25M5.5 1V25"/>
+    <circle cx="-1.2" cy="9" r="1.4"/><circle cx="-1.2" cy="17" r="1.1"/><circle cx="-1.2" cy="23" r=".9"/>
+    <path fill="#fffaf2" d="M-19-9C-23.5-10-23.5-16.5-19-17.5C-19.5-24-12-26.5-8.5-22C-6.5-27.5 1-28.5 3-23C6-27.5 13.5-26 13.5-20.5C18.5-21 20.5-14.5 16-11C17-8 15-6.5 12.5-6.5V-2C12.5 1 9 1 8.5-2V-6.5H-17C-18.5-6.5-19.5-7.5-19-9Z"/></g><g transform="translate(272 46) rotate(0) scale(0.78)">
+    <circle fill="#fffaf2" cx="15" cy="10" r="11.5"/><circle cx="15" cy="10" r="8.3"/><circle cx="15" cy="10" r="2.2"/>
+    <circle fill="#fffaf2" cx="-5" cy="-3" r="15"/><circle cx="-5" cy="-3" r="11"/><circle cx="-5" cy="-3" r="2.8"/>
+    <ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(0 -5 -3)"/><ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(60 -5 -3)"/><ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(120 -5 -3)"/><ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(180 -5 -3)"/><ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(240 -5 -3)"/><ellipse cx="-5" cy="-10" rx="1.5" ry="2.6" transform="rotate(300 -5 -3)"/>
+    <ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(0 15 10)"/><ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(60 15 10)"/><ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(120 15 10)"/><ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(180 15 10)"/><ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(240 15 10)"/><ellipse cx="15" cy="4.6" rx="1.1" ry="1.9" transform="rotate(300 15 10)"/></g><g transform="translate(120 160) rotate(-7) scale(0.9)">
+    <g fill="#fffaf2"><rect x="-19" y="-30" width="6.5" height="34" rx="1.5" transform="rotate(-9 -16 -10)"/>
+    <rect x="-11" y="-37" width="6.5" height="40" rx="1.5" transform="rotate(-3 -8 -15)"/>
+    <rect x="-3" y="-33" width="6.5" height="36" rx="1.5" transform="rotate(4 0 -12)"/>
+    <rect x="5" y="-38" width="6.5" height="40" rx="1.5" transform="rotate(8 8 -15)"/>
+    <rect x="12" y="-28" width="6.5" height="30" rx="1.5" transform="rotate(16 15 -10)"/></g>
+    <path fill="#fffaf2" d="M-21-4L-15.5 34H15.5L21-4Q10.5 4 0-4Q-10.5 4-21-4Z"/>
+    <path fill="#e8650a" stroke="none" d="M-18.2 13H18.2L16.9 23H-16.9Z"/>
+    <path fill="#fffaf2" stroke="none" d="M2.5 14.2L-5 19H-.6L-2.6 22.2L5 17H.6Z"/></g><g transform="translate(248 146) rotate(12) scale(0.82)">
+    <path fill="#fffaf2" d="M-26 4L10-15L27-6V13L-26 19Z"/>
+    <path d="M-26 4L27-6"/>
+    <ellipse cx="7" cy="-7.5" rx="3.6" ry="1.8" transform="rotate(-10 7 -7.5)"/>
+    <circle cx="-12" cy="11.5" r="3.4"/><circle cx="4" cy="7" r="2.4"/><circle cx="16" cy="8.5" r="3.6"/><circle cx="-1" cy="14.5" r="1.6"/></g><g transform="translate(44 196) rotate(-24) scale(0.78)">
+    <path fill="#fffaf2" d="M-30-1C-23-8-16 6-8-1S7-8 14-1S25 6 30 1V12C25 17 19 3 12 10S-3 17-10 10S-24 3-30 11Z"/>
+    <path d="M-28 6C-22 0-16 11-9 5S6 -1 13 5S24 11 29 7"/></g><g transform="translate(236 250) rotate(8) scale(0.9)">
+    <path fill="#fffaf2" d="M-24 30H24C24 35 20 38.5 15 38.5H-15C-20 38.5-24 35-24 30Z"/>
+    <rect fill="#fffaf2" x="-26" y="20.5" width="52" height="10.5" rx="5.25"/>
+    <path d="M-16 26h4.5M-3 25.2h4.5M9 26h4.5"/>
+    <path fill="#fffaf2" d="M-24 16H24L21 21H8.5L5.5 27L2.5 21H-9L-12 25L-15 21H-21.5Z"/>
+    <rect fill="#fffaf2" x="-26" y="6.5" width="52" height="10.5" rx="5.25"/>
+    <path d="M-15 12h4.5M-2 11.2h4.5M10 12h4.5"/>
+    <path fill="#fffaf2" d="M-25 2.5H25V7.5H-25Z"/><path d="M-12 2.5V7.5M0 2.5V7.5M12 2.5V7.5"/>
+    <path fill="#fffaf2" d="M-27.5 2.5q3.44-4.6 6.88 0t6.88 0t6.88 0t6.88 0t6.88 0t6.88 0t6.88 0t6.88 0L25-2H-25Z"/>
+    <path fill="#fffaf2" d="M-25-7C-25-24-14-33 0-33C14-33 25-24 25-7C25-4 23-2 20-2H-20C-23-2-25-4-25-7Z"/>
+    <path d="M-15-22C-11-26.5-6-29-1.5-29.5"/>
+    <path d="M-5-22l3.2-1.4M5-26l3.2.7M13-19l2.8 1.6M-1-15l3.2-.4M-14-13l2.7-1.7M14-11l3 .6"/></g><g transform="translate(128 268) rotate(-16) scale(0.85)">
+    <path fill="#fffaf2" d="M-5-33H5V-21C5-16 12.5-13 12.5-5V28C12.5 31 10.5 33 7.5 33H-7.5C-10.5 33-12.5 31-12.5 28V-5C-12.5-13-5-16-5-21Z"/>
+    <path fill="#fffaf2" d="M-6.5-38H6.5V-32.5H-6.5Z"/><path d="M-3.5-38V-32.5M0-38V-32.5M3.5-38V-32.5"/>
+    <path d="M-5-26H5"/>
+    <rect fill="#fffaf2" x="-10" y="3" width="20" height="17" rx="2.5"/>
+    <path d="M-5.5 9H5.5M-3.5 14H3.5"/>
+    <path d="M-8.5-3V-7"/></g><g transform="translate(44 286) rotate(18) scale(0.62)">
+    <path fill="#fffaf2" d="M-28 8C-16 11-3 6 8-3C14-8 18-13 22-11C25-9 23-4 19-1C9 8-6 17-26 13C-30 12-31 8-28 8Z"/>
+    <path d="M21-11C22-16 25-18 29-17"/><path d="M15-7C17-9 19-10 21-9"/>
+    <path d="M-17 11C-10 11-3 8 3 4"/></g></g></svg>
