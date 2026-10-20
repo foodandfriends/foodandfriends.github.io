@@ -84,7 +84,7 @@
     capsulas.append(titulo, ul);
     const carta = document.getElementById('carta'), mas = carta.querySelector(':scope > .mas-pedidos');
     if (mas) mas.after(capsulas); else carta.prepend(capsulas);
-    if (window.cargarFotos) window.cargarFotos(capsulas);
+    if (window.vigilarFotos) window.vigilarFotos(capsulas);
     // La fila de secciones de arriba (con la sección abierta)
     for (const s of secs) {
       const b = el('button', '', s.nombre);
@@ -143,7 +143,7 @@
     estilo.scrollBehavior = antes;
   }
   function abrir(id, empujar) {
-    if (!document.body.classList.contains('con-capsulas')) return; // las cápsulas se apagaron (ver prender)
+    if (!document.body.classList.contains('con-capsulas') || !document.getElementById(id)) return; // apagadas (ver prender) o ya no existe
     if (!abierta) { dondeIba = scrollY; primera = id; }
     limpiarRestos();
     if (deslizador) deslizador.activo(true);
@@ -176,8 +176,10 @@
   }
   function cerrar() {
     const ultima = abierta;
+    // Lo que el deslizamiento tenía pendiente (terminar de correrse, la sección tocada en la fila) ya no se hace: si no,
+    // la sección se volvía a abrir sola encima de las cápsulas o la pantalla quedaba en blanco
+    if (deslizador) { deslizador.cancelar(); deslizador.activo(false); }
     limpiarRestos();
-    if (deslizador) deslizador.activo(false);
     abierta = null;
     document.body.classList.remove('viendo-seccion');
     document.documentElement.classList.remove('viendo-seccion');
@@ -200,7 +202,7 @@
     // llega antes que el de carta.js, que solo baja hasta el plato)
     document.addEventListener('click', ev => {
       const t = ev.target.closest('#carta .mas-pedidos .fav');
-      if (!t || abierta) return;
+      if (!t || abierta || !document.body.classList.contains('con-capsulas')) return;
       const plato = document.querySelector('#carta .cat .plato[data-id="' + CSS.escape(t.dataset.id) + '"]');
       if (!plato) return;
       ev.stopPropagation();
@@ -232,7 +234,8 @@
     // La página ampliada con los dedos (zoom): deslizar de lado ya no cambia de sección, mueve la página
     if (window.visualViewport) visualViewport.addEventListener('resize', () => document.documentElement.classList.toggle('con-zoom', visualViewport.scale > 1.01));
     window.addEventListener('popstate', ev => {
-      if (ev.state && ev.state.seccion) { if (ev.state.seccion !== abierta) abrir(ev.state.seccion, false); }
+      const id = ev.state && ev.state.seccion;
+      if (id && document.getElementById(id)) { if (id !== abierta) abrir(id, false); }
       else if (abierta) cerrar();
     });
     let cuadro = 0;
@@ -266,6 +269,7 @@
     // ajusta sola a una sección (scroll-snap), para que no dé saltos
     let fila0 = 0, fila1 = 0, cuadroFila = 0;
     let siguiente = null; // la sección que se tocó en la fila mientras otra todavía se corría: se abre al terminar
+    let turno = 0;        // cambia al volver a las cápsulas: lo que quedó pendiente de antes ya no se hace
     function correrFila(hasta, dura, curva) {
       cancelAnimationFrame(cuadroFila);
       const desde = fila.scrollLeft;
@@ -334,7 +338,9 @@
       if (vecina) { vecina.style.transition = transicion; vecina.style.transform = 'translateX(' + (xSec + lado * ancho()) + 'px)'; }
       correrFila(filaHasta, dura, curva);
       // Pase lo que pase en fin(), se puede volver a deslizar (si no, quedaba trabado para siempre)
+      const mio = turno;
       setTimeout(() => {
+        if (mio !== turno) return;
         try { fin(); } finally { ocupado = false; }
         if (siguiente) { const id = siguiente; siguiente = null; if (id !== abierta) pasarA(id); }
       }, dura + 10);
@@ -427,10 +433,21 @@
       // Arranca dos cuadros después: la otra sección ya quedó pintada en su capa, al lado, y el movimiento no da un
       // tirón al empezar
       ocupado = true;
-      requestAnimationFrame(() => requestAnimationFrame(() => { ocupado = false; pasarALaVecina(true); }));
+      const mio = turno;
+      requestAnimationFrame(() => requestAnimationFrame(() => { if (mio !== turno) return; ocupado = false; pasarALaVecina(true); }));
     };
     return {
       pasarA,
+      cancelar() {
+        turno++;
+        siguiente = null;
+        ocupado = false;
+        modo = 'nada';
+        lado = 0;
+        cancelAnimationFrame(cuadroFila);
+        fila.style.scrollSnapType = '';
+        if (vecina) { vecina.classList.remove('abierta'); soltarVecina(vecina); vecina = null; }
+      },
       activo(si) {
         if (si) document.addEventListener('touchmove', alMoverDedo, { passive: false });
         else document.removeEventListener('touchmove', alMoverDedo);
@@ -455,7 +472,10 @@
         return;
       }
       // Si la persona recargó con una sección abierta, sigue en ella
-      if (history.state && history.state.seccion && document.getElementById(history.state.seccion)) abrir(history.state.seccion, false);
+      if (history.state && history.state.seccion) {
+        if (document.getElementById(history.state.seccion)) abrir(history.state.seccion, false);
+        else try { history.replaceState(null, ''); } catch { /* el navegador limita los cambios: se queda así */ }
+      }
     }
   };
 })();

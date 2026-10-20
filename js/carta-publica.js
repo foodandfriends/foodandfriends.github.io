@@ -95,20 +95,35 @@
         // Se deja lista para pintar: al mostrarla no sale primero el recuadro vacío (sin esperar más de 3 s)
         if (img.decode) return Promise.race([img.decode().catch(() => {}), new Promise(ok => setTimeout(ok, 3000))]);
       })
-      .catch(() => { const plato = img.closest('.plato'); if (plato) plato.classList.remove('con-foto'); img.remove(); });
+      .catch(e => {
+        // Si fue la señal (no que la foto no exista), se vuelve a pedir en unos segundos, cuando se vea; a la tercera, o si
+        // no existe, se quita y el plato queda sin el espacio de la foto
+        const intentos = Number(img.dataset.intentos || 0) + 1;
+        if (e && e.estado !== 404 && intentos < 3) {
+          img.dataset.intentos = intentos;
+          setTimeout(() => { delete img.dataset.pedida; vista.observe(img); }, 4000);
+          return;
+        }
+        const plato = img.closest('.plato');
+        if (plato) plato.classList.remove('con-foto');
+        img.remove();
+      });
   }
   const vista = new IntersectionObserver(entradas => {
     for (const e of entradas) if (e.isIntersecting) cargar(e.target);
   }, { rootMargin: '400px 0px' });
   document.querySelectorAll('img[data-foto]').forEach(img => vista.observe(img));
   window.cargarFotos = nodo => nodo.querySelectorAll('img[data-foto]').forEach(cargar);
+  // Las que se pintan después (las de las cápsulas) se piden igual: cuando están por aparecer
+  window.vigilarFotos = nodo => nodo.querySelectorAll('img[data-foto]').forEach(img => { if (!img.dataset.pedida) vista.observe(img); });
 
-  // Después, con calma y de a pocas, las fotos de las secciones que todavía no se ven: primero las de arriba de cada
-  // sección. Así, al abrir una o deslizar a otra, las fotos ya están y no van apareciendo de a una (pesan unos 20 KB cada
-  // una). Si el celular pide ahorrar datos, solo se traen al verlas
+  // Después, con calma y de a pocas, las fotos que todavía no se ven: primero las de "Los más pedidos" (la fila se desliza
+  // de lado y las de la derecha aparecían tarde) y luego las de las secciones, primero las de arriba de cada una. Así, al
+  // abrir una sección o deslizar a otra, las fotos ya están y no van apareciendo de a una (pesan unos 20 KB cada una). Lo
+  // que está en pantalla va antes que todo esto. Si el celular pide ahorrar datos, solo se traen al verlas
   if (!(navigator.connection && navigator.connection.saveData)) setTimeout(() => {
     const porSeccion = [...document.querySelectorAll('#carta .cat')].map(s => [...s.querySelectorAll('img[data-foto]')]);
-    const cola = [];
+    const cola = [...document.querySelectorAll('#carta .mas-pedidos img[data-foto]')];
     for (let k = 0; porSeccion.some(f => f[k]); k++) porSeccion.forEach(f => { if (f[k]) cola.push(f[k]); });
     let andando = 0;
     const seguir = () => {

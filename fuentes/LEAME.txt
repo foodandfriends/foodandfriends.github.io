@@ -1,0 +1,9 @@
+Letras de la carta (index.html), copiadas de Google Fonts para servirlas desde este mismo sitio (así la carta abre más
+rápido: no espera otra conexión). Solo traen las letras del español (el grupo "latin" de Google Fonts).
+
+- oswald-latin.woff2: Oswald, de Vernon Adams, Kalapi Gajjar y Cyreal. Licencia SIL Open Font License 1.1.
+  https://fonts.google.com/specimen/Oswald
+- kaushan-script-latin.woff2: Kaushan Script, de Impallari Type. Licencia SIL Open Font License 1.1.
+  https://fonts.google.com/specimen/Kaushan+Script
+
+La licencia permite usarlas, copiarlas y servirlas en una página: https://openfontlicense.org

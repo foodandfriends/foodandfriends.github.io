@@ -11,7 +11,7 @@ window.CONFIG = {
   firebaseApiKey: "AIzaSyBWi2lwUOZCibPTQCVeTb7HrwoYh9W8wS4",   // "apiKey" de la configuración web de Firebase
   firebaseProyecto: "cartas-574bf",                            // "projectId"
   restaurante: "food-friends",
-  logo: "logo.webp",        // desde la raíz del sitio
+  logo: "logo-carta.webp",  // desde la raíz del sitio (el logo achicado para la carta: 400 px)
   // "Los más pedidos", arriba de las secciones y en este orden (el id de cada plato en la carta). Si el dueño borra uno
   // o lo marca agotado, no sale
   masPedidos: [
@@ -22,10 +22,13 @@ window.CONFIG = {
     "a2c0d386-9165-49cd-9d14-364671f1601d", // Burrito mixto especial
     "664a507f-5eb6-463b-a37c-ddc8f4481b59"  // Lomo al carbón 250 g
   ],
-  // Foto de la cápsula de una sección que no tiene fotos en sus platos (el id de la sección; desde la raíz del sitio).
-  // Las demás secciones usan la foto de su primer plato con foto
+  // Foto propia de la cápsula de una sección (el id de la sección; desde la raíz del sitio): para las que no tienen fotos
+  // en sus platos, o cuando la del plato es de muy cerca y en la cápsula (ancha y bajita) solo se veía una franja.
+  // Las demás secciones usan la foto de su primer plato con foto. Todas de Unsplash, licencia libre
   fotosSecciones: {
-    "69593f3a-e159-4baa-a29e-9e5c9334d90b": "fotos-secciones/cervezas.jpg" // Cervezas. Unsplash, licencia libre (photo-1608270586620-248524c67de9)
+    "5ea21531-2c8d-48aa-b0d7-ec571ee91471": "fotos-secciones/bebidas.webp",  // Bebidas (photo-1496318447583-f524534e9ce1)
+    "cdbc514b-df56-4951-9953-5574dccfcc6c": "fotos-secciones/cocteles.webp", // Cócteles (photo-1551024709-8f23befc6f87)
+    "69593f3a-e159-4baa-a29e-9e5c9334d90b": "fotos-secciones/cervezas.webp"  // Cervezas (photo-1608270586620-248524c67de9)
   },
   // Avisos que pide la ley (SIC): va fijo al final de la carta. Confirmado con el dueño el 30-sep-2026
   textoLegal: "Precios en pesos colombianos, con impuestos incluidos. La propina es voluntaria. " +
