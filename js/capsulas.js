@@ -169,6 +169,14 @@
   function abrir(id, empujar) {
     if (!document.body.classList.contains('con-capsulas') || !document.getElementById(id)) return; // apagadas (ver prender) o ya no existe
     if (!abierta) dondeIba = scrollY;
+    // La historia va antes de esconder nada: Safari guarda con la entrada la altura de la página en ese momento, y si ya
+    // estaba corta (cápsulas escondidas) guardaba otra altura. "desdeCapsulas": esa entrada la puso la carta, así que la
+    // flecha puede volver con el "atrás" del navegador
+    try {
+      if (empujar && atrasPropio) empujarAlVolver = true; // ver salir()
+      else if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
+      else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
+    } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
     limpiarRestos();
     if (deslizador) { deslizador.olvidar(); deslizador.activo(true); deslizador.prepararLuego(); }
     // También en <html> y con el id de la sección en <body>: el CSS cambia lo que haga falta sin :has() (algunos
@@ -181,13 +189,6 @@
     // Las fotos de esta sección y de las de al lado se piden de una vez (si no habían llegado): al deslizar ya están
     const ids = [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec), i = ids.indexOf(id);
     if (window.cargarFotos) for (const v of [id, ids[i - 1], ids[i + 1]]) if (v) window.cargarFotos(document.getElementById(v));
-    // Primero la historia (así el navegador recuerda dónde iba en las cápsulas) y después arriba del todo.
-    // "desdeCapsulas": esa entrada la puso la carta, así que la flecha puede volver con el "atrás" del navegador
-    try {
-      if (empujar && atrasPropio) empujarAlVolver = true; // ver salir()
-      else if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
-      else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
-    } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
     irA(0);
   }
   function cerrar() {
