@@ -17,7 +17,6 @@
   // Las secciones de trago: al final llevan el aviso legal del pie (el del alcohol), que la ley pide donde se ofrece
   const LICORES = /cervez|c[oó]ctel|licor|trago|\bvinos?\b|beer/i;
   let listo = false, capsulas = null, barra = null, fila = null, abierta = null, dondeIba = 0, deslizador = null;
-  let primera = null;     // la sección que se abrió desde las cápsulas (o desde "Los más pedidos")
   let fotosSecciones = {}; // id de la sección → foto propia de su cápsula (js/config.js)
 
   const el = (tag, clase, texto) => {
@@ -48,6 +47,7 @@
         const img = el('img');
         img.src = s.propia;
         img.alt = '';
+        img.addEventListener('load', () => { img.decoding = 'sync'; }, { once: true }); // ver cargar() en carta-publica.js
         b.append(img);
       } else if (s.foto) {
         // La misma foto del plato: carta-publica.js la trae (del celular, si ya la había visto)
@@ -149,7 +149,7 @@
   }
   function abrir(id, empujar) {
     if (!document.body.classList.contains('con-capsulas') || !document.getElementById(id)) return; // apagadas (ver prender) o ya no existe
-    if (!abierta) { dondeIba = scrollY; primera = id; }
+    if (!abierta) dondeIba = scrollY;
     limpiarRestos();
     if (deslizador) { deslizador.olvidar(); deslizador.activo(true); deslizador.prepararLuego(); }
     // También en <html> y con el id de la sección en <body>: el CSS cambia lo que haga falta sin :has() (algunos
@@ -170,15 +170,6 @@
     } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
     irA(0);
   }
-  // A dónde vuelve la página al salir: a donde iba la persona. Pero si en la sección pasó a otra (deslizando o con la
-  // fila) y desde ahí no se ve la cápsula de la última que vio (por ejemplo, Cervezas, al final), queda en esa cápsula
-  function dondeDe(ultima) {
-    const capsula = ultima && ultima !== primera && capsulas.querySelector('.capsula[data-sec="' + CSS.escape(ultima) + '"]');
-    if (!capsula) return dondeIba;
-    const r = capsula.getBoundingClientRect(), arriba = r.top + scrollY;
-    if (arriba >= dondeIba + 12 && arriba + r.height <= dondeIba + innerHeight - 12) return dondeIba;
-    return Math.max(0, arriba - (innerHeight - r.height) / 2);
-  }
   function cerrar() {
     const ultima = abierta;
     // Lo que el deslizamiento tenía pendiente (terminar de correrse, la sección tocada en la fila) ya no se hace: si no,
@@ -190,7 +181,9 @@
     document.documentElement.classList.remove('viendo-seccion');
     delete document.body.dataset.seccion;
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
-    const y = dondeDe(ultima);
+    // Al salir, la página queda exactamente donde iba la persona en las cápsulas (también si pasó a otras secciones o
+    // había bajado hasta el final). El navegador no la mueve por su cuenta: ver history.scrollRestoration en prender()
+    const y = dondeIba;
     // Si el enfoque estaba en la barra (con el teclado), vuelve a la cápsula de la última sección que se vio
     const conTeclado = barra.contains(document.activeElement);
     irA(y);
@@ -618,6 +611,9 @@
       if (listo || !document.querySelector('#carta .cat')) return;
       listo = true;
       fotosSecciones = (opciones && opciones.fotosSecciones) || {};
+      // La posición de la página la pone la carta: al volver de una sección, el navegador la movía un cuadro a la altura
+      // que tenía guardada (se veía otra parte, por ejemplo la cápsula de México, y luego saltaba a donde iba)
+      try { history.scrollRestoration = 'manual'; } catch { /* navegador viejo: sigue en automático */ }
       try {
         preparar();
         pintar();

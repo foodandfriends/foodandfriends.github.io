@@ -101,8 +101,11 @@
       .then(url => {
         if (!listas.has(img.dataset.foto)) listas.set(img.dataset.foto, url);
         img.src = url;
-        // Se deja lista para pintar: al mostrarla no sale primero el recuadro vacío (sin esperar más de 3 s)
-        if (img.decode) return Promise.race([img.decode().catch(() => {}), new Promise(ok => setTimeout(ok, 3000))]);
+        // Se deja lista para pintar: al mostrarla no sale primero el recuadro vacío (sin esperar más de 3 s). Y ya cargada,
+        // se dibuja sin espera: en el iPhone, al volver a mostrarse (al salir de una sección), salía un instante en blanco
+        const lista = () => { img.decoding = 'sync'; };
+        if (img.decode) return Promise.race([img.decode().catch(() => {}), new Promise(ok => setTimeout(ok, 3000))]).then(lista);
+        lista();
       })
       .catch(e => {
         // Si fue la señal (no que la foto no exista), se vuelve a pedir en unos segundos, cuando se vea; a la tercera, o si
