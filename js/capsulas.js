@@ -96,9 +96,28 @@
   }
   // Volver a las cápsulas: con el "atrás" si la sección se abrió desde ellas; si no (por ejemplo, una entrada vieja de
   // la historia), aquí mismo, sin salirse de la carta
+  // Salir (la flecha, Esc o deslizar a la derecha en la primera): las cápsulas salen de una vez, donde iba la persona, y
+  // después se hace el "atrás" del historial (para que el atrás del celular siga funcionando). Antes se esperaba el aviso
+  // del navegador (popstate) para mostrarlas y en el iPhone se demoraba casi un segundo. Mientras ese aviso llega
+  // (atrasPropio), una cápsula que se toque se abre de una vez y su entrada del historial se pone cuando llegue
+  let atrasPropio = false, relojAtras = 0, empujarAlVolver = false;
   function salir() {
-    if (history.state && history.state.seccion && history.state.desdeCapsulas) history.back();
-    else { cerrar(); try { history.replaceState(null, ''); } catch { /* el navegador limita los cambios: se queda así */ } }
+    if (atrasPropio) { empujarAlVolver = false; cerrar(); return; } // el "atrás" de antes todavía no llega: no pedir otro
+    if (history.state && history.state.seccion && history.state.desdeCapsulas) {
+      cerrar();
+      atrasPropio = true;
+      clearTimeout(relojAtras);
+      relojAtras = setTimeout(llegoAtras, 1500); // por si el aviso no llega
+      history.back();
+    } else { cerrar(); try { history.replaceState(null, ''); } catch { /* el navegador limita los cambios: se queda así */ } }
+  }
+  function llegoAtras() {
+    atrasPropio = false;
+    clearTimeout(relojAtras);
+    if (empujarAlVolver) {
+      empujarAlVolver = false;
+      if (abierta) try { history.pushState({ seccion: abierta, desdeCapsulas: true }, ''); } catch { /* se queda así */ }
+    }
   }
   // Restos de un deslizamiento cortado (un segundo dedo, un cambio a la mitad): ninguna sección queda corrida ni encima
   function limpiarRestos() {
@@ -165,7 +184,8 @@
     // Primero la historia (así el navegador recuerda dónde iba en las cápsulas) y después arriba del todo.
     // "desdeCapsulas": esa entrada la puso la carta, así que la flecha puede volver con el "atrás" del navegador
     try {
-      if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
+      if (empujar && atrasPropio) empujarAlVolver = true; // ver salir()
+      else if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
       else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
     } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
     irA(0);
@@ -253,6 +273,7 @@
     // La página ampliada con los dedos (zoom): deslizar de lado ya no cambia de sección, mueve la página
     if (window.visualViewport) visualViewport.addEventListener('resize', () => document.documentElement.classList.toggle('con-zoom', visualViewport.scale > 1.01));
     window.addEventListener('popstate', ev => {
+      if (atrasPropio) { llegoAtras(); return; } // el "atrás" que pidió la carta al salir: las cápsulas ya están
       const id = ev.state && ev.state.seccion;
       if (id && document.getElementById(id)) { if (id !== abierta) abrir(id, false); }
       else if (abierta) cerrar();
