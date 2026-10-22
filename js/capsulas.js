@@ -131,16 +131,11 @@
     }
     if (empujarAlVolver) {
       empujarAlVolver = false;
-      // La sección que se abrió mientras tanto, a la historia. Para que el navegador guarde con las cápsulas la altura
-      // buena (donde iba la persona, no la de la sección), se ponen un momento las cápsulas a esa altura, se avisa a la
-      // historia y se vuelve a la sección: todo en el mismo instante, sin que se pinte
+      // La sección que se abrió mientras tanto, a la historia. La carta de abajo sigue donde iba la persona (la sección
+      // es una capa encima), así que el navegador guarda con las cápsulas la altura buena
       if (abierta) {
-        const enSeccion = Math.round(scrollY), raiz = document.documentElement;
-        document.body.classList.remove('viendo-seccion'); raiz.classList.remove('viendo-seccion');
-        irA(dondeIba);
+        if (Math.abs(scrollY - dondeIba) > 1) irA(dondeIba);
         try { history.pushState({ seccion: abierta, desdeCapsulas: true }, ''); alturaGuardada = Math.round(scrollY); } catch { /* se queda así */ }
-        document.body.classList.add('viendo-seccion'); raiz.classList.add('viendo-seccion');
-        irA(enSeccion);
       }
     }
   }
@@ -214,7 +209,19 @@
     // Las fotos de esta sección y de las de al lado se piden de una vez (si no habían llegado): al deslizar ya están
     const ids = [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec), i = ids.indexOf(id);
     if (window.cargarFotos) for (const v of [id, ids[i - 1], ids[i + 1]]) if (v) window.cargarFotos(document.getElementById(v));
-    irA(0);
+    // La sección empieza en su comienzo (tiene su propio desplazamiento: la carta de abajo no se mueve)
+    const abiertaAhora = document.getElementById(id);
+    if (abiertaAhora) abiertaAhora.scrollTop = 0;
+    taparCarta(true);
+  }
+  // Mientras hay una sección abierta, lo de la carta que queda tapado no lo leen los lectores de pantalla ni se llega con
+  // el tabulador (sigue en su sitio, sin esconderse)
+  function taparCarta(si) {
+    for (const e of [document.querySelector('.cinta'), document.querySelector('.hero'), document.querySelector('#carta > .mas-pedidos'), capsulas, document.querySelector('body > footer')]) {
+      if (!e) continue;
+      if (si) e.setAttribute('aria-hidden', 'true'); else e.removeAttribute('aria-hidden');
+      if ('inert' in e) e.inert = si;
+    }
   }
   function cerrar() {
     const ultima = abierta;
@@ -227,15 +234,14 @@
     document.documentElement.classList.remove('viendo-seccion');
     delete document.body.dataset.seccion;
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
-    // Al salir, la página queda exactamente donde iba la persona en las cápsulas (también si pasó a otras secciones o
-    // había bajado hasta el final). Es la misma altura que el navegador guardó con la entrada del historial (se guarda
-    // antes de esconder nada, ver abrir()), así que cuando el navegador la pone (scrollRestoration en "auto": el "atrás"
-    // desde la orilla del iPhone lo necesita para soltar rápido la foto de la pantalla anterior) no hay salto
-    const y = dondeIba;
+    taparCarta(false);
+    // Al salir solo se quita la capa: la carta de abajo nunca se escondió ni se movió, así que queda exactamente donde iba
+    // la persona sin volver a pintar nada. Si algo la movió (el teclado en el computador), vuelve a donde iba. Es la misma
+    // altura que el navegador guardó con la entrada del historial, así que cuando la pone (scrollRestoration en "auto": el
+    // "atrás" desde la orilla del iPhone lo necesita para soltar rápido la foto de la pantalla anterior) no hay salto
     // Si el enfoque estaba en la barra (con el teclado), vuelve a la cápsula de la última sección que se vio
     const conTeclado = barra.contains(document.activeElement);
-    irA(y);
-    requestAnimationFrame(() => irA(y));
+    if (Math.abs(scrollY - dondeIba) > 1) irA(dondeIba);
     if (conTeclado) { const c = capsulas.querySelector('.capsula[data-sec="' + CSS.escape(ultima) + '"]'); if (c) c.focus({ preventScroll: true }); }
   }
 
@@ -247,6 +253,19 @@
       '<div class="seccion-fila-marco"><div class="seccion-fila"></div></div>';
     fila = barra.querySelector('.seccion-fila');
     document.getElementById('carta').before(barra);
+    const fondo = el('div', 'seccion-fondo');
+    fondo.setAttribute('aria-hidden', 'true');
+    barra.before(fondo);
+    // En el computador, la rueda del mouse sobre la barra (o el fondo) mueve la sección abierta, no la carta tapada de
+    // abajo (esa nunca se mueve). La rueda de lado sobre la fila de secciones sigue corriendo la fila
+    const ruedaASeccion = ev => {
+      const s = abierta && document.getElementById(abierta);
+      if (!s || Math.abs(ev.deltaY) <= Math.abs(ev.deltaX)) return;
+      ev.preventDefault();
+      s.scrollTop += ev.deltaY * (ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? s.clientHeight : 1);
+    };
+    barra.addEventListener('wheel', ruedaASeccion, { passive: false });
+    fondo.addEventListener('wheel', ruedaASeccion, { passive: false });
     // "Los más pedidos": el plato está en una sección cerrada, así que se abre su sección y ahí se resalta (este aviso
     // llega antes que el de carta.js, que solo baja hasta el plato)
     document.addEventListener('click', ev => {
@@ -257,8 +276,8 @@
       ev.stopPropagation();
       abrir(plato.closest('.cat').id, true);
       requestAnimationFrame(() => {
-        const r = plato.getBoundingClientRect();
-        irA(scrollY + r.top - (innerHeight - r.height) / 2);
+        const s = plato.closest('.cat');
+        s.scrollTop = Math.max(0, plato.offsetTop - (s.clientHeight - plato.offsetHeight) / 2);
         if (window.resaltarPlato) window.resaltarPlato(plato);
       });
     }, true);
@@ -285,6 +304,17 @@
     document.addEventListener('keydown', ev => {
       if (!abierta || ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey || /input|textarea|select/i.test(ev.target.tagName)) return;
       if (ev.key === 'Escape') { ev.preventDefault(); salir(); return; }
+      // Arriba, abajo, AvPág, RePág, Inicio, Fin y espacio mueven la sección (su propio desplazamiento), no la carta tapada
+      const s = document.getElementById(abierta), alto = s ? s.clientHeight * .9 : 0;
+      const mov = { ArrowDown: 48, ArrowUp: -48, PageDown: alto, PageUp: -alto, ' ': alto }[ev.key];
+      if (s && (mov || ev.key === 'Home' || ev.key === 'End')) {
+        if (ev.key === ' ' && ev.target.closest('button, a, [role="button"]')) return; // espacio en un botón: es tocarlo
+        ev.preventDefault();
+        if (ev.key === 'Home') s.scrollTop = 0;
+        else if (ev.key === 'End') s.scrollTop = s.scrollHeight;
+        else s.scrollTop += mov;
+        return;
+      }
       const paso = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0;
       if (!paso) return;
       const ids = [...fila.querySelectorAll('button[data-sec]')].map(b => b.dataset.sec), otra = ids[ids.indexOf(abierta) + paso];
@@ -292,11 +322,12 @@
       ev.preventDefault();
       if (deslizador) deslizador.pasarA(otra); else abrir(otra, false);
     });
-    // "Volver arriba" del pie, con una sección abierta: sube dentro de la sección (el #arriba está escondido)
+    // "Volver arriba", con una sección abierta: sube dentro de la sección
     document.addEventListener('click', ev => {
       if (!abierta || !ev.target.closest('a[href="#arriba"]')) return;
       ev.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const s = document.getElementById(abierta);
+      if (s) s.scrollTo({ top: 0, behavior: 'smooth' });
     });
     // La página ampliada con los dedos (zoom): deslizar de lado ya no cambia de sección, mueve la página
     if (window.visualViewport) visualViewport.addEventListener('resize', () => document.documentElement.classList.toggle('con-zoom', visualViewport.scale > 1.01));
@@ -358,13 +389,12 @@
           v.classList.add('abierta', 'asomada');
           v.dataset.lado = paso;
           v.setAttribute('aria-hidden', 'true'); // tapada: los lectores de pantalla tampoco la leen
-          Object.assign(v.style, { left: abiertaAhora.offsetLeft + 'px', width: abiertaAhora.offsetWidth + 'px', overflow: 'hidden', transform: 'none' });
+          v.style.transform = 'none';
+          v.scrollTop = 0;
           preparadas.push(v);
         }
       }
-      // A la altura donde va la persona (solo se mueve la caja: lo de adentro ya está pintado)
-      const top = abiertaAhora.offsetTop + scrollY, alto = Math.max(0, Math.min(innerHeight, abiertaAhora.offsetHeight - scrollY));
-      for (const v of preparadas) { v.style.top = top + 'px'; v.style.maxHeight = alto + 'px'; v.style.transform = 'none'; }
+      for (const v of preparadas) v.style.transform = 'none';
     }
     // Un momento después de abrir una sección (con la página quieta) se preparan las de al lado
     function prepararLuego() {
@@ -372,12 +402,9 @@
       const mio = turno;
       relojPreparar = setTimeout(() => { if (mio === turno && abierta) prepararVecinas(); }, 350);
     }
-    // Al empezar a deslizar, cada una a su lado (por fuera de la pantalla) y ya completa hasta abajo de la pantalla
+    // Al empezar a deslizar, cada una a su lado (por fuera de la pantalla)
     function correrPreparadas() {
-      for (const v of preparadas) {
-        v.style.maxHeight = innerHeight + 'px';
-        v.style.transform = 'translateX(' + Number(v.dataset.lado) * ancho() + 'px)';
-      }
+      for (const v of preparadas) v.style.transform = 'translateX(' + Number(v.dataset.lado) * ancho() + 'px)';
     }
     function soltarPreparadas(menos) {
       for (const v of preparadas) if (v !== menos) { v.classList.remove('abierta'); soltarVecina(v); }
@@ -422,18 +449,9 @@
       vecina.removeAttribute('aria-hidden');
       if (preparadas.indexOf(vecina) < 0) {
         vecina.classList.add('abierta', 'asomada');
-        vecina.style.top = (sec.offsetTop + scrollY) + 'px';
-        vecina.style.left = sec.offsetLeft + 'px';
-        vecina.style.width = sec.offsetWidth + 'px';
-        vecina.style.maxHeight = innerHeight + 'px';
-        vecina.style.overflow = 'hidden';
+        vecina.scrollTop = 0; // entra en su comienzo, que es donde va a quedar
       }
       fila1 = sitioEnFila(id);
-      // Mientras tanto la carta crece si hace falta: en los iPhone con iOS 15 o menos (sin overflow-x: clip) recortaba lo
-      // que la de al lado pasaba de su alto, y desde abajo de una sección larga se veía cortada. La de al lado solo se ve
-      // hasta abajo de la pantalla mientras se corre (se completa al quedar abierta)
-      const hasta = (sec.offsetTop + scrollY) + innerHeight;
-      if (hasta > carta.offsetHeight) carta.style.minHeight = hasta + 'px';
     }
     const soltarVecina = v => {
       v.classList.remove('asomada');
@@ -577,15 +595,12 @@
         xSec = 0;
         // Si mientras tanto volvieron a las cápsulas (la flecha o el "atrás"), no se abre nada
         if (abierta !== antes.id) { soltarPreparadas(); soltarVecina(nueva); nueva.classList.remove('abierta'); antes.style.transform = antes.style.transition = ''; return; }
-        // Todo en el mismo momento (sin dibujar en medio): la otra pasa a ser la abierta, arriba, donde ya estaba
-        const arriba = nueva.getBoundingClientRect().top;
+        // Todo en el mismo momento (sin dibujar en medio): la otra pasa a ser la abierta, donde ya estaba (las dos son
+        // capas fijas en el mismo sitio)
         soltarPreparadas(nueva);
         abrir(destino, false);
         soltarVecina(nueva);
         antes.style.transform = antes.style.transition = antes.style.willChange = '';
-        // Si la página se había movido un poco mientras tanto, la nueva queda exactamente donde se veía: sin brinco
-        const corrida = nueva.getBoundingClientRect().top - arriba;
-        if (Math.abs(corrida) > 1) irA(scrollY + corrida);
       }, toque, v);
       lado = 0;
     }

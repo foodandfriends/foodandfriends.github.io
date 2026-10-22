@@ -36,11 +36,11 @@
 <link rel="preload" href="datos/food-friends.json" as="fetch" crossorigin>
 <!-- El código, pedido de una vez y todo a la vez (antes, al final de la página, se pedía un archivo después del otro);
      corre en orden cuando la página ya está leída -->
-<script src="js/config.js?v=202610212307" defer></script>
-<script src="js/firebase.js?v=202610212307" defer></script>
-<script src="js/carta.js?v=202610212307" defer></script>
-<script src="js/capsulas.js?v=202610212307" defer></script>
-<script src="js/carta-publica.js?v=202610212307" defer></script>
+<script src="js/config.js?v=202610220013" defer></script>
+<script src="js/firebase.js?v=202610220013" defer></script>
+<script src="js/carta.js?v=202610220013" defer></script>
+<script src="js/capsulas.js?v=202610220013" defer></script>
+<script src="js/carta-publica.js?v=202610220013" defer></script>
 <style>
   /* Oswald: la letra gruesa y angosta del menú impreso (una sola letra para todos los gruesos). Kaushan Script: la de
      "La carta" y la historia. Son de Google Fonts (licencia libre, ver fuentes/LEAME.txt), solo con las letras del español */
@@ -73,7 +73,6 @@
   :root { --pagina: 255, 255, 255; }
   html { background: rgb(var(--pagina)) url(dibujos.svg) 0 0 / 260px 260px repeat; }
   body { background: none; }
-  html.viendo-seccion { background: rgb(var(--pagina)); }
 
   /* Pantalla de entrada: solo el logo sobre blanco mientras carga; luego se desvanece sobre la carta */
   .portada { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--fondo); transition: opacity .35s ease, visibility .35s;
@@ -195,10 +194,9 @@
   .fav .precio { bottom: 10px; margin: 0; font-size: 1.08rem; }
 
   /* Las secciones en cápsulas (js/capsulas.js), una debajo de otra con su foto. Al tocar una se abre esa sección sola,
-     con la fila de las demás arriba; la flecha vuelve a las cápsulas */
+     encima de la carta (ver "La sección abierta"), con la fila de las demás arriba; la flecha vuelve a las cápsulas */
   body.con-capsulas #nav, body.con-capsulas:not(.viendo-seccion) #carta .cat, body.con-capsulas:not(.viendo-seccion) .seccion-barra,
-  body.viendo-seccion .cinta, body.viendo-seccion .hero, body.viendo-seccion .capsulas, body.viendo-seccion #carta .mas-pedidos,
-  body.viendo-seccion #carta .cat:not(.abierta) { display: none; }
+  body.con-capsulas:not(.viendo-seccion) .seccion-fondo, body.viendo-seccion #carta .cat:not(.abierta) { display: none; }
   .capsulas { padding-top: 18px; }
   .capsulas-titulo { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .capsulas-lista { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
@@ -219,11 +217,16 @@
   .capsula-dibujo { position: absolute; top: 50%; right: 62px; z-index: -1; width: 62px; height: 62px; margin-top: -31px; fill: none; stroke: var(--amarillo);
     stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; opacity: .55; }
 
-  /* La sección abierta: arriba, fija al bajar, la flecha y la fila de secciones (la abierta en amarillo). Fondo liso, sin
-     desenfoque: en los iPhone viejos el desenfoque hace que la página se mueva a saltos al bajar */
-  .seccion-barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center;
-    padding: calc(10px + env(safe-area-inset-top)) max(12px, calc((100% - 576px) / 2)) 10px;
-    background: rgb(var(--pagina)); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06); }
+  /* La sección abierta es una capa fija encima de la carta, que no se esconde, no se mueve ni cambia de fondo: al salir
+     solo se quita la capa, sin nada que volver a pintar ni acomodar (antes, en el iPhone, al reaparecer titilaban fotos y
+     difuminados). Arriba, fija, la barra con la flecha y la fila de secciones (la abierta en amarillo); debajo, la sección
+     con su propio desplazamiento; detrás, un fondo liso que tapa la carta. Sin desenfoque (en iPhones viejos va a saltos) */
+  :root { --alto-barra: calc(60px + env(safe-area-inset-top)); }
+  .seccion-barra { position: fixed; top: 0; left: 0; right: 0; z-index: 20; height: var(--alto-barra); display: flex; align-items: center;
+    padding: env(safe-area-inset-top) max(12px, calc((100% - 576px) / 2)) 0;
+    background: rgb(var(--pagina)); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06);
+    touch-action: pan-x; } /* el dedo de arriba abajo sobre la barra no mueve la carta de abajo */
+  .seccion-fondo { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 16; background: rgb(var(--pagina)); touch-action: none; }
   .seccion-volver { flex: none; margin-right: 10px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
     background: var(--texto); color: var(--amarillo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .seccion-volver svg { width: 22px; height: 22px; }
@@ -240,25 +243,26 @@
     scroll-snap-align: start; -webkit-tap-highlight-color: transparent; }
   .seccion-fila button + button { margin-left: 8px; }
   .seccion-fila button[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); }
-  /* Deslizar de lado sobre los platos cambia de sección: el navegador solo hace el movimiento de arriba abajo (y el
-     zoom), y lo que se corre de lado no ensancha la página */
-  body.viendo-seccion #carta { position: relative; touch-action: pan-y; touch-action: pan-y pinch-zoom; overflow-x: hidden; overflow-x: clip; }
-  html.con-zoom body.viendo-seccion #carta { touch-action: auto; } /* con la página ampliada, que se pueda mover de lado */
-  /* La sección de al lado mientras se desliza: encima, a la misma altura y del mismo ancho que la abierta */
-  body.viendo-seccion #carta .cat.asomada { position: absolute; }
-  /* La sección abierta (y las de al lado, mientras se preparan para deslizar) en su propia capa todo el tiempo: si la capa
-     se armara al empezar a deslizar, el iPhone tendría que volver a pintarla entera y el movimiento daría un tirón */
-  body.viendo-seccion #carta .cat.abierta { will-change: transform; }
-  /* La abierta va encima de las de al lado y es lisa: las tapa mientras se preparan debajo de ella (js/capsulas.js) */
-  body.viendo-seccion #carta .cat.abierta:not(.asomada) { position: relative; z-index: 1; background: rgb(var(--pagina)); }
-  body.viendo-seccion #carta .cat.abierta { padding-top: 6px; }
+  /* La sección: fija entre la barra y el borde de abajo, con su propio desplazamiento y lisa. Deslizar de lado sobre los
+     platos cambia de sección (el navegador solo hace el movimiento de arriba abajo y el zoom). Siempre se puede mover un
+     poquito (::before un px más alto que ella): así el dedo nunca termina moviendo la carta de abajo. En su propia capa
+     todo el tiempo: si la capa se armara al empezar a deslizar, el iPhone la volvería a pintar y daría un tirón */
+  body.viendo-seccion #carta .cat.abierta { position: fixed; top: var(--alto-barra); left: 0; right: 0; bottom: 0; z-index: 18;
+    overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+    touch-action: pan-y; touch-action: pan-y pinch-zoom;
+    padding: 6px max(20px, calc((100% - 560px) / 2)) calc(24px + env(safe-area-inset-bottom));
+    background: rgb(var(--pagina)); will-change: transform; }
+  body.viendo-seccion #carta .cat.abierta::before { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none; }
+  html.con-zoom body.viendo-seccion #carta .cat.abierta { touch-action: auto; } /* con la página ampliada, que se pueda mover de lado */
+  /* Las de al lado (preparadas debajo de la abierta, o entrando al deslizar): igual de fijas, por debajo de ella */
+  body.viendo-seccion #carta .cat.asomada { z-index: 17; }
   /* La fila de arriba ya dice en qué sección va: el título queda para los lectores de pantalla, sin ocupar espacio */
   body.viendo-seccion #carta .cat.abierta h2 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   body.viendo-seccion #carta .cat.abierta .platos { margin-top: 14px; }
   /* En las secciones no va el pie de la página. Donde hay trago, el aviso legal va al final de la sección misma (lo pone
      js/capsulas.js; la ley lo pide donde se ofrece): al deslizar se corre con los platos y llega con ellos */
-  body.viendo-seccion footer, .aviso-seccion { display: none; }
-  body.viendo-seccion .aviso-seccion { display: block; margin: 32px 0 0; padding: 14px 0 calc(28px + env(safe-area-inset-bottom));
+  .aviso-seccion { display: none; }
+  body.viendo-seccion .aviso-seccion { display: block; margin: 32px 0 0; padding: 14px 0 4px;
     border-top: 1px solid var(--linea); color: var(--suave); font-size: .85rem; line-height: 1.55; }
 
   /* El pie, del mismo blanco de la carta: los dibujos de fondo se desvanecen al llegar a él (no hay una franja de otro color) */
