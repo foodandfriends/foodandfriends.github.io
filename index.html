@@ -36,11 +36,11 @@
 <link rel="preload" href="datos/food-friends.json" as="fetch" crossorigin>
 <!-- El código, pedido de una vez y todo a la vez (antes, al final de la página, se pedía un archivo después del otro);
      corre en orden cuando la página ya está leída -->
-<script src="js/config.js?v=202610220013" defer></script>
-<script src="js/firebase.js?v=202610220013" defer></script>
-<script src="js/carta.js?v=202610220013" defer></script>
-<script src="js/capsulas.js?v=202610220013" defer></script>
-<script src="js/carta-publica.js?v=202610220013" defer></script>
+<script src="js/config.js?v=202610220019" defer></script>
+<script src="js/firebase.js?v=202610220019" defer></script>
+<script src="js/carta.js?v=202610220019" defer></script>
+<script src="js/capsulas.js?v=202610220019" defer></script>
+<script src="js/carta-publica.js?v=202610220019" defer></script>
 <style>
   /* Oswald: la letra gruesa y angosta del menú impreso (una sola letra para todos los gruesos). Kaushan Script: la de
      "La carta" y la historia. Son de Google Fonts (licencia libre, ver fuentes/LEAME.txt), solo con las letras del español */
@@ -226,6 +226,7 @@
     padding: env(safe-area-inset-top) max(12px, calc((100% - 576px) / 2)) 0;
     background: rgb(var(--pagina)); box-shadow: 0 1px 0 var(--linea), 0 6px 14px rgba(0, 0, 0, .06);
     touch-action: pan-x; } /* el dedo de arriba abajo sobre la barra no mueve la carta de abajo */
+  .seccion-barra *, .seccion-fila button { touch-action: pan-x; } /* también la fila (se desliza de lado y si no, corta la regla) y la flecha */
   .seccion-fondo { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 16; background: rgb(var(--pagina)); touch-action: none; }
   .seccion-volver { flex: none; margin-right: 10px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
     background: var(--texto); color: var(--amarillo); cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -250,7 +251,7 @@
   body.viendo-seccion #carta .cat.abierta { position: fixed; top: var(--alto-barra); left: 0; right: 0; bottom: 0; z-index: 18;
     overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
     touch-action: pan-y; touch-action: pan-y pinch-zoom;
-    padding: 6px max(20px, calc((100% - 560px) / 2)) calc(24px + env(safe-area-inset-bottom));
+    padding: 6px max(20px, calc((100% - 560px) / 2)) env(safe-area-inset-bottom); /* abajo, sin espacio muerto */
     background: rgb(var(--pagina)); will-change: transform; }
   body.viendo-seccion #carta .cat.abierta::before { content: ""; position: absolute; top: 0; left: 0; width: 1px; height: calc(100% + 1px); pointer-events: none; }
   html.con-zoom body.viendo-seccion #carta .cat.abierta { touch-action: auto; } /* con la página ampliada, que se pueda mover de lado */

@@ -367,6 +367,8 @@
       return 3 * (1 - u) * (1 - u) * u * y1 + 3 * (1 - u) * u * u * y2 + u * u * u;
     };
     let x0 = 0, y0 = 0, dx = 0, modo = 'nada', sec = null, vecina = null, lado = 0, ocupado = false;
+    // El dedo empezó fuera de la sección y de la barra (algo que flota encima, un aviso…): no mueve la carta de abajo
+    let fuera = false;
     // Medidas tomadas una vez al empezar: medir en cada movimiento del dedo obliga al iPhone a recalcular la página y el
     // movimiento salía a saltos. xSec es dónde está la abierta ahora (para saber cuánto le falta al soltar)
     let anchoFijo = 0, xSec = 0, desfase = 0;
@@ -518,6 +520,7 @@
     }
 
     document.addEventListener('touchstart', ev => {
+      fuera = !!abierta && !(ev.target.closest && ev.target.closest('#carta .cat.abierta, .seccion-barra'));
       // Un segundo dedo a mitad del deslizamiento (para ampliar): todo vuelve a su sitio
       if (modo === 'lado') { soltar({ type: 'touchcancel', timeStamp: ev.timeStamp }); return; }
       modo = 'nada';
@@ -531,6 +534,7 @@
     // No pasivo (mientras se desliza de lado la página no baja ni sube), y solo con una sección abierta: en las cápsulas
     // cada movimiento del dedo no tiene que esperar a este código
     const alMoverDedo = ev => {
+      if (fuera) { if (ev.cancelable) ev.preventDefault(); return; }
       if (modo === 'nada') return;
       const t = ev.touches[0], mx = t.clientX - x0, my = t.clientY - y0;
       if (modo === 'quizas') {
