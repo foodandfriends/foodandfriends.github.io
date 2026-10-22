@@ -101,7 +101,6 @@
   // del navegador (popstate) para mostrarlas y en el iPhone se demoraba casi un segundo. Mientras ese aviso llega
   // (atrasPropio), una cápsula que se toque se abre de una vez y su entrada del historial se pone cuando llegue
   let atrasPropio = false, relojAtras = 0, empujarAlVolver = false;
-  let alturaGuardada = 0; // la altura que el navegador guardó con la entrada de las cápsulas (al entrar a la sección)
   function salir() {
     if (atrasPropio) { empujarAlVolver = false; cerrar(); return; } // el "atrás" de antes todavía no llega: no pedir otro
     if (history.state && history.state.seccion && history.state.desdeCapsulas) {
@@ -112,32 +111,27 @@
       history.back();
     } else { cerrar(); try { history.replaceState(null, ''); } catch { /* el navegador limita los cambios: se queda así */ } }
   }
-  function llegoAtras(porAviso) {
+  function llegoAtras() {
     atrasPropio = false;
     clearTimeout(relojAtras);
-    // Si mientras llegaba el "atrás" la persona ya bajó o subió (o abrió otra sección), el navegador la lleva justo después
-    // a la altura que guardó (scrollRestoration en "auto"): se le regresa a donde iba, antes de que se pinte. Solo ese
-    // salto exacto (a la altura guardada, o al final si la página es más corta), para no pelear con el dedo si sigue bajando
-    const y = Math.round(scrollY), guardada = alturaGuardada;
-    if (porAviso === true && Math.abs(y - guardada) > 2) {
-      const alMover = () => {
-        const destino = Math.min(guardada, document.documentElement.scrollHeight - innerHeight);
-        if (Math.abs(scrollY - destino) > 2) return;
-        removeEventListener('scroll', alMover);
-        irA(y);
-      };
-      addEventListener('scroll', alMover, { passive: true });
-      setTimeout(() => removeEventListener('scroll', alMover), 300);
-    }
     if (empujarAlVolver) {
       empujarAlVolver = false;
       // La sección que se abrió mientras tanto, a la historia. La carta de abajo sigue donde iba la persona (la sección
       // es una capa encima), así que el navegador guarda con las cápsulas la altura buena
       if (abierta) {
         if (Math.abs(scrollY - dondeIba) > 1) irA(dondeIba);
-        try { history.pushState({ seccion: abierta, desdeCapsulas: true }, ''); alturaGuardada = Math.round(scrollY); } catch { /* se queda así */ }
+        try { history.pushState({ seccion: abierta, desdeCapsulas: true }, ''); } catch { /* se queda así */ }
       }
     }
+  }
+  // El "atrás" que pidió la carta al salir: la carta de abajo nunca se movió, así que el navegador no le pone la altura que
+  // guardó con la entrada de las cápsulas (en el iPhone la ponía corrida: la carta aparecía más arriba de donde iba, un
+  // momento después de salir). Cuando llega el aviso, esa entrada ya es la actual y el navegador todavía no ha puesto la
+  // altura: se apaga solo para este "atrás" y se vuelve a prender enseguida. El "atrás" desde la orilla del iPhone sigue
+  // con su altura (sin ella tardaba en soltar la foto de la pantalla anterior)
+  function sinAlturaGuardada() {
+    try { history.scrollRestoration = 'manual'; } catch { return; }
+    setTimeout(() => { try { history.scrollRestoration = 'auto'; } catch { /* se queda así */ } }, 0);
   }
   // Restos de un deslizamiento cortado (un segundo dedo, un cambio a la mitad): ninguna sección queda corrida ni encima
   function limpiarRestos() {
@@ -194,7 +188,7 @@
     // flecha puede volver con el "atrás" del navegador
     try {
       if (empujar && atrasPropio) empujarAlVolver = true; // ver salir()
-      else if (empujar) { history.pushState({ seccion: id, desdeCapsulas: true }, ''); alturaGuardada = Math.round(scrollY); }
+      else if (empujar) history.pushState({ seccion: id, desdeCapsulas: true }, '');
       else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
     } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
     anclar();
@@ -253,9 +247,9 @@
     document.querySelectorAll('#carta .cat.abierta').forEach(c => c.classList.remove('abierta'));
     taparCarta(false);
     // Al salir solo se quita la capa: la carta de abajo nunca se escondió ni se movió, así que queda exactamente donde iba
-    // la persona sin volver a pintar nada. Si algo la movió (el teclado en el computador), vuelve a donde iba. Es la misma
-    // altura que el navegador guardó con la entrada del historial, así que cuando la pone (scrollRestoration en "auto": el
-    // "atrás" desde la orilla del iPhone lo necesita para soltar rápido la foto de la pantalla anterior) no hay salto
+    // la persona sin volver a pintar nada. Si algo la movió (el teclado en el computador), vuelve a donde iba. Con el
+    // "atrás" de la carta el navegador no pone ninguna altura (ver sinAlturaGuardada); con el de la orilla del iPhone pone
+    // la que guardó con la entrada del historial, que es esta misma
     // Si el enfoque estaba en la barra (con el teclado), vuelve a la cápsula de la última sección que se vio
     const conTeclado = barra.contains(document.activeElement);
     if (Math.abs(scrollY - dondeIba) > 1) irA(dondeIba);
@@ -350,7 +344,7 @@
     // La página ampliada con los dedos (zoom): deslizar de lado ya no cambia de sección, mueve la página
     if (window.visualViewport) visualViewport.addEventListener('resize', () => document.documentElement.classList.toggle('con-zoom', visualViewport.scale > 1.01));
     window.addEventListener('popstate', ev => {
-      if (atrasPropio) { llegoAtras(true); return; } // el "atrás" que pidió la carta al salir: las cápsulas ya están
+      if (atrasPropio) { sinAlturaGuardada(); llegoAtras(); return; } // el "atrás" que pidió la carta al salir: las cápsulas ya están
       const id = ev.state && ev.state.seccion;
       if (id && document.getElementById(id)) { if (id !== abierta) abrir(id, false); }
       else if (abierta) cerrar();
