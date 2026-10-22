@@ -197,6 +197,7 @@
       else if (empujar) { history.pushState({ seccion: id, desdeCapsulas: true }, ''); alturaGuardada = Math.round(scrollY); }
       else history.replaceState(Object.assign({}, history.state || {}, { seccion: id }), '');
     } catch { /* el navegador limita los cambios de historia: la sección se abre igual */ }
+    anclar();
     limpiarRestos();
     if (deslizador) { deslizador.olvidar(); deslizador.activo(true); deslizador.prepararLuego(); }
     // También en <html> y con el id de la sección en <body>: el CSS cambia lo que haga falta sin :has() (algunos
@@ -213,6 +214,22 @@
     const abiertaAhora = document.getElementById(id);
     if (abiertaAhora) abiertaAhora.scrollTop = 0;
     taparCarta(true);
+  }
+  // La capa de la sección (barra, fondo y sección) va en la página donde está la pantalla, del alto de la pantalla (no
+  // "fixed": ver index.html, Safari y la franja de la hora). Si la página se llegara a mover (girar el celular, la barra
+  // del navegador), la capa la sigue
+  let ancla = -1, altoAncla = 0, anclaArea = 0;
+  function anclar() {
+    // Las secciones van dentro de #area-carta (ver index.html): la misma altura, medida desde ahí
+    const area = Math.round(scrollY - (document.getElementById('area-carta').getBoundingClientRect().top + scrollY));
+    if (ancla === scrollY && altoAncla === innerHeight && anclaArea === area) return;
+    ancla = scrollY;
+    altoAncla = innerHeight;
+    anclaArea = area;
+    const s = document.body.style;
+    s.setProperty('--capa-y', ancla + 'px');
+    s.setProperty('--capa-alto', altoAncla + 'px');
+    s.setProperty('--capa-y-carta', anclaArea + 'px');
   }
   // Mientras hay una sección abierta, lo de la carta que queda tapado no lo leen los lectores de pantalla ni se llega con
   // el tabulador (sigue en su sitio, sin esconderse)
@@ -252,7 +269,7 @@
     barra.innerHTML = '<button type="button" class="seccion-volver" aria-label="Volver a las secciones">' + ATRAS + '</button>' +
       '<div class="seccion-fila-marco"><div class="seccion-fila"></div></div>';
     fila = barra.querySelector('.seccion-fila');
-    document.getElementById('carta').before(barra);
+    document.getElementById('area-carta').before(barra);
     const fondo = el('div', 'seccion-fondo');
     fondo.setAttribute('aria-hidden', 'true');
     barra.before(fondo);
@@ -266,6 +283,7 @@
     };
     barra.addEventListener('wheel', ruedaASeccion, { passive: false });
     fondo.addEventListener('wheel', ruedaASeccion, { passive: false });
+    for (const e of ['scroll', 'resize']) addEventListener(e, () => { if (abierta) anclar(); }, { passive: true });
     // "Los más pedidos": el plato está en una sección cerrada, así que se abre su sección y ahí se resalta (este aviso
     // llega antes que el de carta.js, que solo baja hasta el plato)
     document.addEventListener('click', ev => {
